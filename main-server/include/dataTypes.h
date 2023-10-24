@@ -14,6 +14,12 @@ namespace FluffyMultiplayer
     unsigned short port;
     std::string data;
   };
+
+  struct ConnectedClients
+  {
+    boost::asio::ip::address ip;
+    unsigned short port;
+  };
 }
 
 #endif

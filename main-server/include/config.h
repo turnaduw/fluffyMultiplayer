@@ -4,8 +4,8 @@
 #define MS_DEFAULT_PORT 8888 //socket binds
 #define MS_RECEIVE_BUFFER 1024 //received data by server hold on a array with this size
 #define MS_DATABASE_FILE "fluffy.db"
-
-
+#define MS_VERSION "0.0.1"
+#define MS_DATA_DELIMITER ";"
 
 
 /*

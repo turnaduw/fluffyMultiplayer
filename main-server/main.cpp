@@ -54,7 +54,7 @@ int main()
   try
   {
       //check database file existant then if needed create database tables or open database.
-      FluffyMultiplayer::FluffyDatabase dB(boost::filesystem::exists(MS_DATABASE_FILE));
+      FluffyMultiplayer::FluffyDatabase db(boost::filesystem::exists(MS_DATABASE_FILE));
 
       //init a stack for received data from socket
       std::vector<FluffyMultiplayer::SocketDataStack> receivedDataStack;
@@ -69,7 +69,10 @@ int main()
       //process obj
       FluffyMultiplayer::ProcessData process_data;
 
-      process_data.process(socket,receivedDataStack);
+      while(true)
+      {
+        process_data.process(socket,receivedDataStack,db);
+      }
 
 
 
