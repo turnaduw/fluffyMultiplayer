@@ -19,6 +19,10 @@ namespace FluffyMultiplayer
       FluffyDatabase(bool);
       ~FluffyDatabase();
 
+      std::string getLobbyInfo(const int&); //write code..
+      std::string getLobbyList(int); //not refrenced because arguman is from config.h      //write code..
+      bool isIdentityExists(const std::string&); //write code..
+      int createLobby(const FluffyMultiplayer::CreateLobbyData&, std::string&); //write code..
       void initTables();
   };
 }

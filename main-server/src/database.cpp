@@ -51,7 +51,7 @@ namespace FluffyMultiplayer
                              "server_ip TEXT NOT NULL,"
                              "server_port TEXT NOT NULL,"
                              "password TEXT," //not null or e default password
-                             "gameMode TEXT NOT NULL,"
+                             "gameMode INTEGER DEFAULT 1,"
                              "maxPlayers INTEGER DEFAULT 4,"
                              "owner INTEGER NOT NULL,"
                              "isTextChatAllowed BOOLEAN DEFAULT 1,"
