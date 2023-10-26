@@ -53,7 +53,7 @@ namespace FluffyMultiplayer
                              "password TEXT," //not null or e default password
                              "gameMode INTEGER DEFAULT 1,"
                              "maxPlayers INTEGER DEFAULT 4,"
-                             "owner INTEGER NOT NULL,"
+                             "owner INTEGER PRIMARY KEY NOT NULL,"
                              "isTextChatAllowed BOOLEAN DEFAULT 1,"
                              "isVoiceChatAllowed BOOLEAN DEFAULT 1,"
                              "isSpecterAllowed BOOLEAN DEFAULT 0,"
