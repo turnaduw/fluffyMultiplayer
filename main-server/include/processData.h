@@ -44,8 +44,17 @@ namespace FluffyMultiplayer
     std::vector<std::string> dataSeparator(const std::string&, std::string, int=0,int=0);
     int convertStringToInt(const std::string&);
 
-    bool isSQLCodeIncluded(const std::string&); //write code..
     int separateCode(const std::string&); //means requesst code
+
+
+    bool isSQLCodeIncluded(const std::string&); //write code..
+    void decryptData(std::string&); //write code..
+    void encryptData(std::string&); //write code..
+
+    bool isDataValidated(FluffyMultiplayer::RegisterClientData&);
+    bool isDataValidated(FluffyMultiplayer::CreateLobbyData&);
+    bool isDataValidated(FluffyMultiplayer::LoginClientData&);
+
     void process(udp::socket&, std::vector<FluffyMultiplayer::SocketDataStack>&, FluffyMultiplayer::FluffyDatabase&);
   };
 }

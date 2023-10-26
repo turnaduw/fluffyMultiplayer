@@ -37,7 +37,7 @@ namespace FluffyMultiplayer
 
   void ProcessData::disconnectClient(const boost::asio::ip::address& ip, const unsigned short& port)
   {
-    //remove ip n port from client list
+    //search then remove ip n port from client list
   }
 
   std::vector<int> dataIndexes(const std::string& data, const std::string& delimiter);
@@ -82,20 +82,69 @@ namespace FluffyMultiplayer
     //...
   }
 
+  void ProcessData::decryptData(std::string& data)
+  {
+    //..
+  }
+
+  void ProcessData::encryptData(std::string& data)
+  {
+    //..
+  }
+
+  bool ProcessData::isDataValidated(FluffyMultiplayer::RegisterClientData& client)
+  {
+    if(  client.username.length() < MS_CLIENT_MINIMUM_USERNAME_LENGTH || client.username.length() > MS_CLIENT_MAXIMUM_USERNAME_LENGTH
+      || client.password.length() < MS_CLIENT_MINIMUM_PASSWORD_LENGTH || client.password.length() > MS_CLIENT_MAXIMUM_PASSWORD_LENGTH
+      || client.hardwareId.length() < MS_CLIENT_MINIMUM_HARDWAREID_LENGTH || client.hardwareId.length() > MS_CLIENT_MAXIMUM_HARDWAREID_LENGTH
+      || client.email.length() < MS_CLIENT_MINIMUM_EMAIL_LENGTH || client.email.length() > MS_CLIENT_MAXIMUM_EMAIL_LENGTH)
+    {
+      return false;
+    }
+    return true;
+  }
+  bool ProcessData::isDataValidated(FluffyMultiplayer::CreateLobbyData& data)
+  {
+    if(  data.identity.length() < MS_CLIENT_MINIMUM_IDENTITY_LENGTH
+      || data.identity.length() > MS_CLIENT_MAXIMUM_IDENTITY_LENGTH)
+    {
+      return false;
+    }
+    return true;
+  }
+
+  bool ProcessData::isDataValidated(FluffyMultiplayer::LoginClientData& client)
+  {
+    if(  client.username.length() < MS_CLIENT_MINIMUM_USERNAME_LENGTH || client.username.length() > MS_CLIENT_MAXIMUM_USERNAME_LENGTH
+      || client.password.length() < MS_CLIENT_MINIMUM_PASSWORD_LENGTH || client.password.length() > MS_CLIENT_MAXIMUM_PASSWORD_LENGTH
+      || client.hardwareId.length() < MS_CLIENT_MINIMUM_HARDWAREID_LENGTH || client.hardwareId.length() > MS_CLIENT_MAXIMUM_HARDWAREID_LENGTH
+      || client.oldIdentity.length() < MS_CLIENT_MINIMUM_IDENTITY_LENGTH || client.oldIdentity.length() > MS_CLIENT_MAXIMUM_IDENTITY_LENGTH)
+    {
+      return false;
+    }
+    return true;
+  }
 
   void ProcessData::process(udp::socket& socket, std::vector<FluffyMultiplayer::SocketDataStack>& stack, FluffyMultiplayer::FluffyDatabase& db)
   {
       for(int i=0; i<=stack.size(); i++)
       {
-        udp::endpoint receiver(stack[i].ip, stack[i].port);
+        bool elementProcessed = false; //a flag to avoid pop un-processed element
+        std::string receivedData = stack[i].data;
+        boost::asio::ip::address senderIp = stack[i].ip;
+        unsigned short senderPort = stack[i].port;
+        udp::endpoint receiverEndpoint(senderIp,senderPort);
 
+        if(receivedData.length()>MS_RECEIVED_DATA_MINIMUM_LENGTH)
+          decryptData(receivedData);
 
         //a function to call and check connection existant.
         auto checkConnection = [&] () -> bool
         {
-          if(!isConnectionExists(stack[i].ip,stack[i].port))
+          if(!isConnectionExists(senderIp,senderPort))
           {
-            sendData(MS_ERROR_CONNECTION_NOT_EXISTS,socket,receiver);
+            sendData(MS_ERROR_CONNECTION_NOT_EXISTS,socket,receiverEndpoint);
+            elementProcessed=true;
             stack.pop_back(); //remove processed request (current) from stack
             return false;
           }
@@ -108,12 +157,14 @@ namespace FluffyMultiplayer
         {
           case MS_REQUEST_CONNECT:
           {
-            if(isConnectionExists(stack[i].ip,stack[i].port))
-              sendData(MS_ERROR_CONNECTION_EXISTS,socket,receiver);
+            if(isConnectionExists(senderIp,senderPort))
+            {
+              sendData(MS_ERROR_CONNECTION_EXISTS,socket,receiverEndpoint);
+            }
             else
             {
-              connectClient(stack[i].ip,stack[i].port);
-              sendData(MS_RESPONSE_CONNECTION_ACCEPTED,socket,receiver);
+              connectClient(senderIp,senderPort);
+              sendData(MS_RESPONSE_CONNECTION_ACCEPTED,socket,receiverEndpoint);
             }
           }break;
 
@@ -121,26 +172,111 @@ namespace FluffyMultiplayer
           {
             if(checkConnection())
             {
-              disconnectClient(stack[i].ip,stack[i].port);
-              sendData(MS_RESPONSE_DISCONNECTED,socket,receiver);
+              disconnectClient(senderIp,senderPort);
+              sendData(MS_RESPONSE_DISCONNECTED,socket,receiverEndpoint);
             }
           }break;
 
           case MS_REQUEST_LOGIN:
           {
+            if(checkConnection())
+            {
+              std::vector<std::string>data = dataSeparator(receivedData, MS_DATA_DELIMITER, MS_DATA_START_AT_INDEX);
+              FluffyMultiplayer::LoginClientData client = { data[0], data[1], data[2], data[3] };
 
+              //data check
+              if(isDataValidated(client)
+              {
+                std::string identityResult;
+                switch (db.loginClient(client,identityResult))
+                {
+                  case 0:
+                  {
+                    if(identityResult.length()<MS_MINIMUM_RETURNED_DATA_BY_SQL_SEARCH)
+                      sendData(MS_ERROR_FAILED_TO_LOGIN_CLIENT,socket,receiverEndpoint);
+                    else
+                      sendData(MS_RESPONSE_SUCCESS_LOGIN,socket,receiverEndpoint,identityResult);
+                  }break;
+
+                  case 1:
+                  {
+                    sendData(MS_ERROR_FAILED_TO_LOGIN_INCORRECT,socket,receiverEndpoint);
+                  }break;
+
+                  case 2:
+                  {
+                    sendData(MS_ERROR_FAILED_TO_LOGIN_NOT_EXISTS,socket,receiverEndpoint);
+                  }break;
+
+                  case 3:
+                  {
+                    sendData(MS_ERROR_FAILED_TO_LOGIN_BANNED,socket,receiverEndpoint);
+                  }break;
+
+                  default: //interal error or unexcepted error.
+                  {
+                    sendData(MS_ERROR_FAILED_TO_LOGIN_CLIENT,socket,receiverEndpoint);
+                  }
+                }
+              }
+              else
+                sendData(MS_ERROR_FAILED_TO_LOGIN_BAD_DATA_SYNTAX,socket,receiverEndpoint);
+            }
           }break;
 
           case MS_REQUEST_REGISTER:
           {
+            if(checkConnection())
+            {
+              std::vector<std::string>data = dataSeparator(receivedData, MS_DATA_DELIMITER, MS_DATA_START_AT_INDEX);
+              FluffyMultiplayer::RegisterClientData client = { data[0], data[1], data[2], data[3] };
 
+              if(isDataValidated(client)
+              {
+                std::string identityResult;
+                switch (db.registerClient(client,identityResult))
+                {
+                  case 0:
+                  {
+                    if(identityResult.length()<MS_MINIMUM_RETURNED_DATA_BY_SQL_SEARCH)
+                      sendData(MS_ERROR_FAILED_TO_REGISTER_CLIENT,socket,receiverEndpoint);
+                    else
+                      sendData(MS_RESPONSE_SUCCESS_REGISTER,socket,receiverEndpoint,identityResult);
+                  }break;
+
+                  case 1:
+                  {
+                    sendData(MS_ERROR_FAILED_TO_REGISTER_EMIAL_EXISTS,socket,receiverEndpoint);
+                  }break;
+
+                  case 2:
+                  {
+                    sendData(MS_ERROR_FAILED_TO_REGISTER_USERNAME_EXISTS,socket,receiverEndpoint);
+                  }break;
+
+                  case 3:
+                  {
+                    sendData(MS_ERROR_FAILED_TO_REGISTER_EASY_PASSWORD,socket,receiverEndpoint);
+                  }break;
+
+                  default: //interal error or unexcepted error.
+                  {
+                    sendData(MS_ERROR_FAILED_TO_REGISTER_CLIENT,socket,receiverEndpoint);
+                  }
+                }
+
+              }
+              else
+                sendData(MS_ERROR_FAILED_TO_REGISTER_BAD_DATA_SYNTAX,socket,receiverEndpoint);
+
+            }
           }break;
 
           case MS_REQUEST_CREATE_LOBBY:
           {
             if(checkConnection())
             {
-              std::vector<std::string>data = dataSeparator(stack[i].data, MS_DATA_DELIMITER, MS_DATA_START_AT_INDEX);
+              std::vector<std::string>data = dataSeparator(receivedData, MS_DATA_DELIMITER, MS_DATA_START_AT_INDEX);
               FluffyMultiplayer::CreateLobbyData createLobbyInfo =
               {
                 data[0],
@@ -152,45 +288,36 @@ namespace FluffyMultiplayer
               };
 
 
-              //data check
-              if(createLobbyInfo.identity.length() < MS_CLIENT_MINIMUM_IDENTITY_LENGTH
-                || createLobbyInfo.identity.length() > MS_CLIENT_MAXIMUM_IDENTITY_LENGTH
-                || isSQLCodeIncluded(data)
+              if(isDataValidated(createLobbyInfo))
               {
-                sendData(MS_ERROR_FAILED_TO_LOBBY_CREATION_BAD_DATA_SYNTAX,socket,receiver);
-                break;
-              }
-              else
-              {
-                if(db.isIdentityExists(createLobbyInfo.identity))
-                {
-                  std::string resultServerInfo;
-                  int result = db.createLobby(createLobbyInfo,resultServerInfo);
-                  switch (result)
+                  if(db.isIdentityExists(createLobbyInfo.identity))
                   {
-                    case 0:
+                    std::string resultServerInfo;
+                    switch (db.createLobby(createLobbyInfo,resultServerInfo))
                     {
-                      sendData(MS_RESPONSE_SUCCESS_LOBBY_CREATED,socket,receiver,resultServerInfo);
-                    }break;
-                    case 1:
-                    {
-                      sendData(MS_ERROR_FAILED_TO_LOBBY_CREATION_FORBIDDEN_FOR_YOU,socket,receiver);
-                    }break;
-                    case 2:
-                    {
-                      sendData(MS_ERROR_FAILED_TO_LOBBY_CREATION_CANT_OWN_TWO_LOBBY,socket,receiver);
-                    }break;
-                    default: //interanl error or unexcepted error
-                    {
-                      sendData(MS_ERROR_FAILED_TO_CREATE_LOBBY,socket,receiver);
+                      case 0:
+                      {
+                        sendData(MS_RESPONSE_SUCCESS_LOBBY_CREATED,socket,receiverEndpoint,resultServerInfo);
+                      }break;
+                      case 1:
+                      {
+                        sendData(MS_ERROR_FAILED_TO_LOBBY_CREATION_FORBIDDEN_FOR_YOU,socket,receiverEndpoint);
+                      }break;
+                      case 2:
+                      {
+                        sendData(MS_ERROR_FAILED_TO_LOBBY_CREATION_CANT_OWN_TWO_LOBBY,socket,receiverEndpoint);
+                      }break;
+                      default: //interanl error or unexcepted error
+                      {
+                        sendData(MS_ERROR_FAILED_TO_CREATE_LOBBY,socket,receiverEndpoint);
+                      }
                     }
                   }
+                  else
+                    sendData(MS_ERROR_FAILED_TO_LOBBY_CREATION_INVALID_IDENTITY,socket,receiverEndpoint);
                 }
                 else
-                {
-                  sendData(MS_ERROR_FAILED_TO_LOBBY_CREATION_INVALID_IDENTITY,socket,receiver);
-                }
-              }
+                  sendData(MS_ERROR_FAILED_TO_LOBBY_CREATION_BAD_DATA_SYNTAX,socket,receiverEndpoint);
 
             }
           }break;
@@ -200,10 +327,10 @@ namespace FluffyMultiplayer
             if(checkConnection())
             {
               std::string lobbies = db.getLobbyList(MS_GET_LOBBY_LIST_COUNT_OF_RESULTS);
-              if(lobbies.length()>=1)
-                sendData(MS_RESPONSE_SUCCESS_GET_LOBBY_LIST,socket,receiver,lobbies);
+              if(lobbies.length()>=MS_MINIMUM_RETURNED_DATA_BY_SQL_SEARCH)
+                sendData(MS_RESPONSE_SUCCESS_GET_LOBBY_LIST,socket,receiverEndpoint,lobbies);
               else
-                sendData(MS_ERROR_FAILED_TO_GET_LOBBY_LIST_NO_LOBBY_AVAIABLE,socket,receiver);
+                sendData(MS_ERROR_FAILED_TO_GET_LOBBY_LIST_NO_LOBBY_AVAIABLE,socket,receiverEndpoint);
             }
           }break;
 
@@ -211,17 +338,17 @@ namespace FluffyMultiplayer
           {
             if(checkConnection())
             {
-              std::vector<std::string>data = dataSeparator(stack[i].data, MS_DATA_DELIMITER, MS_DATA_START_AT_INDEX);
+              std::vector<std::string>data = dataSeparator(receivedData, MS_DATA_DELIMITER, MS_DATA_START_AT_INDEX);
               int lobbyId = convertStringToInt(data[0]);
-              if(lobbyId==0)
-                sendData(MS_ERROR_FAILED_TO_GET_LOBBY_INFO_BAD_DATA_SYNTAX,socket,receiver);
+              if(lobbyId==MS_INVALID_LOBBY_ID_IS)
+                sendData(MS_ERROR_FAILED_TO_GET_LOBBY_INFO_BAD_DATA_SYNTAX,socket,receiverEndpoint);
               else
               {
                 std::string lobbyData = db.getLobbyInfo(lobbyId);
-                if(lobbyData.length()>=1)
-                  sendData(MS_RESPONSE_SUCCESS_GET_LOBBY_INFO,socket,receiver,lobbyData);
+                if(lobbyData.length()>=MS_MINIMUM_RETURNED_DATA_BY_SQL_SEARCH)
+                  sendData(MS_RESPONSE_SUCCESS_GET_LOBBY_INFO,socket,receiverEndpoint,lobbyData);
                 else
-                  sendData(MS_ERROR_FAILED_TO_GET_LOBBY_INFO_LOBBY_NOT_FOUND,socket,receiver);
+                  sendData(MS_ERROR_FAILED_TO_GET_LOBBY_INFO_LOBBY_NOT_FOUND,socket,receiverEndpoint);
               }
             }
           }break;
@@ -230,7 +357,7 @@ namespace FluffyMultiplayer
           {
             if(checkConnection())
             {
-              sendData(MS_RESPONSE_SUCCESS_LATEST_VERSION,socket,receiver,MS_VERSION);
+              sendData(MS_RESPONSE_SUCCESS_LATEST_VERSION,socket,receiverEndpoint,MS_VERSION);
             }
           }break;
 
@@ -241,7 +368,8 @@ namespace FluffyMultiplayer
         }
 
         //remove processed element
-        stack.pop_back();
+        if(!elementProcessed)
+          stack.pop_back();
       }
 
     }//end of function

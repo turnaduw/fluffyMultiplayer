@@ -30,6 +30,24 @@ namespace FluffyMultiplayer
     bool textChatForbidden;
     bool specterForbidden;
   };
+
+
+  struct LoginClientData
+  {
+    std::string username;
+    std::string password;
+    std::string hardwareId;
+    std::string oldIdentity;
+  };
+
+  struct RegisterClientData
+  {
+    std::string email;
+    std::string username;
+    std::string password;
+    std::string hardwareId;
+  };
+
 }
 
 #endif
