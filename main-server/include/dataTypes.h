@@ -20,6 +20,16 @@ namespace FluffyMultiplayer
     boost::asio::ip::address ip;
     unsigned short port;
   };
+
+  struct CreateLobbyData
+  {
+    std::string identity;
+    int gameMode;
+    int maxPlayers;
+    bool voiceChatForbidden;
+    bool textChatForbidden;
+    bool specterForbidden;
+  };
 }
 
 #endif
