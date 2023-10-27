@@ -23,12 +23,17 @@ using boost::asio::ip::udp;
 #include <boost/asio.hpp>
 
 
+#include "dataSecurity.h"
+
+
 namespace FluffyMultiplayer
 {
   class ProcessData
   {
   private:
     std::vector<FluffyMultiplayer::ConnectedClients> clientList;
+    FluffyMultiplayer::FluffyDataSecurity dataSecurity;
+
   public:
     ProcessData();
     ~processData();
@@ -45,11 +50,6 @@ namespace FluffyMultiplayer
     int convertStringToInt(const std::string&);
 
     int separateCode(const std::string&); //means requesst code
-
-
-    bool isSQLCodeIncluded(const std::string&); //write code..
-    void decryptData(std::string&); //write code..
-    void encryptData(std::string&); //write code..
 
     bool isDataValidated(FluffyMultiplayer::RegisterClientData&);
     bool isDataValidated(FluffyMultiplayer::CreateLobbyData&);

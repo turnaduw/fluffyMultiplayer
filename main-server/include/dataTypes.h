@@ -29,6 +29,7 @@ namespace FluffyMultiplayer
     bool voiceChatForbidden;
     bool textChatForbidden;
     bool specterForbidden;
+    std::string password;
   };
 
 

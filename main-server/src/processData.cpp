@@ -25,6 +25,8 @@ namespace FluffyMultiplayer
     if(data.length()>1)
       message+=data;
 
+    dataSecurity.encryptData(message);
+
     socket.send_to(boost::asio::buffer(message), receiver);
   }
 
@@ -77,20 +79,6 @@ namespace FluffyMultiplayer
     return std::atoi(c);
   }
 
-  bool ProcessData::isSQLCodeIncluded(const std::string& data)
-  {
-    //...
-  }
-
-  void ProcessData::decryptData(std::string& data)
-  {
-    //..
-  }
-
-  void ProcessData::encryptData(std::string& data)
-  {
-    //..
-  }
 
   bool ProcessData::isDataValidated(FluffyMultiplayer::RegisterClientData& client)
   {
@@ -136,7 +124,9 @@ namespace FluffyMultiplayer
         udp::endpoint receiverEndpoint(senderIp,senderPort);
 
         if(receivedData.length()>MS_RECEIVED_DATA_MINIMUM_LENGTH)
-          decryptData(receivedData);
+          dataSecurity.decryptData(receivedData);
+
+        dataSecurity.removeSQLCodeFromData(receivedData);
 
         //a function to call and check connection existant.
         auto checkConnection = [&] () -> bool
@@ -293,31 +283,17 @@ namespace FluffyMultiplayer
                   if(db.isIdentityExists(createLobbyInfo.identity))
                   {
                     std::string resultServerInfo;
-                    switch (db.createLobby(createLobbyInfo,resultServerInfo))
-                    {
-                      case 0:
-                      {
-                        sendData(MS_RESPONSE_SUCCESS_LOBBY_CREATED,socket,receiverEndpoint,resultServerInfo);
-                      }break;
-                      case 1:
-                      {
-                        sendData(MS_ERROR_FAILED_TO_LOBBY_CREATION_FORBIDDEN_FOR_YOU,socket,receiverEndpoint);
-                      }break;
-                      case 2:
-                      {
-                        sendData(MS_ERROR_FAILED_TO_LOBBY_CREATION_CANT_OWN_TWO_LOBBY,socket,receiverEndpoint);
-                      }break;
-                      default: //interanl error or unexcepted error
-                      {
-                        sendData(MS_ERROR_FAILED_TO_CREATE_LOBBY,socket,receiverEndpoint);
-                      }
-                    }
+                    int resultCode = db.createLobby(createLobbyInfo,resultServerInfo);
+                    if(resultCode == MS_RESPONSE_SUCCESS_LOBBY_CREATED)
+                      sendData(resultCodel,socket,receiverEndpoint,resultServerInfo);
+                    else
+                      sendData(resultCodel,socket,receiverEndpoint);
                   }
                   else
                     sendData(MS_ERROR_FAILED_TO_LOBBY_CREATION_INVALID_IDENTITY,socket,receiverEndpoint);
-                }
-                else
-                  sendData(MS_ERROR_FAILED_TO_LOBBY_CREATION_BAD_DATA_SYNTAX,socket,receiverEndpoint);
+              }
+              else
+                sendData(MS_ERROR_FAILED_TO_LOBBY_CREATION_BAD_DATA_SYNTAX,socket,receiverEndpoint);
 
             }
           }break;
@@ -345,7 +321,7 @@ namespace FluffyMultiplayer
               else
               {
                 std::string lobbyData = db.getLobbyInfo(lobbyId);
-                if(lobbyData.length()>=MS_MINIMUM_RETURNED_DATA_BY_SQL_SEARCH)
+                if(lobbyData.length()>=MS_LOBBY_IP_PORT_MINIMUM_LENGTH)
                   sendData(MS_RESPONSE_SUCCESS_GET_LOBBY_INFO,socket,receiverEndpoint,lobbyData);
                 else
                   sendData(MS_ERROR_FAILED_TO_GET_LOBBY_INFO_LOBBY_NOT_FOUND,socket,receiverEndpoint);

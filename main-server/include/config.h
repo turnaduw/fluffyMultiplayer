@@ -25,6 +25,7 @@
 #define MS_CLIENT_MINIMUM_EMAIL_LENGTH 10
 #define MS_CLIENT_MAXIMUM_EMAIL_LENGTH 32
 
+#define MS_LOBBY_IP_PORT_MINIMUM_LENGTH 11
 /*
   data received from client or wants to send position of that string is set by here
   maybe later needs to re-position data code indexes change these three numbers.
@@ -36,7 +37,7 @@
 #define MS_DATA_START_AT_INDEX 3
 #define MS_DATA_DELIMITER ";"
 #define MS_RECEIVED_DATA_MINIMUM_LENGTH 1
-#define MS_MINIMUM_RETURNED_DATA_BY_SQL_SEARCH 1
+#define MS_MINIMUM_RETURNED_DATA_BY_SQL_SEARCH 3
 #define MS_INVALID_LOBBY_ID_IS 0
 
 
