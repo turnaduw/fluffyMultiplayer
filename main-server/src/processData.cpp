@@ -73,11 +73,7 @@ namespace FluffyMultiplayer
     return result;
   }
 
-  int ProcessData::convertStringToInt(const std::string& data)
-  {
-    const char* c = data.c_str();
-    return std::atoi(c);
-  }
+
 
 
   bool ProcessData::isDataValidated(FluffyMultiplayer::RegisterClientData& client)
@@ -178,36 +174,12 @@ namespace FluffyMultiplayer
               if(isDataValidated(client)
               {
                 std::string identityResult;
-                switch (db.loginClient(client,identityResult))
-                {
-                  case 0:
-                  {
-                    if(identityResult.length()<MS_MINIMUM_RETURNED_DATA_BY_SQL_SEARCH)
-                      sendData(MS_ERROR_FAILED_TO_LOGIN_CLIENT,socket,receiverEndpoint);
-                    else
-                      sendData(MS_RESPONSE_SUCCESS_LOGIN,socket,receiverEndpoint,identityResult);
-                  }break;
+                int resultCode = db.loginClient(client,identityResult);
 
-                  case 1:
-                  {
-                    sendData(MS_ERROR_FAILED_TO_LOGIN_INCORRECT,socket,receiverEndpoint);
-                  }break;
-
-                  case 2:
-                  {
-                    sendData(MS_ERROR_FAILED_TO_LOGIN_NOT_EXISTS,socket,receiverEndpoint);
-                  }break;
-
-                  case 3:
-                  {
-                    sendData(MS_ERROR_FAILED_TO_LOGIN_BANNED,socket,receiverEndpoint);
-                  }break;
-
-                  default: //interal error or unexcepted error.
-                  {
-                    sendData(MS_ERROR_FAILED_TO_LOGIN_CLIENT,socket,receiverEndpoint);
-                  }
-                }
+                if(resultCode == MS_RESPONSE_SUCCESS_LOGIN)
+                  sendData(resultCode,socket,receiverEndpoint,identityResult);
+                else
+                  sendData(resultCode,socket,receiverEndpoint);
               }
               else
                 sendData(MS_ERROR_FAILED_TO_LOGIN_BAD_DATA_SYNTAX,socket,receiverEndpoint);
@@ -224,37 +196,12 @@ namespace FluffyMultiplayer
               if(isDataValidated(client)
               {
                 std::string identityResult;
-                switch (db.registerClient(client,identityResult))
-                {
-                  case 0:
-                  {
-                    if(identityResult.length()<MS_MINIMUM_RETURNED_DATA_BY_SQL_SEARCH)
-                      sendData(MS_ERROR_FAILED_TO_REGISTER_CLIENT,socket,receiverEndpoint);
-                    else
-                      sendData(MS_RESPONSE_SUCCESS_REGISTER,socket,receiverEndpoint,identityResult);
-                  }break;
+                int resultCode = db.registerClient(client,identityResult);
 
-                  case 1:
-                  {
-                    sendData(MS_ERROR_FAILED_TO_REGISTER_EMIAL_EXISTS,socket,receiverEndpoint);
-                  }break;
-
-                  case 2:
-                  {
-                    sendData(MS_ERROR_FAILED_TO_REGISTER_USERNAME_EXISTS,socket,receiverEndpoint);
-                  }break;
-
-                  case 3:
-                  {
-                    sendData(MS_ERROR_FAILED_TO_REGISTER_EASY_PASSWORD,socket,receiverEndpoint);
-                  }break;
-
-                  default: //interal error or unexcepted error.
-                  {
-                    sendData(MS_ERROR_FAILED_TO_REGISTER_CLIENT,socket,receiverEndpoint);
-                  }
-                }
-
+                if(resultCode == MS_RESPONSE_SUCCESS_REGISTER)
+                  sendData(resultCode,socket,receiverEndpoint,identityResult);
+                else
+                  sendData(resultCode,socket,receiverEndpoint);
               }
               else
                 sendData(MS_ERROR_FAILED_TO_REGISTER_BAD_DATA_SYNTAX,socket,receiverEndpoint);
@@ -271,10 +218,10 @@ namespace FluffyMultiplayer
               {
                 data[0],
                 data[1],
-                convertStringToInt(data[2]),
-                static_cast<bool>(convertStringToInt(data[3])),
-                static_cast<bool>(convertStringToInt(data[4])),
-                static_cast<bool>(convertStringToInt(data[5]))
+                FluffyMultiplayer::convertStringToInt(data[2]),
+                static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[3])),
+                static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[4])),
+                static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[5]))
               };
 
 
@@ -315,7 +262,7 @@ namespace FluffyMultiplayer
             if(checkConnection())
             {
               std::vector<std::string>data = dataSeparator(receivedData, MS_DATA_DELIMITER, MS_DATA_START_AT_INDEX);
-              int lobbyId = convertStringToInt(data[0]);
+              int lobbyId = FluffyMultiplayer::convertStringToInt(data[0]);
               if(lobbyId==MS_INVALID_LOBBY_ID_IS)
                 sendData(MS_ERROR_FAILED_TO_GET_LOBBY_INFO_BAD_DATA_SYNTAX,socket,receiverEndpoint);
               else

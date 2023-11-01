@@ -16,6 +16,7 @@ namespace FluffyMultiplayer
     void decryptData(std::string&); //writecode..
     void encryptData(std::string&); //writecode..
     std::string generateIdentity(); //writecode..
+    bool isPasswordEasy(const std::string&); //write code
 
   };
 }

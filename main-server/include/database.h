@@ -14,6 +14,8 @@
 
 #include "config.h"
 
+#include "dataSecurity.h"
+#include "dataTypes.h"
 
 namespace FluffyMultiplayer
 {
@@ -27,15 +29,16 @@ namespace FluffyMultiplayer
 
 
       //------------------------- authication
-      bool isIdentityExists(const std::string&);
 
-      int loginClient(const FluffyMultiplayer::LoginClientData&, std::string&); //write code..
+      int loginClient(const FluffyMultiplayer::LoginClientData&, std::string&);//write relogin section..
 
-      int registerClient(const FluffyMultiplayer::RegisterClientData&, std::string&);//write..
+      int registerClient(const FluffyMultiplayer::RegisterClientData&, std::string&);
 
       int getClientIdByIdentity(const std::string&);
+      bool isIdentityExists(const std::string&);
 
-      bool isIdentityUnique(const std::string&); //writecode..
+      bool createSessionForClient(const int&,std::string&);
+
 
       //------------------------- lobby
       /*

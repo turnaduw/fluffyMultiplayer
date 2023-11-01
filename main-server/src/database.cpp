@@ -126,13 +126,7 @@ namespace FluffyMultiplayer
 
   bool FluffyDatabase::isIdentityExists(const std::string& identity)
   {
-        std::string basic_query = "SELECT id FROM fm_client WHERE identity='";
-        basic_query += identity + "';";
-        std::string clientId = isExists_in_db(basic_query);
-
-        //convert received data into int
-        const char* cxx = clientId.c_str();
-        int cid = std::atoi(cxx);
+        int cid = getClientIdByIdentity(identity);
         if(cid>=1)
           return true;
         return false;
@@ -140,7 +134,7 @@ namespace FluffyMultiplayer
 
   int FluffyDatabase::getClientIdByIdentity(const std::string& identity)
   {
-    std::string basic_query = "SELECT id FROM fm_client WHERE identity='";
+    std::string basic_query = "SELECT clientId FROM fm_client_login WHERE identity='";
     basic_query += identity + "';";
     std::string clientId = isExists_in_db(basic_query);
 
@@ -152,9 +146,115 @@ namespace FluffyMultiplayer
     return -1; //not found
   }
 
+  int FluffyDatabase::registerClient(const FluffyMultiplayer::RegisterClientData& client, std::string& outputIdentity)
+  {
+      //search for that email address.
+      std::string basic_query = "SELECT id FROM fm_client WHERE username=";
+      basic_query += client.username + ";";
+      if(isExists_in_db(basic_query))
+        return MS_ERROR_FAILED_TO_REGISTER_EMIAL_EXISTS;
+
+      //search for that username
+      std::string basic_query = "SELECT id FROM fm_client WHERE email=";
+      basic_query += client.email + ";";
+      if(isExists_in_db(basic_query))
+        return MS_ERROR_FAILED_TO_REGISTER_USERNAME_EXISTS;
+
+      //check for password not easy
+      if(FluffyMultiplayer::FluffyDataSecurity::isPasswordEasy(client.password))
+        return MS_ERROR_FAILED_TO_REGISTER_EASY_PASSWORD;
+
+      //insert into database
+      std::string basic_query = "INSERT INTO fm_client (email,username,password,hardwareId) VALUES('";
+      basic_query += client.email + "', '";
+      basic_query += client.username + "', '";
+      basic_query += client.password  + "', '";
+      basic_query += client.hardwareId + "');";
+      if(query_to_db(basic_query))
+      {
+        //search for created client id..
+        basic_query = "SELECT id FROM fm_client WHERE username='";
+        basic_query += client.username + ";";
+        std::string result =  search_in_db(basic_query);
+        int clientId = FluffyMultiplayer::convertStringToInt(result.substr(3,result.length())); //count of charecter id + a '=' is 3 so result is on [3]
+        if(clientId<=0)
+          return MS_ERROR_FAILED_TO_REGISTER_CLIENT; //failed to get client id
+
+        //create session for that client id
+        if(!createSessionForClient(clientId,outputIdentity)) //genrate and insert identity for that id
+          return MS_ERROR_FAILED_TO_INSERT_CLIENT_IDENTITY;
+
+        if(outputIdentity.length()<MS_MINIMUM_RETURNED_DATA_BY_SQL_SEARCH)
+        {
+          outputIdentity = "";
+          return MS_ERROR_FAILED_TO_REGISTER_CLIENT;
+        }
+        else
+          return MS_RESPONSE_SUCCESS_REGISTER;
+
+      }
+      else
+        return MS_ERROR_FAILED_TO_REGISTER_CLIENT; //failed to insert
+  }
+
   int FluffyDatabase::loginClient(const FluffyMultiplayer::LoginClientData& client, std::string& outputIdentity)
   {
-     //generateIdentity then checkForUniq then return that id //write code..
+    if(client.oldIdentity.length()<=0)
+    {
+      //insert into database
+      std::string basic_query = "SELECT isBanned,id,password FROM fm_client WHERE username='";
+      basic_query += client.username + "');";
+      std::string result = search_in_db(basic_query);
+      if(result.length()<MS_MINIMUM_RETURNED_DATA_BY_SQL_SEARCH)
+        return MS_ERROR_FAILED_TO_LOGIN_NOT_EXISTS; //98% chance to account not found because in some case maybe database is not abled to return query's response.
+
+      int isBanned = FluffyMultiplayer::convertStringToInt(result.substr(9,10)); // isBanned= [9], boolain is just one chartecter 0 or 1
+      if(isBanned>0)
+        return MS_ERROR_FAILED_TO_LOGIN_BANNED;
+
+      int clientId = FluffyMultiplayer::convertStringToInt(result.substr(12,5)); //count of charecter id + a '=' is 3 so result is on [9+3]
+      if(clientId<=0)
+        return MS_ERROR_FAILED_TO_LOGIN_CLIENT; //failed to get client id
+
+      std::string password=result.substr(17,result.length());
+      if(client.password == password)
+      {
+          //create session for that client id
+          if(!createSessionForClient(clientId,outputIdentity))
+            return MS_ERROR_FAILED_TO_INSERT_CLIENT_IDENTITY;
+
+          if(outputIdentity.length()<MS_MINIMUM_RETURNED_DATA_BY_SQL_SEARCH)
+          {
+            outputIdentity = "";
+            return MS_ERROR_FAILED_TO_LOGIN_CLIENT;
+          }
+          else
+            return MS_RESPONSE_SUCCESS_LOGIN;
+      }
+      else
+        return MS_ERROR_FAILED_TO_LOGIN_INCORRECT; //incrrect password
+    }
+    else //re-login client
+    {
+      //search for that oldIdentity from fm_client_login
+      std::string basic_query = "SELECT loginDate,clientId FROM fm_client_login WHERE identity='";
+      basic_query += client.oldIdentity + "');";
+      std::string result = search_in_db(basic_query);
+      if(result.length()<MS_MINIMUM_RETURNED_DATA_BY_SQL_SEARCH)
+        return MS_ERROR_FAILED_TO_LOGIN_CLIENT; //98% chance to login not found because in some case maybe database is not abled to return query's response.
+
+      //get current time
+
+      //...
+      //compare current time with loginDate then return diffrance number of days,hours,minutes,seconds
+      //if those numbers are more than our DEFINES written in config.h return failed login expired
+      //else return login sucess return new identity to client.
+      // #define MS_CLIENT_LOGIN_IDENTITY_EXPIRE_DAYS 1
+      // #define MS_CLIENT_LOGIN_IDENTITY_EXPIRE_HOURS 12
+      // #define MS_CLIENT_LOGIN_IDENTITY_EXPIRE_MINUTES 0
+      // #define MS_CLIENT_LOGIN_IDENTITY_EXPIRE_SECONDS 0
+    }
+
   }
 
   int FluffyDatabase::createLobby(const FluffyMultiplayer::CreateLobbyData& lobbyInfo, std::string& outputServerIpPort)
@@ -195,10 +295,6 @@ namespace FluffyMultiplayer
       return MS_ERROR_FAILED_TO_CREATE_LOBBY; //failed to get client id
   }
 
-  int FluffyDatabase::registerClient(const FluffyMultiplayer::RegisterClientData& client, std::string& outputIdentity)
-  {
-     //write..
-  }
 
 
   bool FluffyDatabase::isOwnLobby(const int& ownerId)
@@ -217,6 +313,26 @@ namespace FluffyMultiplayer
       if(result == "true" || result == "TRUE" || result == "True" || result == "1") //idk what database saves for BOOLEAN type
         return true;
       return false;
+  }
+
+  bool FluffyDatabase::createSessionForClient(const int& clientId, std::string& outputIdentity)
+  {
+    outputIdentity = FluffyMultiplayer::FluffyDataSecurity::generateIdentity();
+
+    //insert identity for client
+    std::string basic_query = "DELETE FROM fm_client_login WHERE clientId='";
+    basic_query += std::to_string(clientId) + "');";
+    if(query_to_db(basic_query))
+    {
+      basic_query = "INSERT INTO fm_client_login (identity,clientId) VALUES('";
+      basic_query += outputIdentity + "', '";
+      basic_query += std::to_string(clientId) + "');";
+      if(query_to_db(basic_query))
+        return true;
+    }
+
+    outputIdentity = "";
+    return false;
   }
 
 

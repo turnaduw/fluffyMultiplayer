@@ -26,6 +26,12 @@
 #define MS_CLIENT_MAXIMUM_EMAIL_LENGTH 32
 
 #define MS_LOBBY_IP_PORT_MINIMUM_LENGTH 11
+
+#define MS_CLIENT_LOGIN_IDENTITY_EXPIRE_DAYS 1
+#define MS_CLIENT_LOGIN_IDENTITY_EXPIRE_HOURS 12
+#define MS_CLIENT_LOGIN_IDENTITY_EXPIRE_MINUTES 0
+#define MS_CLIENT_LOGIN_IDENTITY_EXPIRE_SECONDS 0
+
 /*
   data received from client or wants to send position of that string is set by here
   maybe later needs to re-position data code indexes change these three numbers.

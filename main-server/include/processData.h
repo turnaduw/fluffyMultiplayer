@@ -47,7 +47,6 @@ namespace FluffyMultiplayer
 
     std::vector<int> dataIndexes(const std::string&, const std::string&);
     std::vector<std::string> dataSeparator(const std::string&, std::string, int=0,int=0);
-    int convertStringToInt(const std::string&);
 
     int separateCode(const std::string&); //means requesst code
 
