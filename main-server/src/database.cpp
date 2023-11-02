@@ -161,7 +161,7 @@ namespace FluffyMultiplayer
         return MS_ERROR_FAILED_TO_REGISTER_USERNAME_EXISTS;
 
       //check for password not easy
-      if(FluffyMultiplayer::FluffyDataSecurity::isPasswordEasy(client.password))
+      if(dataSecurity.isPasswordEasy(client.password))
         return MS_ERROR_FAILED_TO_REGISTER_EASY_PASSWORD;
 
       //insert into database
@@ -317,7 +317,7 @@ namespace FluffyMultiplayer
 
   bool FluffyDatabase::createSessionForClient(const int& clientId, std::string& outputIdentity)
   {
-    outputIdentity = FluffyMultiplayer::FluffyDataSecurity::generateIdentity();
+    outputIdentity = dataSecurity.generateIdentity();
 
     //insert identity for client
     std::string basic_query = "DELETE FROM fm_client_login WHERE clientId='";

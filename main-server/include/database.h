@@ -23,6 +23,7 @@ namespace FluffyMultiplayer
   {
       sqlite3* db;
       char* errMsg = nullptr;
+      FluffyMultiplayer::FluffyDataSecurity dataSecurity;
     public:
       FluffyDatabase(bool);
       ~FluffyDatabase();
