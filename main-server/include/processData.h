@@ -11,6 +11,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <queue>
 
 //convert string to int
 #include <cstdlib>
