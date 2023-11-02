@@ -42,7 +42,7 @@ namespace FluffyMultiplayer
     //search then remove ip n port from client list
   }
 
-  std::vector<int> dataIndexes(const std::string& data, const std::string& delimiter);
+  std::vector<int> dataIndexes(const std::string& data, const std::string& delimiter)
   {
     std::vector<int> result;
     for(int i=0; i<=data.length()-1; i++)
