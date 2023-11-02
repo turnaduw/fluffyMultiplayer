@@ -13,18 +13,18 @@
 #include <vector>
 #include <queue>
 
-//convert string to int
-#include <cstdlib>
-using boost::asio::ip::udp;
-
 #include "dataTypes.h" //access to struct SocketDataQueue
+#include "dataSecurity.h"
 
-#include "database.h" //access to type FluffyMultiplayer::FluffyDatabase
 //socket
 #include <boost/asio.hpp>
+using boost::asio::ip::udp;
 
+//convert string to int
+#include <cstdlib>
 
-#include "dataSecurity.h"
+#include "database.h" //access to type FluffyMultiplayer::FluffyDatabase
+
 
 
 namespace FluffyMultiplayer
