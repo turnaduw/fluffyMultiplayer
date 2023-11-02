@@ -37,7 +37,7 @@ namespace FluffyMultiplayer
 
   public:
     ProcessData();
-    ~processData();
+    ~ProcessData();
 
     void sendData(int ,udp::socket&, udp::endpoint&,std::string);
     bool isConnectionExists(const boost::asio::ip::address&, const unsigned short&);
