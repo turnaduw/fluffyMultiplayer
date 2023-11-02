@@ -20,7 +20,10 @@ namespace FluffyMultiplayer
 
   FluffyDatabase::~FluffyDatabase()
   {
-    delete db;
+    sqlite3_close(db);
+    db=nullptr;
+    errMsg=nullptr;
+    // delete db;
     delete errMsg;
   }
 
