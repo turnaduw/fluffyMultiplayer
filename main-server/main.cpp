@@ -25,6 +25,7 @@ namespace FluffyMultiplayer
   void receiveData(udp::socket& socket,std::queue<FluffyMultiplayer::SocketDataQueue>& receivedDataQueue)
   {
     FluffyMultiplayer::ProcessData processD;
+    FluffyMultiplayer::SocketDataQueue temp_queue;
     while (true)
     {
         char receive_data[MS_RECEIVE_BUFFER];
@@ -35,13 +36,15 @@ namespace FluffyMultiplayer
         if(receive_length >=1)
         {
           std::string data = std::string(receive_data,receive_length);
-          receivedDataQueue.push
-          (
+          temp_queue =
+          {
             processD.separateCode(data),
             receive_endpoint.address(),
             receive_endpoint.port(),
             std::string(data[MS_DATA_START_AT_INDEX],data.length())
-          );
+          };
+
+          receivedDataQueue.push(temp_queue);
         }
     }
   }
