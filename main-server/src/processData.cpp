@@ -111,12 +111,15 @@ namespace FluffyMultiplayer
 
   void ProcessData::process(udp::socket& socket, std::queue<FluffyMultiplayer::SocketDataQueue>& queue, FluffyMultiplayer::FluffyDatabase& db)
   {
+      FluffyMultiplayer::SocketDataQueue currentItem;
       for(int i=0; i<=queue.size(); i++)
       {
+        currentItem = queue.front();
+
         bool elementProcessed = false; //a flag to avoid pop un-processed element
-        std::string receivedData = queue[i].data;
-        boost::asio::ip::address senderIp = queue[i].ip;
-        unsigned short senderPort = queue[i].port;
+        std::string receivedData = currentItem.data;
+        boost::asio::ip::address senderIp = currentItem.ip;
+        unsigned short senderPort = currentItem.port;
         udp::endpoint receiverEndpoint(senderIp,senderPort);
 
         if(receivedData.length()>MS_RECEIVED_DATA_MINIMUM_LENGTH)
@@ -140,7 +143,7 @@ namespace FluffyMultiplayer
 
 
 
-        switch (queue[i].code)
+        switch (currentItem.code)
         {
           case MS_REQUEST_CONNECT:
           {
@@ -287,7 +290,7 @@ namespace FluffyMultiplayer
 
           default:
           {
-            std::cout << "Unknown request code is: " << queue[i].code << std::endl;
+            std::cout << "Unknown request code is: " << currentItem.code << std::endl;
           }break;
         }
 
