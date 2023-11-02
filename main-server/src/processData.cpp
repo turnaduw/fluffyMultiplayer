@@ -6,8 +6,8 @@ namespace FluffyMultiplayer
   int ProcessData::separateCode(const std::string& data)
   {
     //these MS_DATA_CODE_INDEX_X are from config.h
-    std::string code_str = ( data[MS_DATA_CODE_INDEX_A] + data[MS_DATA_CODE_INDEX_B] + data[MS_DATA_CODE_INDEX_C] );
-    const char* temp = data.c_str();
+    char codes [3] = {data[MS_DATA_CODE_INDEX_A], data[MS_DATA_CODE_INDEX_B], data[MS_DATA_CODE_INDEX_C]};
+    const char* temp = codes;
     return std::atoi(temp);
   }
 
@@ -236,9 +236,9 @@ namespace FluffyMultiplayer
                     std::string resultServerInfo;
                     int resultCode = db.createLobby(createLobbyInfo,resultServerInfo);
                     if(resultCode == MS_RESPONSE_SUCCESS_LOBBY_CREATED)
-                      sendData(resultCodel,socket,receiverEndpoint,resultServerInfo);
+                      sendData(resultCode,socket,receiverEndpoint,resultServerInfo);
                     else
-                      sendData(resultCodel,socket,receiverEndpoint);
+                      sendData(resultCode,socket,receiverEndpoint);
                   }
                   else
                     sendData(MS_ERROR_FAILED_TO_LOBBY_CREATION_INVALID_IDENTITY,socket,receiverEndpoint);
