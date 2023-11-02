@@ -136,7 +136,7 @@ namespace FluffyMultiplayer
   {
     std::string basic_query = "SELECT clientId FROM fm_client_login WHERE identity='";
     basic_query += identity + "';";
-    std::string clientId = isExists_in_db(basic_query);
+    std::string clientId = search_in_db(basic_query);
 
     //convert received data into int
     const char* cxx = clientId.c_str();
@@ -155,7 +155,7 @@ namespace FluffyMultiplayer
         return MS_ERROR_FAILED_TO_REGISTER_EMIAL_EXISTS;
 
       //search for that username
-      std::string basic_query = "SELECT id FROM fm_client WHERE email=";
+      basic_query = "SELECT id FROM fm_client WHERE email=";
       basic_query += client.email + ";";
       if(isExists_in_db(basic_query))
         return MS_ERROR_FAILED_TO_REGISTER_USERNAME_EXISTS;
@@ -165,7 +165,7 @@ namespace FluffyMultiplayer
         return MS_ERROR_FAILED_TO_REGISTER_EASY_PASSWORD;
 
       //insert into database
-      std::string basic_query = "INSERT INTO fm_client (email,username,password,hardwareId) VALUES('";
+      basic_query = "INSERT INTO fm_client (email,username,password,hardwareId) VALUES('";
       basic_query += client.email + "', '";
       basic_query += client.username + "', '";
       basic_query += client.password  + "', '";
@@ -267,13 +267,13 @@ namespace FluffyMultiplayer
        if(!isLobbyCreationLimited(ownerId))
        {
           std::string basic_query = "INSERT INTO fm_lobby (gameMode,maxPlayers,password,owner,textChatForbidden,voiceChatForbidden,specterForbidden) VALUES('";
-          basic_query += lobbyInfo.gameMode + "', '" +
-           lobbyInfo.maxPlayers + "', '" +
+          basic_query += std::to_string(lobbyInfo.gameMode) + "', '" +
+           std::to_string(lobbyInfo.maxPlayers) + "', '" +
            lobbyInfo.password  + "', '" +
-           ownerId + "', '" +
-           lobbyInfo.textChatForbidden + "', '" +
-           lobbyInfo.voiceChatForbidden + "', '" +
-           lobbyInfo.specterForbidden + "');";
+           std::to_string(ownerId) + "', '" +
+           std::to_string(lobbyInfo.textChatForbidden) + "', '" +
+           std::to_string(lobbyInfo.voiceChatForbidden) + "', '" +
+           std::to_string(lobbyInfo.specterForbidden) + "');";
           if(query_to_db(basic_query))
           {
             outputServerIpPort = getLobbyInfoByOwnerId(ownerId);
