@@ -16,7 +16,7 @@
 #include <cstdlib>
 using boost::asio::ip::udp;
 
-#include "dataTypes.h" //access to struct SocketDataStack
+#include "dataTypes.h" //access to struct SocketDataQueue
 
 #include "database.h" //access to type FluffyMultiplayer::FluffyDatabase
 //socket
@@ -54,7 +54,7 @@ namespace FluffyMultiplayer
     bool isDataValidated(FluffyMultiplayer::CreateLobbyData&);
     bool isDataValidated(FluffyMultiplayer::LoginClientData&);
 
-    void process(udp::socket&, std::vector<FluffyMultiplayer::SocketDataStack>&, FluffyMultiplayer::FluffyDatabase&);
+    void process(udp::socket&, std::queue<FluffyMultiplayer::SocketDataQueue>&, FluffyMultiplayer::FluffyDatabase&);
   };
 }
 

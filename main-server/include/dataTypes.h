@@ -7,7 +7,7 @@
 
 namespace FluffyMultiplayer
 {
-  struct SocketDataStack
+  struct SocketDataQueue
   {
     int code;
     boost::asio::ip::address ip;

@@ -109,14 +109,14 @@ namespace FluffyMultiplayer
     return true;
   }
 
-  void ProcessData::process(udp::socket& socket, std::vector<FluffyMultiplayer::SocketDataStack>& stack, FluffyMultiplayer::FluffyDatabase& db)
+  void ProcessData::process(udp::socket& socket, std::queue<FluffyMultiplayer::SocketDataQueue>& queue, FluffyMultiplayer::FluffyDatabase& db)
   {
-      for(int i=0; i<=stack.size(); i++)
+      for(int i=0; i<=queue.size(); i++)
       {
         bool elementProcessed = false; //a flag to avoid pop un-processed element
-        std::string receivedData = stack[i].data;
-        boost::asio::ip::address senderIp = stack[i].ip;
-        unsigned short senderPort = stack[i].port;
+        std::string receivedData = queue[i].data;
+        boost::asio::ip::address senderIp = queue[i].ip;
+        unsigned short senderPort = queue[i].port;
         udp::endpoint receiverEndpoint(senderIp,senderPort);
 
         if(receivedData.length()>MS_RECEIVED_DATA_MINIMUM_LENGTH)
@@ -132,7 +132,7 @@ namespace FluffyMultiplayer
           {
             sendData(MS_ERROR_CONNECTION_NOT_EXISTS,socket,receiverEndpoint);
             elementProcessed=true;
-            stack.pop_back(); //remove processed request (current) from stack
+            queue.pop(); //remove processed request (current) from queue
             return false;
           }
           return true;
@@ -140,7 +140,7 @@ namespace FluffyMultiplayer
 
 
 
-        switch (stack[i].code)
+        switch (queue[i].code)
         {
           case MS_REQUEST_CONNECT:
           {
@@ -287,13 +287,13 @@ namespace FluffyMultiplayer
 
           default:
           {
-            std::cout << "Unknown request code is: " << stack[i].code << std::endl;
+            std::cout << "Unknown request code is: " << queue[i].code << std::endl;
           }break;
         }
 
         //remove processed element
         if(!elementProcessed)
-          stack.pop_back();
+          queue.pop();
       }
 
     }//end of function
