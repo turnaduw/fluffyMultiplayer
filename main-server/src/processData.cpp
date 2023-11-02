@@ -221,11 +221,12 @@ namespace FluffyMultiplayer
               FluffyMultiplayer::CreateLobbyData createLobbyInfo =
               {
                 data[0],
-                data[1],
+                FluffyMultiplayer::convertStringToInt(data[1]),
                 FluffyMultiplayer::convertStringToInt(data[2]),
                 static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[3])),
                 static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[4])),
-                static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[5]))
+                static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[5])),
+                data[6]
               };
 
 
