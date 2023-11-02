@@ -7,11 +7,11 @@ namespace FluffyMultiplayer
   {
     //these MS_DATA_CODE_INDEX_X are from config.h
     std::string code_str = ( data[MS_DATA_CODE_INDEX_A] + data[MS_DATA_CODE_INDEX_B] + data[MS_DATA_CODE_INDEX_C] );
-    const char* temp = _data.c_str();
+    const char* temp = data.c_str();
     return std::atoi(temp);
   }
 
-  bool ProcessData::isConnectionExists(const boost::asio::ip::address& senderIp, const unsigned short& senderPort);
+  bool ProcessData::isConnectionExists(const boost::asio::ip::address& senderIp, const unsigned short& senderPort)
   {
     for (int i = 0; i < clientList.size(); i++)
       if(clientList[i].ip == senderIp && clientList[i].port == senderPort)
@@ -33,7 +33,7 @@ namespace FluffyMultiplayer
 
   void ProcessData::connectClient(const boost::asio::ip::address& ip, const unsigned short& port)
   {
-    FluffyMultiplayer::ConnectedClients temp(ip,port);
+    ConnectedClients temp{ip,port};
     clientList.push_back(temp);
   }
 
