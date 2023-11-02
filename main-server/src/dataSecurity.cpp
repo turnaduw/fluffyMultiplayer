@@ -39,25 +39,31 @@ namespace FluffyMultiplayer
     std::string charecters = MS_CHARECTERS_ALLOWED_FOR_IDENTITY_GENERATOR;
     std::random_device rd;
     std::mt19937 generator(rd());
-    std::uniform_int_distrubution<int> distrubution(0,charecters.size()-1);
+    std::uniform_int_distribution<int> distribution(0,charecters.size()-1);
     std::string result;
 
     for(int i=0; i< MS_CLIENT_MAXIMUM_IDENTITY_LENGTH; ++i)
     {
-      result+=charecters[distrubution(generator)];
+      result+=charecters[distribution(generator)];
     }
     return result;
   }
 
   bool FluffyDataSecurity::isPasswordEasy(const std::string& password)
   {
-    if(password="" || password.length()<MS_CLIENT_MINIMUM_PASSWORD_LENGTH)
+    if(password.empty() || password.size() < MS_CLIENT_MINIMUM_PASSWORD_LENGTH)
       return true;
 
-    boost::regex pattern("[a-zA-Z+]"); //password contains only alphabet
-    boost::regex pattern2("\\d+"); //password contains only digits
+    boost::regex pattern("[a-zA-Z]"); //password contains only alphabet
+    boost::regex pattern2("[a-z]+"); //password contains only alphabet
+    boost::regex pattern3("[A-Z]+"); //password contains only alphabet
+    boost::regex pattern4("\\d+"); //password contains only digits
 
-    if( boost::regex_match(password,pattern) || boost::regex_match(password,pattern2) )
+
+    if( boost::regex_match(password,pattern) ||
+        boost::regex_match(password,pattern2) ||
+        boost::regex_match(password,pattern3) ||
+        boost::regex_match(password,pattern4) )
       return true;
 
     return false;

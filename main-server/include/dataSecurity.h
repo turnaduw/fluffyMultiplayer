@@ -17,13 +17,11 @@ namespace FluffyMultiplayer
 {
   class FluffyDataSecurity
   {
-  priavte:
-    bool isSQLCodeIncluded(const std::string&);
-
   public:
     FluffyDataSecurity();
     ~FluffyDataSecurity();
 
+    bool isSQLCodeIncluded(const std::string&);
     void removeSQLCodeFromData(std::string&); //writecode..
     void decryptData(std::string&); //writecode..
     void encryptData(std::string&); //writecode..
