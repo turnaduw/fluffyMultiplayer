@@ -49,11 +49,7 @@ namespace FluffyMultiplayer
     std::string hardwareId;
   };
 
-  int convertStringToInt(const std::string& data)
-  {
-    const char* c = data.c_str();
-    return std::atoi(c);
-  }
+  int convertStringToInt(const std::string&);
 }
 
 #endif
