@@ -122,7 +122,8 @@ namespace FluffyMultiplayer
         if(receivedData.length()>MS_RECEIVED_DATA_MINIMUM_LENGTH)
           dataSecurity.decryptData(receivedData);
 
-        dataSecurity.removeSQLCodeFromData(receivedData);
+        if(dataSecurity.isSQLCodeIncluded(receivedData))
+          dataSecurity.removeSQLCodeFromData(receivedData);
 
         //a function to call and check connection existant.
         auto checkConnection = [&] () -> bool

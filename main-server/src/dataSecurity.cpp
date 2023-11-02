@@ -4,14 +4,24 @@ namespace FluffyMultiplayer
 {
   bool FluffyDataSecurity::isSQLCodeIncluded(const std::string& data)
   {
-    //...
+     boost::regex pattern("(\\b(union|select|insert|delete|update|drop|alter|create|truncate|grant|revoke)\\b)", boost::regex::icase);
+     return boost::regex_search(data,pattern);
   }
+
+  FluffyDataSecurity::FluffyDataSecurity()
+  {
+
+  }
+
+  FluffyDataSecurity::~FluffyDataSecurity()
+  {
+
+  }
+
+
   void FluffyDataSecurity::removeSQLCodeFromData(std::string& data)
   {
-    if(isSQLCodeIncluded(data)
-    {
-      //..
-    }
+    //..
   }
 
   void FluffyDataSecurity::decryptData(std::string& data)
@@ -26,6 +36,30 @@ namespace FluffyMultiplayer
 
   std::string FluffyDataSecurity::generateIdentity()
   {
-    //..
+    std::string charecters = MS_CHARECTERS_ALLOWED_FOR_IDENTITY_GENERATOR;
+    std::random_device rd;
+    std::mt19937 generator(rd());
+    std::uniform_int_distrubution<int> distrubution(0,charecters.size()-1);
+    std::string result;
+
+    for(int i=0; i< MS_CLIENT_MAXIMUM_IDENTITY_LENGTH; ++i)
+    {
+      result+=charecters[distrubution(generator)];
+    }
+    return result;
+  }
+
+  bool FluffyDataSecurity::isPasswordEasy(const std::string& password)
+  {
+    if(password="" || password.length()<MS_CLIENT_MINIMUM_PASSWORD_LENGTH)
+      return true;
+
+    boost::regex pattern("[a-zA-Z+]"); //password contains only alphabet
+    boost::regex pattern2("\\d+"); //password contains only digits
+
+    if( boost::regex_match(password,pattern) || boost::regex_match(password,pattern2) )
+      return true;
+
+    return false;
   }
 }
