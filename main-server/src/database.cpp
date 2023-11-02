@@ -254,7 +254,7 @@ namespace FluffyMultiplayer
       // #define MS_CLIENT_LOGIN_IDENTITY_EXPIRE_MINUTES 0
       // #define MS_CLIENT_LOGIN_IDENTITY_EXPIRE_SECONDS 0
     }
-
+    return MS_ERROR_FAILED_TO_LOGIN_CLIENT;
   }
 
   int FluffyDatabase::createLobby(const FluffyMultiplayer::CreateLobbyData& lobbyInfo, std::string& outputServerIpPort)
