@@ -175,7 +175,7 @@ namespace FluffyMultiplayer
               FluffyMultiplayer::LoginClientData client = { data[0], data[1], data[2], data[3] };
 
               //data check
-              if(isDataValidated(client)
+              if(isDataValidated(client))
               {
                 std::string identityResult;
                 int resultCode = db.loginClient(client,identityResult);
@@ -197,7 +197,7 @@ namespace FluffyMultiplayer
               std::vector<std::string>data = dataSeparator(receivedData, MS_DATA_DELIMITER, MS_DATA_START_AT_INDEX);
               FluffyMultiplayer::RegisterClientData client = { data[0], data[1], data[2], data[3] };
 
-              if(isDataValidated(client)
+              if(isDataValidated(client))
               {
                 std::string identityResult;
                 int resultCode = db.registerClient(client,identityResult);
