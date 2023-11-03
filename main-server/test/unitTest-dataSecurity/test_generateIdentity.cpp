@@ -5,7 +5,9 @@
 
 int fails=0;
 std::vector<std::string> outputs;
-std::vector<std::string> failedOutput;
+std::vector<std::string> failedOutputWrongLength;
+std::vector<std::string> failedOutputDuplicated;
+
 
 bool isStringExists(const std::string& data)
 {
@@ -21,23 +23,23 @@ void prt(std::string output)
 {
   if(!isStringExists(output))
   {
-      if(output.length()<MS_CLIENT_MAXIMUM_IDENTITY_LENGTH && output.length() > MS_CLIENT_MINIMUM_IDENTITY_LENGTH)
+      if(output.length()<=MS_CLIENT_MAXIMUM_IDENTITY_LENGTH && output.length() > MS_CLIENT_MINIMUM_IDENTITY_LENGTH)
       {
-        std::cout << "[DONE] test success identity generated = " << output << std::endl;
+        std::cout << "[DONE] identity generated = " << output << std::endl;
         outputs.push_back(output);
       }
       else
       {
         fails++;
         std::cout << "[ X ] wrong identity length, test failed identity generated = " << output << " ----------------------- " << std::endl;
-        failedOutput.push_back(output);
+        failedOutputWrongLength.push_back(output);
       }
   }
   else
   {
     fails++;
     std::cout << "[ X ] duplicated identity, test failed identity generated = " << output << " ----------------------- " << std::endl;
-    failedOutput.push_back(output);
+    failedOutputDuplicated.push_back(output);
   }
 }
 
@@ -57,11 +59,19 @@ int main()
   test_generateIdentity(count_test);
   if(fails>0)
   {
+    for(auto element : failedOutputDuplicated)
+      std::cout << "failed identity duplicated = " << element << std::endl;
+
+    for(auto element : failedOutputWrongLength)
+      std::cout << "failed identity wrong length= " << element << std::endl;
+
     std::cout << "[ X ] test_generateIdentity " << fails <<" of " << count_test << " failed.\n";
-    for(auto element : failedOutput)
-      std::cout << "failed identity = " << element << std::endl;
+    std::cout << "[COuNTS], failed due to duplicated: " << failedOutputDuplicated.size()
+      << "\nfailed due to wrong length: " << failedOutputWrongLength.size()
+      << "\nof " << count_test << " total cases.\n";
   }
   else
     std::cout << "[DONE] All " <<  count_test << " tests for test_generateIdentity successfully passed.\n";
+
   return 0;
 }
