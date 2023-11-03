@@ -42,7 +42,7 @@ namespace FluffyMultiplayer
     std::uniform_int_distribution<int> distribution(0,charecters.size()-1);
     std::string result;
 
-    for(int i=0; i< MS_CLIENT_MAXIMUM_IDENTITY_LENGTH; ++i)
+    for(int i=1; i< MS_CLIENT_MAXIMUM_IDENTITY_LENGTH; ++i)
     {
       result+=charecters[distribution(generator)];
     }
