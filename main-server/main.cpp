@@ -13,9 +13,6 @@ using boost::asio::ip::udp;
 #include <string>
 
 
-#include "include/config.h" //access to MS_RECEIVE_BUFFER, MS_DATABASE_FILE , MS_DEFAULT_PORT,MS_DATA_START_AT_INDEX
-#include "include/dataTypes.h" //access to struct SocketDataQueue
-
 #include "include/processData.h"
 
 
