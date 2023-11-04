@@ -60,6 +60,8 @@ namespace FluffyMultiplayer
                              "voiceChatForbidden BOOLEAN DEFAULT 0,"
                              "textChatForbidden BOOLEAN DEFAULT 0,"
                              "specterForbidden BOOLEAN DEFAULT 0,"
+                             "lobbyStatus BOOLEAN DEFAULT 0,"
+                             "showLobbyOnList BOOLEAN DEFAULT 1,"
                              "creationDate DATETIME DEFAULT CURRENT_TIMESTAMP,"
                              "FOREIGN KEY(owner) REFERENCES fm_client(id));";
     rc = sqlite3_exec(db, createTableLobby, nullptr, 0, &errMsg);
