@@ -32,15 +32,16 @@ namespace FluffyMultiplayer
     int rc;
     // Create a table for client
     const char* createTableClient = "CREATE TABLE IF NOT EXISTS fm_client("
-                                 "id INTEGER AUTOINCREMENT,"
-                                 "email PRIMARY KEY TEXT NOT NULL,"
-                                 "username PRIMARY KEY TEXT NOT NULL,"
+                                 "id INTEGER," //AUTOINCREMENT
+                                 "email TEXT NOT NULL,"
+                                 "username TEXT NOT NULL,"
                                  "password TEXT NOT NULL,"
                                  "hardwareId TEXT NOT NULL,"
                                  "isBanned BOOLEAN DEFAULT 0,"
                                  "isLobbyCreationLimited BOOLEAN DEFAULT 0,"
                                  "isAdmin BOOLEAN DEFAULT 0,"
-                                 "registerDate DATETIME DEFAULT CURRENT_TIMESTAMP);";
+                                 "registerDate DATETIME DEFAULT CURRENT_TIMESTAMP,"
+                                 "PRIMARY KEY (id,email,username) );";
     rc = sqlite3_exec(db, createTableClient, nullptr, 0, &errMsg);
     if (rc != SQLITE_OK)
     {
@@ -50,18 +51,19 @@ namespace FluffyMultiplayer
 
     // Create table for lobby
     const char* createTableLobby = "CREATE TABLE IF NOT EXISTS fm_lobby("
-                             "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                             "id INTEGER," //AUTOINCREMENT
                              "server_ip TEXT NOT NULL,"
                              "server_port TEXT NOT NULL,"
                              "password TEXT," //not null or e default password
                              "gameMode INTEGER DEFAULT 1,"
                              "maxPlayers INTEGER DEFAULT 4,"
-                             "owner INTEGER PRIMARY KEY NOT NULL,"
+                             "owner INTEGER NOT NULL,"
                              "voiceChatForbidden BOOLEAN DEFAULT 0,"
                              "textChatForbidden BOOLEAN DEFAULT 0,"
                              "specterForbidden BOOLEAN DEFAULT 0,"
                              "creationDate DATETIME DEFAULT CURRENT_TIMESTAMP,"
-                             "FOREIGN KEY(owner) REFERENCES fm_client(id));";
+                             "FOREIGN KEY(owner) REFERENCES fm_client(id),"
+                             "PRIMARY KEY (id,owner) );";
     rc = sqlite3_exec(db, createTableLobby, nullptr, 0, &errMsg);
     if (rc != SQLITE_OK)
     {
@@ -71,10 +73,11 @@ namespace FluffyMultiplayer
 
     // Create table for client_login
     const char* createClientLogin = "CREATE TABLE IF NOT EXISTS fm_client_login("
-                             "clientId INTEGER PRIMARY KEY,"
-                             "identity TEXT PRIMARY KEY,"
+                             "clientId INTEGER,"
+                             "identity TEXT,"
                              "loginDate DATETIME DEFAULT CURRENT_TIMESTAMP,"
-                             "FOREIGN KEY(clientId) REFERENCES fm_client(id));";
+                             "FOREIGN KEY(clientId) REFERENCES fm_client(id),"
+                             "PRIMARY KEY(clientId, identity) );";
     rc = sqlite3_exec(db, createClientLogin, nullptr, 0, &errMsg);
     if (rc != SQLITE_OK)
     {
@@ -84,10 +87,11 @@ namespace FluffyMultiplayer
 
     // Create table for client_in_lobby
     const char* createClientInLobby = "CREATE TABLE IF NOT EXISTS fm_client_in_lobby("
-                             "clientId INTEGER PRIMARY KEY,"
-                             "lobbyId INTEGER PRIMARY KEY,"
+                             "clientId INTEGER,"
+                             "lobbyId INTEGER,"
                              "FOREIGN KEY(clientId) REFERENCES fm_client(id),"
-                             "FOREIGN KEY(lobbyId) REFERENCES fm_lobby(id));";
+                             "FOREIGN KEY(lobbyId) REFERENCES fm_lobby(id),"
+                             "PRIMARY KEY(clientId,lobbyId) );";
     rc = sqlite3_exec(db, createClientInLobby, nullptr, 0, &errMsg);
     if (rc != SQLITE_OK)
     {
