@@ -121,7 +121,7 @@ namespace FluffyMultiplayer
   void ProcessData::process(udp::socket& socket, std::queue<FluffyMultiplayer::SocketDataQueue>& queue, FluffyMultiplayer::FluffyDatabase& db)
   {
       FluffyMultiplayer::SocketDataQueue currentItem;
-      for(int i=0; i<=queue.size(); i++)
+      for(int i=0; i<queue.size(); i++)
       {
         currentItem = queue.front();
 
