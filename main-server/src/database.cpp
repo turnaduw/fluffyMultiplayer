@@ -376,6 +376,12 @@ namespace FluffyMultiplayer
 
     std::string result;
     int rc = sqlite3_exec(db, final_query, &FluffyDatabase::search_in_db_callback, &result , &errMsg);
+
+
+    final_query = nullptr;
+    delete[] final_query;
+
+
     if (rc != SQLITE_OK)
     {
         std::cout << "(search_in_db)SQL search error: " << errMsg << "\tquery=" << _q << std::endl;
@@ -405,11 +411,16 @@ namespace FluffyMultiplayer
 
     std::string result;
     int rc = sqlite3_exec(db, final_query, &FluffyDatabase::isExists_in_db_callback, &result , &errMsg);
+
+    final_query = nullptr;
+    delete[] final_query;
+
     if (rc != SQLITE_OK)
     {
         std::cout << "(isExists_in_db) SQL search error: " << errMsg << "\tquery=" << _q << std::endl;
         sqlite3_free(errMsg);
     }
+
     if(result.length()>MS_MINIMUM_RETURNED_DATA_BY_SQL_SEARCH)
       return true;
     return false;
@@ -423,6 +434,12 @@ namespace FluffyMultiplayer
         std::strcpy(final_query, _q.c_str());
 
         int rc = sqlite3_exec(db, final_query, nullptr, 0, &errMsg);
+
+        final_query = nullptr;
+        delete[] final_query;
+
+
+
         if (rc != SQLITE_OK)
         {
             std::cout << "(query_to_db) SQL error: " << errMsg << "\tquery=" << _q << std::endl;
@@ -430,7 +447,6 @@ namespace FluffyMultiplayer
         }
         else
           result = true;
-        delete[] final_query;
         return result;
   }
 
