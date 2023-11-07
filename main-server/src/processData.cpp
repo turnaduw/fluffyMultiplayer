@@ -3,6 +3,15 @@
 
 namespace FluffyMultiplayer
 {
+  ProcessData::ProcessData()
+  {
+
+  }
+  ProcessData::~ProcessData()
+  {
+
+  }
+
   int ProcessData::separateCode(const std::string& data)
   {
     //these MS_DATA_CODE_INDEX_X are from config.h
@@ -42,7 +51,7 @@ namespace FluffyMultiplayer
     //search then remove ip n port from client list
   }
 
-  std::vector<int> dataIndexes(const std::string& data, const std::string& delimiter)
+  std::vector<int> ProcessData::dataIndexes(const std::string& data, const std::string& delimiter)
   {
     std::vector<int> result;
     for(int i=0; i<=data.length()-1; i++)
@@ -112,7 +121,7 @@ namespace FluffyMultiplayer
   void ProcessData::process(udp::socket& socket, std::queue<FluffyMultiplayer::SocketDataQueue>& queue, FluffyMultiplayer::FluffyDatabase& db)
   {
       FluffyMultiplayer::SocketDataQueue currentItem;
-      for(int i=0; i<=queue.size(); i++)
+      for(int i=0; i<queue.size(); i++)
       {
         currentItem = queue.front();
 
