@@ -1,5 +1,7 @@
 #include "../include/app.h"
 
+#include "../include/states/stateReadServerList.h"
+
 namespace FluffyMultiplayer
 {
   App::~App()
@@ -9,7 +11,7 @@ namespace FluffyMultiplayer
 
   void App::init()
   {
-    // currentState = ;
+    currentState = new FluffyMultiplayer::StateReadServerList;
     appWindow.setFramerateLimit(60);
 
   }
