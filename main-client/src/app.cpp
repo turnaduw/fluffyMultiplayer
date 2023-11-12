@@ -16,6 +16,11 @@ namespace FluffyMultiplayer
 
   }
 
+  int App::getServerListCount()
+  {
+    return serverList.size()-1;
+  }
+
   void App::run(std::queue<std::string>& received_data_queue, std::queue<std::string>& send_data_queue)
   {
 
