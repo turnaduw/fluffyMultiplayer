@@ -11,8 +11,8 @@ namespace FluffyMultiplayer
   class StateReadServerList : public AppState
   {
   public:
-    StateReadServerList() {}
-    ~StateReadServerList() {}
+    StateReadServerList();
+    ~StateReadServerList();
 
     void render(sf::RenderWindow&);
     FluffyMultiplayer::AppState* update(FluffyMultiplayer::App&,

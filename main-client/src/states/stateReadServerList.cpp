@@ -1,7 +1,17 @@
-#include "../../include/states/stateReadServerList.h"
+#include "../../include/states.h"
 
 namespace FluffyMultiplayer
 {
+  StateReadServerList::StateReadServerList()
+  {
+
+  }
+
+  StateReadServerList::~StateReadServerList()
+  {
+
+  }
+
   void StateReadServerList::render(sf::RenderWindow& window)
   {
     // sf::Text centerText;
@@ -52,9 +62,20 @@ namespace FluffyMultiplayer
 
 
   FluffyMultiplayer::AppState* StateReadServerList::eventHandle(FluffyMultiplayer::App& app,
-                            sf::Event&)
+                            sf::Event& event)
   {
-    //..
+    switch(event.type)
+    {
+      //keyboard
+      case sf::Event::KeyPressed:
+        {
+          if(event.key.code == sf::Keyboard::Enter || event.key.code == sf::Keyboard::Return)
+          {
+              return new FluffyMultiplayer::StateLoginForm;
+          }
+        }
+        break;
+    }
     return this;
   }
 }
