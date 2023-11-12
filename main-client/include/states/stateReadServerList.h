@@ -3,6 +3,12 @@
 
 #include "../appState.h"
 
+//convert string to int
+#include <cstdlib>
+
+#include <fstream>
+
+
 namespace FluffyMultiplayer
 {
   class App; // Forward declaration of App class
@@ -10,10 +16,12 @@ namespace FluffyMultiplayer
 
   class StateReadServerList : public AppState
   {
+  private:
+    int findIndexOfChar(const std::string&, const char&);
   public:
     StateReadServerList();
     ~StateReadServerList();
-
+    FluffyMultiplayer::AnAddress getIpAndPort(const std::string&, std::string, std::string);
     void render(sf::RenderWindow&);
     FluffyMultiplayer::AppState* update(FluffyMultiplayer::App&,
                       std::queue<std::string>&,
