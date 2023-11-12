@@ -10,9 +10,6 @@ using boost::asio::ip::udp;
 
 #include "appState.h"
 
-//StateReadServerList -> StatePickPort
-//StateReadServerList -> Could not read serverlist
-
 namespace FluffyMultiplayer
 {
   class AppState;
