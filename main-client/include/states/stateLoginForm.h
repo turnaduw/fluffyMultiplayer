@@ -2,10 +2,12 @@
 #define H_STATE_LOGIN_FORM
 
 #include "../appState.h"
-#include "../app.h"
 
 namespace FluffyMultiplayer
 {
+  class App; // Forward declaration of App class
+  class AppState; // Forward declaration of AppState class
+
   class StateLoginForm : public AppState
   {
   private:
