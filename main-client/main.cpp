@@ -10,16 +10,24 @@
 #include <fstream>
 using boost::asio::ip::udp;
 
+
+#include "include/dataSecurity.h"
+
+
 namespace FluffyMultiplayer
 {
   void sendData(udp::socket& socket,std::queue<std::string>& sendDataQueue, FluffyMultiplayer::AnAddress server, bool send_status=1)
   {
+    FluffyMultiplayer::DataSecurity dSecurity;
+    std::string data;
     while(true)
     {
       if(send_status && sendDataQueue.size()>=1)
       {
+          data = sendDataQueue.front();
+          dSecurity.encryptData(data);
           udp::endpoint send_endpoint(server.ip, server.port);
-          socket.send_to(boost::asio::buffer(sendDataQueue.front()), send_endpoint);
+          socket.send_to(boost::asio::buffer(data), send_endpoint);
           sendDataQueue.pop();
       }
     }
@@ -27,6 +35,8 @@ namespace FluffyMultiplayer
 
   void receiveData(udp::socket& socket,std::queue<std::string>& receivedDataQueue, FluffyMultiplayer::AnAddress server, bool receive_status=1)
   {
+    FluffyMultiplayer::DataSecurity dSecurity;
+    std::string data;
     while (true)
     {
       if(receive_status)
@@ -40,7 +50,8 @@ namespace FluffyMultiplayer
             senderEndpoint.address() == server.ip &&
             senderEndpoint.port() == server.port)
         {
-          std::string data = std::string(receive_data,receive_length);
+          data = std::string(receive_data,receive_length);
+          dSecurity.decryptData(data);
           receivedDataQueue.push(data);
         }
       }
