@@ -4,32 +4,34 @@
 #include <SFML/Graphics.hpp>
 #include <queue>
 #include <array>
-#include "include/config.h"
-#include "include/dataType.h"
+#include "config.h"
+#include "dataType.h"
 using boost::asio::ip::udp;
 
-#include "include/appState.h"
+#include "appState.h"
 
-
+//StateReadServerList -> StatePickPort
+//StateReadServerList -> Could not read serverlist
 
 namespace FluffyMultiplayer
 {
+  class AppState;
   class App
   {
     private:
-      sf::RenderWindow appWindow;
       FluffyMultiplayer::AnAddress serverAddress;
       unsigned short appPort;
       FluffyMultiplayer::AppState* currentState;
-      std::array<FluffyMultiplayer::AppState*, STATES_COUNT> states;
       std::queue<FluffyMultiplayer::AnAddress> serverList;
       bool sendDataStatus;
       bool receiveDataStatus;
 
     public:
+      sf::RenderWindow appWindow;
       App(): appWindow(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), WINDOW_TITLE)
       {
-
+        appPort=MC_DEFAULT_PORT; //default port
+        currentState=nullptr;
       }
 
       ~App();
@@ -38,7 +40,8 @@ namespace FluffyMultiplayer
       FluffyMultiplayer::AnAddress getServerAddress();
       void setServer(FluffyMultiplayer::AnAddress);
       void addServer(FluffyMultiplayer::AnAddress);
-      sf::RenderWindow getWindow();
+      int getServerListCount();
+      void setAppPort(unsigned short);
       unsigned short getAppPort();
       bool getReceiveDataStatus();
       bool getSendDataStatus();

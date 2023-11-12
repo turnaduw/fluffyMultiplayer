@@ -3,7 +3,7 @@
 #include <boost/thread.hpp>
 #include <boost/asio.hpp>
 #include <queue>
-
+#include <iostream>
 #include "include/dataType.h"
 
 //read from file
@@ -31,7 +31,7 @@ namespace FluffyMultiplayer
     {
       if(receive_status)
       {
-        char receive_data[MS_RECEIVE_BUFFER];
+        char receive_data[MC_RECEIVE_BUFFER];
         udp::endpoint senderEndpoint;
         size_t receive_length = socket.receive_from(boost::asio::buffer(receive_data), senderEndpoint);
 
@@ -46,6 +46,7 @@ namespace FluffyMultiplayer
       }
     }
   }
+}
 
 
 int main()
@@ -76,8 +77,8 @@ int main()
         FluffyMultiplayer::receiveData,
         boost::ref(socket),
         boost::ref(receivedDataQueue),
-        boost::ref(app.getServerAddress()),
-        boost::ref(app.getReceiveDataStatus())
+        app.getServerAddress(),
+        app.getReceiveDataStatus()
       )
     );
 
@@ -88,8 +89,8 @@ int main()
         FluffyMultiplayer::sendData,
         boost::ref(socket),
         boost::ref(sendDataQueue),
-        boost::ref(app.getServerAddress()),
-        boost::ref(app.getSendDataStatus())
+        app.getServerAddress(),
+        app.getSendDataStatus()
       )
     );
 

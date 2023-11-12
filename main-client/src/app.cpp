@@ -10,8 +10,8 @@ namespace FluffyMultiplayer
   void App::init()
   {
     // currentState = ;
+    appWindow.setFramerateLimit(60);
 
-    
   }
 
   void App::run(std::queue<std::string>& received_data_queue, std::queue<std::string>& send_data_queue)
@@ -26,13 +26,14 @@ namespace FluffyMultiplayer
            // Request for closing the window
            if (event.type == sf::Event::Closed)
                appWindow.close();
-            currentState = currentState->eventHandle(appWindow,event,states);
+
+           currentState = currentState->eventHandle((*this),event);
        }
 
        // Clear the whole window before rendering a new frame
        appWindow.clear();
 
-       currentState = currentState->update(appWindow,states,received_data_queue,send_data_queue);
+       currentState = currentState->update((*this),received_data_queue,send_data_queue);
 
        // Draw some graphical entities
        currentState->render(appWindow);
@@ -65,9 +66,9 @@ namespace FluffyMultiplayer
     serverList.push(address);
   }
 
-  sf::RenderWindow App::getWindow()
+  void App::setAppPort(unsigned short port)
   {
-    return appWindow;
+      appPort = port;
   }
 
   unsigned short App::getAppPort()

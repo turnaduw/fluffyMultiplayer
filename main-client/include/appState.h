@@ -1,7 +1,8 @@
 #ifndef H_APP_STATE_CLASS
 #define H_APP_STATE_CLASS
-#include "include/config.h"
-#include "include/dataType.h"
+#include "./config.h"
+#include "./dataType.h"
+#include "./app.h"
 #include <SFML/Graphics.hpp>
 #include <string>
 #include <array>
@@ -9,8 +10,7 @@
 
 namespace FluffyMultiplayer
 {
-  typedef std::array<FluffyMultiplayer::AppState*, STATES_COUNT>  StatesList;
-
+  class App;
   class AppState
   {
   protected:
@@ -23,13 +23,13 @@ namespace FluffyMultiplayer
     std::string font_path;
   public:
     virtual void render(sf::RenderWindow&)=0;
-    virtual FluffyMultiplayer::AppState* update(sf::RenderWindow&,
-                      const FluffyMultiplayer::StatesList&,
+
+    virtual FluffyMultiplayer::AppState* update(FluffyMultiplayer::App&,
                       std::queue<std::string>&,
                       std::queue<std::string>&)=0;
 
-    virtual FluffyMultiplayer::AppState* eventHandle(sf::RenderWindow&,
-    sf::Event&, const FluffyMultiplayer::StatesList&)=0;
+    virtual FluffyMultiplayer::AppState* eventHandle(FluffyMultiplayer::App&,
+                                        sf::Event&)=0;
 
     void setBasicFont(std::string);
     void setBasicTextSize(unsigned int);

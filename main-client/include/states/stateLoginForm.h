@@ -2,6 +2,7 @@
 #define H_STATE_LOGIN_FORM
 
 #include "../appState.h"
+#include "../app.h"
 
 namespace FluffyMultiplayer
 {
@@ -26,20 +27,15 @@ namespace FluffyMultiplayer
 
   public:
     StateLoginForm();
-    StateLoginForm
-    (
-      std::array<std::string, 2> inputs,
-      std::array<std::string, 2> errors,
-      bool rememberlogin
-    );
+    StateLoginForm( std::array<std::string, 2>inputs, std::array<std::string, 2>errors, bool rememberlogin );
     ~StateLoginForm();
 
     void render(sf::RenderWindow&);
-    FluffyMultiplayer::AppState* update(sf::RenderWindow&,
-                      const FluffyMultiplayer::StatesList&, std::Queue<std::string>&,
+    FluffyMultiplayer::AppState* update(FluffyMultiplayer::App&,
+                      std::Queue<std::string>&,
                       std::Queue<std::string>&);
-    FluffyMultiplayer::AppState* eventHandle(sf::RenderWindow&,
-    sf::Event&, const FluffyMultiplayer::StatesList&);
+    FluffyMultiplayer::AppState* eventHandle(FluffyMultiplayer::App&,
+                              sf::Event&);
   };
 }
 
