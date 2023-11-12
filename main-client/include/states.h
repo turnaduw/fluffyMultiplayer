@@ -5,5 +5,6 @@
 
 #include "../include/states/stateReadServerList.h"
 #include "../include/states/stateLoginForm.h"
+#include "../include/states/stateConnectToServer.h"
 
 #endif
