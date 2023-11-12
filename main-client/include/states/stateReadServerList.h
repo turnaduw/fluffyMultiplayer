@@ -1,26 +1,23 @@
-#ifndef H_STATE_LOGIN_FORM
-#define H_STATE_LOGIN_FORM
+#ifndef H_STATE_READ_SERVER_LIST
+#define H_STATE_READ_SERVER_LIST
 
 #include "../appState.h"
-#include "../app.h"
 
 namespace FluffyMultiplayer
 {
+  class App; // Forward declaration of App class
+  class AppState; // Forward declaration of AppState class
+
   class StateReadServerList : public AppState
   {
-  private:
-    sf::Text centerText;
-    std::string message;
-    FluffyMultiplayer::AnAddress getIpAndPort(std::string data,std::string delimiter,std::string endline);
-
   public:
-    StateLoginForm();
-    ~StateLoginForm();
+    StateReadServerList() {}
+    ~StateReadServerList() {}
 
     void render(sf::RenderWindow&);
     FluffyMultiplayer::AppState* update(FluffyMultiplayer::App&,
-                      std::Queue<std::string>&,
-                      std::Queue<std::string>&);
+                      std::queue<std::string>&,
+                      std::queue<std::string>&);
     FluffyMultiplayer::AppState* eventHandle(FluffyMultiplayer::App&,
                               sf::Event&);
   };
