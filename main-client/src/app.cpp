@@ -1,6 +1,6 @@
 #include "../include/app.h"
 
-#include "../include/states/stateReadServerList.h"
+#include "../include/states.h"
 
 namespace FluffyMultiplayer
 {
