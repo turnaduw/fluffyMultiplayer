@@ -2,24 +2,24 @@
 
 namespace FluffyMultiplayer
 {
-  StateConnectToServer::StateConnectToServer()
+  StateConnectingToServer::StateConnectingToServer()
   {
 
   }
 
-  StateConnectToServer::~StateConnectToServer()
+  StateConnectingToServer::~StateConnectingToServer()
   {
 
   }
 
-  int StateConnectToServer::generateRandomNumber(int min=2500,int max=64000)
+  int StateConnectingToServer::generateRandomNumber(int min=2500,int max=64000)
   {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
     int randomNumber = std::rand() % (max - min + 1) + min;
     return randomNumber;
   }
 
-  bool StateConnectToServer::isPortBusy(int port)
+  bool StateConnectingToServer::isPortBusy(int port)
   {
     //lets check port is in use or not
     boost::asio::io_service ioService;
@@ -49,7 +49,7 @@ namespace FluffyMultiplayer
   }
 
 
-  void StateConnectToServer::render(sf::RenderWindow& window)
+  void StateConnectingToServer::render(sf::RenderWindow& window)
   {
     // sf::Text centerText;
     // centerText.setText("reading server list from local files\nplease wait...");
@@ -67,7 +67,7 @@ namespace FluffyMultiplayer
   }
 
 
-  FluffyMultiplayer::AppState* StateConnectToServer::update(FluffyMultiplayer::App& app,
+  FluffyMultiplayer::AppState* StateConnectingToServer::update(FluffyMultiplayer::App& app,
                     std::queue<std::string>& receiveDataQueue,
                     std::queue<std::string>& sendDataQueue)
 
@@ -88,7 +88,7 @@ namespace FluffyMultiplayer
   }
 
 
-  FluffyMultiplayer::AppState* StateConnectToServer::eventHandle(FluffyMultiplayer::App& app,
+  FluffyMultiplayer::AppState* StateConnectingToServer::eventHandle(FluffyMultiplayer::App& app,
                             sf::Event& event)
   {
     switch(event.type)

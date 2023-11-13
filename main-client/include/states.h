@@ -3,7 +3,7 @@
 // all states include here and just call this file into all states, on this way can easly access to all states as we want.
 
 #include "../include/states/stateReadServerList.h"
-#include "../include/states/stateUnableToReadServerList.h"
+#include "../include/states/stateUnableToOpenServerList.h"
 #include "../include/states/stateBindPickPort.h"
 #include "../include/states/stateFailedToBindPickPort.h"
 #include "../include/states/stateConnectingToServer.h"
@@ -21,7 +21,6 @@
 #include "../include/states/stateWriteIdentityToLocal.h"
 #include "../include/states/stateFailedWriteIdentityToLocal.h"
 #include "../include/states/stateMainPage.h"
-#include "../include/states/state"
 
 
 #endif
