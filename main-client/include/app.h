@@ -44,6 +44,7 @@ namespace FluffyMultiplayer
       FluffyMultiplayer::AnAddress getServerAddress();
       void setServer(FluffyMultiplayer::AnAddress);
       void addServer(FluffyMultiplayer::AnAddress);
+      FluffyMultiplayer::AnAddress getServer();
       int getServerListCount();
       void setAppPort(unsigned short);
       unsigned short getAppPort();

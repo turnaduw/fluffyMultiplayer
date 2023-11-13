@@ -16,6 +16,13 @@ namespace FluffyMultiplayer
     return serverList.size()-1;
   }
 
+  FluffyMultiplayer::AnAddress App::getServer()
+  {
+    FluffyMultiplayer::AnAddress temp = serverList.front();
+    serverlist.pop();
+    return temp;
+  }
+
   void App::run(std::queue<std::string>& received_data_queue, std::queue<std::string>& send_data_queue)
   {
 
