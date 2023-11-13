@@ -16,12 +16,13 @@ namespace FluffyMultiplayer
   class App
   {
     private:
-      FluffyMultiplayer::AnAddress serverAddress;
-      unsigned short appPort;
-      FluffyMultiplayer::AppState* currentState;
-      std::queue<FluffyMultiplayer::AnAddress> serverList;
       bool sendDataStatus;
       bool receiveDataStatus;
+      unsigned short appPort;
+      FluffyMultiplayer::AnAddress serverAddress;
+      FluffyMultiplayer::AppState* currentState;
+      std::queue<FluffyMultiplayer::AnAddress> serverList;
+      std::queue<FluffyMultiplayer::LobbyData>* lobbyList;
 
     public:
       sf::RenderWindow appWindow;
@@ -29,9 +30,15 @@ namespace FluffyMultiplayer
       {
         appPort=MC_DEFAULT_PORT; //default port
         currentState=nullptr;
+        lobbyList=nullptr;
       }
 
-      ~App();
+      ~App()
+      {
+        delete currentState;
+        delete lobbyList;
+      }
+
       void init();
       void run(std::queue<std::string>&, std::queue<std::string>&);
       FluffyMultiplayer::AnAddress getServerAddress();

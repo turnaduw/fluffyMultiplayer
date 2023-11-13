@@ -4,11 +4,6 @@
 
 namespace FluffyMultiplayer
 {
-  App::~App()
-  {
-
-  }
-
   void App::init()
   {
     currentState = new FluffyMultiplayer::StateReadServerList;
