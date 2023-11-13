@@ -34,7 +34,7 @@ namespace FluffyMultiplayer
     std::string port_str = line.substr(indexSeparator+1, indexEndline);
 
     //to avoid return invalid ip or port instead return a default values
-    if(ip_str.length() >= 7 && port_str.length >= 4)
+    if(ip_str.length() >= 7 && port_str.length() >= 4)
     {
       //convert port into unsigned short
       const char* _port = port_str.c_str();
@@ -83,7 +83,7 @@ namespace FluffyMultiplayer
         {
           std::cout << "Unable to open file server list.\n";
         }
-      return new FluffyMultiplayer::StateUnableToReadServerList;
+      return this;//new FluffyMultiplayer::StateUnableToReadServerList;
   }
 
 

@@ -19,7 +19,7 @@ namespace FluffyMultiplayer
   FluffyMultiplayer::AnAddress App::getServer()
   {
     FluffyMultiplayer::AnAddress temp = serverList.front();
-    serverlist.pop();
+    serverList.pop();
     return temp;
   }
 

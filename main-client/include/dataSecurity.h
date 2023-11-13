@@ -1,6 +1,8 @@
 #ifndef H_DATA_SECURITY_CLASS
 #define H_DATA_SECURITY_CLASS
 
+#include <string>
+
 namespace FluffyMultiplayer
 {
   class DataSecurity

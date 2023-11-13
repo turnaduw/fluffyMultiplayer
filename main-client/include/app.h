@@ -35,8 +35,8 @@ namespace FluffyMultiplayer
 
       ~App()
       {
-        delete currentState;
-        delete lobbyList;
+        // delete currentState;
+        // delete lobbyList;
       }
 
       void init();

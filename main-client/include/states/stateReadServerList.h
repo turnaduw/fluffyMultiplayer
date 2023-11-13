@@ -8,6 +8,7 @@
 
 #include <fstream>
 
+#include <iostream>
 
 namespace FluffyMultiplayer
 {
