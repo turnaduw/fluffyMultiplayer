@@ -23,38 +23,38 @@ namespace FluffyMultiplayer
 
   FluffyMultiplayer::AnAddress StateReadServerList::getIpAndPort(const std::string& line, std::string separator, std::string endline)
   {
+    boost::asio::ip::address ip = boost::asio::ip::address::from_string(MC_SERVER_DEFAULT_IP);
+    unsigned short port = MC_SERVER_DEFAULT_PORT;
+
     int indexSeparator = findIndexOfChar( line, static_cast<char>(separator[0]) );
     int indexEndline = findIndexOfChar ( line, static_cast<char>(endline[0]) );
 
     //convert line into ip and port but type is string
-    std::string ip_str = line.substr(0,indexSeparator); //-1 because of separator charecter
-    std::string port_str = line.substr(indexSeparator+1, indexEndline); //-2 is for endline charecter
+    std::string ip_str = line.substr(0,indexSeparator);
+    std::string port_str = line.substr(indexSeparator+1, indexEndline);
 
-    //convert port into unsigned short
-    const char* _port = port_str.c_str();
-    unsigned short port = static_cast<unsigned short>( std::atoi(_port) );
+    //to avoid return invalid ip or port instead return a default values
+    if(ip_str.length() >= 7 && port_str.length >= 4)
+    {
+      //convert port into unsigned short
+      const char* _port = port_str.c_str();
+      port = static_cast<unsigned short>( std::atoi(_port) );
 
-    //convert string ip into udp ip
-    boost::asio::ip::address ip = boost::asio::ip::address::from_string(ip_str);
+      //convert string ip into udp ip
+      ip = boost::asio::ip::address::from_string(ip_str);
+    }
+
     FluffyMultiplayer::AnAddress tempAddress = {ip,port};
     return tempAddress;
   }
 
   void StateReadServerList::render(sf::RenderWindow& window)
   {
-    // sf::Text centerText;
-    // centerText.setText("reading server list from local files\nplease wait...");
-    // setBasicBackground("bgState.png");
-    // setBasicFont("default.ttf");
     sf::Sprite bgsp;
     sf::Texture bgtexture;
     bgtexture.loadFromFile("./assets/states/bgState.png");
     bgsp.setTexture(bgtexture);
-
-    // centerText.setFont(getBasicFont);
     window.draw(bgsp);
-    // window.draw(getBgSprite());
-    // window.draw(centerText);
   }
 
 
@@ -70,8 +70,6 @@ namespace FluffyMultiplayer
         {
           while ( getline (serverListFile,line) )
           {
-            std::cout << line << '\n';
-
             //sperate ip and port and add it into list
             app.addServer( getIpAndPort(line,MC_IP_PORT_SEPARATOR,MC_IP_PORT_ENDLINE) );
           }
@@ -85,25 +83,13 @@ namespace FluffyMultiplayer
         {
           std::cout << "Unable to open file server list.\n";
         }
-      return this;
+      return new FluffyMultiplayer::StateUnableToReadServerList;
   }
 
 
   FluffyMultiplayer::AppState* StateReadServerList::eventHandle(FluffyMultiplayer::App& app,
                             sf::Event& event)
   {
-    switch(event.type)
-    {
-      //keyboard
-      case sf::Event::KeyPressed:
-        {
-          if(event.key.code == sf::Keyboard::Enter || event.key.code == sf::Keyboard::Return)
-          {
-              return new FluffyMultiplayer::StateLoginForm;
-          }
-        }
-        break;
-    }
     return this;
   }
 }
