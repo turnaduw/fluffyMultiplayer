@@ -76,14 +76,14 @@ namespace FluffyMultiplayer
           serverListFile.close();
           if(app.getServerListCount()>=1)
           {
-            return new FluffyMultiplayer::StateConnectToServer;
+            return new FluffyMultiplayer::StateBindPickPort;
           }
         }
         else
         {
           std::cout << "Unable to open file server list.\n";
         }
-      return this;//new FluffyMultiplayer::StateUnableToReadServerList;
+      return new FluffyMultiplayer::StateUnableToReadServerList;
   }
 
 
