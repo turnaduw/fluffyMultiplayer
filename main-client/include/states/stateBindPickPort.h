@@ -3,6 +3,10 @@
 
 #include "../appState.h"
 
+//random number
+#include <cstdlib>
+#include <ctime>
+
 namespace FluffyMultiplayer
 {
   class App; // Forward declaration of App class
@@ -10,6 +14,12 @@ namespace FluffyMultiplayer
 
   class StateBindPickPort : public AppState
   {
+  private:
+    bool isBusy;
+    int maxTry;
+    unsigned short genrate_random_number(int, int);
+    bool isPortBusy(unsigned short);
+
   public:
     StateBindPickPort();
     ~StateBindPickPort();
