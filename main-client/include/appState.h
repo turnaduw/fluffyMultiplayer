@@ -13,6 +13,23 @@ namespace FluffyMultiplayer
   class App;
   class AppState
   {
+  protected:
+    sf::Font theFont;
+    sf::Text theText;
+    void initSimpleText(std::string fontPath, std::string text,
+                        unsigned int fontSize=22,
+                        sf::Color color=sf::Color::White,
+                        bool isBold=true)
+    {
+      theFont.loadFromFile(fontPath);
+      theText.setFont(theFont);
+      theText.setString(text);
+      theText.setCharacterSize(fontSize);
+      theText.setFillColor(color);
+      if(isBold)
+        theText.setStyle(sf::Text::Bold);
+    }
+
   public:
     virtual void render(sf::RenderWindow&)=0;
 
