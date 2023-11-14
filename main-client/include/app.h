@@ -41,15 +41,15 @@ namespace FluffyMultiplayer
 
       void init();
       void run(std::queue<std::string>&, std::queue<std::string>&);
-      FluffyMultiplayer::AnAddress getServerAddress();
+      FluffyMultiplayer::AnAddress getServerAddress() const;
       void setServer(FluffyMultiplayer::AnAddress);
       void addServer(FluffyMultiplayer::AnAddress);
-      FluffyMultiplayer::AnAddress getServer();
-      int getServerListCount();
+      FluffyMultiplayer::AnAddress popServerAddress();
+      int getServerListCount() const;
       void setAppPort(unsigned short);
-      unsigned short getAppPort();
-      bool getReceiveDataStatus();
-      bool getSendDataStatus();
+      unsigned short getAppPort() const;
+      bool getReceiveDataStatus() const;
+      bool getSendDataStatus() const;
       void setReceiveDataStatus(bool);
       void setSendDataStatus(bool);
   };

@@ -11,12 +11,12 @@ namespace FluffyMultiplayer
 
   }
 
-  int App::getServerListCount()
+  int App::getServerListCount() const
   {
     return serverList.size()-1;
   }
 
-  FluffyMultiplayer::AnAddress App::getServer()
+  FluffyMultiplayer::AnAddress App::popServerAddress()
   {
     FluffyMultiplayer::AnAddress temp = serverList.front();
     serverList.pop();
@@ -53,7 +53,7 @@ namespace FluffyMultiplayer
 
   }
 
-  FluffyMultiplayer::AnAddress App::getServerAddress()
+  FluffyMultiplayer::AnAddress App::getServerAddress() const
   {
     return serverAddress;
   }
@@ -80,17 +80,17 @@ namespace FluffyMultiplayer
       appPort = port;
   }
 
-  unsigned short App::getAppPort()
+  unsigned short App::getAppPort() const
   {
     return appPort;
   }
 
-  bool App::getReceiveDataStatus()
+  bool App::getReceiveDataStatus() const
   {
     return receiveDataStatus;
   }
 
-  bool App::getSendDataStatus()
+  bool App::getSendDataStatus() const
   {
     return sendDataStatus;
   }
