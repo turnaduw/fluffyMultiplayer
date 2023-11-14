@@ -8,8 +8,6 @@
 
 #include <fstream>
 
-#include <iostream>
-
 namespace FluffyMultiplayer
 {
   class App; // Forward declaration of App class
