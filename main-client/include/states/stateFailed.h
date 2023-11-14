@@ -1,5 +1,5 @@
-#ifndef H_STATE_FAILED_TO_BIND_PICK_PORT
-#define H_STATE_FAILED_TO_BIND_PICK_PORT
+#ifndef H_STATE_FAILED
+#define H_STATE_FAILED
 
 #include "../appState.h"
 
@@ -8,11 +8,11 @@ namespace FluffyMultiplayer
   class App; // Forward declaration of App class
   class AppState; // Forward declaration of AppState class
 
-  class StateFailedToBindPickPort : public AppState
+  class StateFailed : public AppState
   {
   public:
-    StateFailedToBindPickPort();
-    ~StateFailedToBindPickPort();
+    StateFailed();
+    ~StateFailed();
     void render(sf::RenderWindow&);
     FluffyMultiplayer::AppState* update(FluffyMultiplayer::App&,
                       std::queue<std::string>&,

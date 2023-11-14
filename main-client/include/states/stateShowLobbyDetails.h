@@ -1,5 +1,5 @@
-#ifndef H_STATE_FAILED_RELOGIN
-#define H_STATE_FAILED_RELOGIN
+#ifndef H_STATE_SHOW_LOBBY_DETAILS
+#define H_STATE_SHOW_LOBBY_DETAILS
 
 #include "../appState.h"
 
@@ -8,11 +8,11 @@ namespace FluffyMultiplayer
   class App; // Forward declaration of App class
   class AppState; // Forward declaration of AppState class
 
-  class StateFailedRelogin : public AppState
+  class StateShowLobbyDetials : public AppState
   {
   public:
-    StateFailedRelogin();
-    ~StateFailedRelogin();
+    StateShowLobbyDetials();
+    ~StateShowLobbyDetials();
     void render(sf::RenderWindow&);
     FluffyMultiplayer::AppState* update(FluffyMultiplayer::App&,
                       std::queue<std::string>&,

@@ -1,5 +1,5 @@
-#ifndef H_STATE_FAILED_WRITE_IDENTITY_TO_LOCAL
-#define H_STATE_FAILED_WRITE_IDENTITY_TO_LOCAL
+#ifndef H_STATE_CREATE_LOBBY_FORM
+#define H_STATE_CREATE_LOBBY_FORM
 
 #include "../appState.h"
 
@@ -8,11 +8,11 @@ namespace FluffyMultiplayer
   class App; // Forward declaration of App class
   class AppState; // Forward declaration of AppState class
 
-  class StateFailedWriteIdentityToLocal : public AppState
+  class StateCreateLobbyForm : public AppState
   {
   public:
-    StateFailedWriteIdentityToLocal();
-    ~StateFailedWriteIdentityToLocal();
+    StateCreateLobbyForm();
+    ~StateCreateLobbyForm();
     void render(sf::RenderWindow&);
     FluffyMultiplayer::AppState* update(FluffyMultiplayer::App&,
                       std::queue<std::string>&,

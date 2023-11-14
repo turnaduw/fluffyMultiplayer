@@ -2,23 +2,23 @@
 
 namespace FluffyMultiplayer
 {
-  StateFailedLogin::StateFailedLogin()
+  StateJoinLobby::StateJoinLobby()
   {
 
   }
 
-  StateFailedLogin::~StateFailedLogin()
+  StateJoinLobby::~StateJoinLobby()
   {
 
   }
 
-  void StateFailedLogin::render(sf::RenderWindow& window)
+  void StateJoinLobby::render(sf::RenderWindow& window)
   {
 
   }
 
 
-  FluffyMultiplayer::AppState* StateFailedLogin::update(FluffyMultiplayer::App& app,
+  FluffyMultiplayer::AppState* StateJoinLobby::update(FluffyMultiplayer::App& app,
                     std::queue<std::string>& receiveDataQueue,
                     std::queue<std::string>& sendDataQueue)
 
@@ -27,7 +27,7 @@ namespace FluffyMultiplayer
   }
 
 
-  FluffyMultiplayer::AppState* StateFailedLogin::eventHandle(FluffyMultiplayer::App& app,
+  FluffyMultiplayer::AppState* StateJoinLobby::eventHandle(FluffyMultiplayer::App& app,
                             sf::Event& event)
   {
     return this;
