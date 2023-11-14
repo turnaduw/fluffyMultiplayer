@@ -2,6 +2,10 @@
 #define H_ALL_STATES
 // all states include here and just call this file into all states, on this way can easly access to all states as we want.
 
+//request and response list mayneeds in anyState
+#include "../include/server-request-response-list.h"
+
+
 #include "../include/states/stateReadServerList.h"
 #include "../include/states/stateBindPickPort.h"
 #include "../include/states/stateConnectingToServer.h"
