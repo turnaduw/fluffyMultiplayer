@@ -2,9 +2,12 @@
 
 namespace FluffyMultiplayer
 {
-  StateWaitForResponse::StateWaitForResponse()
+  StateWaitForResponse::StateWaitForResponse(std::string text, FluffyMultiplayer::AppState* retryState,
+                       FluffyMultiplayer::AppState* acceptedState,
+                       int responseCodeAccepts)
   {
-
+    std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
+    initSimpleText(fontPath, "Wait for response:\n"+text);
   }
 
   StateWaitForResponse::~StateWaitForResponse()
@@ -14,7 +17,7 @@ namespace FluffyMultiplayer
 
   void StateWaitForResponse::render(sf::RenderWindow& window)
   {
-
+    window.draw(theText);
   }
 
 

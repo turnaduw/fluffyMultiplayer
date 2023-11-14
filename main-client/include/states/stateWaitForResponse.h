@@ -11,7 +11,10 @@ namespace FluffyMultiplayer
   class StateWaitForResponse : public AppState
   {
   public:
-    StateWaitForResponse();
+    // StateWaitForResponse();
+    StateWaitForResponse(std::string text, FluffyMultiplayer::AppState* retryState,
+                         FluffyMultiplayer::AppState* acceptedState,
+                         int responseCodeAccepts);
     ~StateWaitForResponse();
     void render(sf::RenderWindow&);
     FluffyMultiplayer::AppState* update(FluffyMultiplayer::App&,
