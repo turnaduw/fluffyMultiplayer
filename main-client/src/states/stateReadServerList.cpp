@@ -4,7 +4,8 @@ namespace FluffyMultiplayer
 {
   StateReadServerList::StateReadServerList()
   {
-
+    std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
+    initSimpleText(fontPath, "Reading server list file\nplease wait...");
   }
 
   StateReadServerList::~StateReadServerList()
@@ -50,11 +51,7 @@ namespace FluffyMultiplayer
 
   void StateReadServerList::render(sf::RenderWindow& window)
   {
-    sf::Sprite bgsp;
-    sf::Texture bgtexture;
-    bgtexture.loadFromFile("./assets/states/bgState.png");
-    bgsp.setTexture(bgtexture);
-    window.draw(bgsp);
+    window.draw(theText);
   }
 
 
@@ -79,11 +76,7 @@ namespace FluffyMultiplayer
             return new FluffyMultiplayer::StateBindPickPort;
           }
         }
-        else
-        {
-          std::cout << "Unable to open file server list.\n";
-        }
-      return new FluffyMultiplayer::StateUnableToReadServerList;
+      return new FluffyMultiplayer::StateFailed("Unable to open/read file: serverlist.txt\n", this , new FluffyMultiplayer::StateEnd);
   }
 
 
