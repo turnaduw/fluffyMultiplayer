@@ -1,14 +1,16 @@
 #include "include/app.h"
 #include "include/config.h"
 #include <boost/thread.hpp>
-#include <boost/asio.hpp>
 #include <queue>
 #include <iostream>
 #include "include/dataType.h"
 
+
+#include <boost/asio.hpp>
+using boost::asio::ip::udp;
+
 //read from file
 #include <fstream>
-using boost::asio::ip::udp;
 
 
 #include "include/dataSecurity.h"
@@ -16,13 +18,14 @@ using boost::asio::ip::udp;
 
 namespace FluffyMultiplayer
 {
-  void sendData(udp::socket& socket,std::queue<std::string>& sendDataQueue, FluffyMultiplayer::AnAddress server, bool send_status=1)
+  void sendData(udp::socket& socket,std::queue<std::string>& sendDataQueue, const FluffyMultiplayer::App& app)
   {
     FluffyMultiplayer::DataSecurity dSecurity;
     std::string data;
     while(true)
     {
-      if(send_status && sendDataQueue.size()>=1)
+      FluffyMultiplayer::AnAddress server = app.getServerAddress();
+      if(app.getSendDataStatus() && sendDataQueue.size()>=1)
       {
           data = sendDataQueue.front();
           dSecurity.encryptData(data);
@@ -33,13 +36,14 @@ namespace FluffyMultiplayer
     }
   }
 
-  void receiveData(udp::socket& socket,std::queue<std::string>& receivedDataQueue, FluffyMultiplayer::AnAddress server, bool receive_status=1)
+  void receiveData(udp::socket& socket,std::queue<std::string>& receivedDataQueue, const FluffyMultiplayer::App& app)
   {
     FluffyMultiplayer::DataSecurity dSecurity;
     std::string data;
     while (true)
     {
-      if(receive_status)
+      FluffyMultiplayer::AnAddress server = app.getServerAddress();
+      if(app.getReceiveDataStatus())
       {
         char receive_data[MC_RECEIVE_BUFFER];
         udp::endpoint senderEndpoint;
@@ -88,8 +92,7 @@ int main()
         FluffyMultiplayer::receiveData,
         boost::ref(socket),
         boost::ref(receivedDataQueue),
-        app.getServerAddress(),
-        app.getReceiveDataStatus()
+        boost::ref(app)
       )
     );
 
@@ -100,8 +103,7 @@ int main()
         FluffyMultiplayer::sendData,
         boost::ref(socket),
         boost::ref(sendDataQueue),
-        app.getServerAddress(),
-        app.getSendDataStatus()
+        boost::ref(app)
       )
     );
 
