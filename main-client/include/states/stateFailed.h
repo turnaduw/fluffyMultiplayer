@@ -10,8 +10,18 @@ namespace FluffyMultiplayer
 
   class StateFailed : public AppState
   {
+  private:
+    int outputStateCount;
   public:
-    StateFailed();
+    StateFailed(std::string, FluffyMultiplayer::AppState* ok);
+
+    StateFailed(std::string, FluffyMultiplayer::AppState* retry,
+                             FluffyMultiplayer::AppState* cancel_or_quit);
+
+    StateFailed(std::string, FluffyMultiplayer::AppState* retry,
+                             FluffyMultiplayer::AppState* cancel_or_quit,
+                             FluffyMultiplayer::AppState* etc);
+
     ~StateFailed();
     void render(sf::RenderWindow&);
     FluffyMultiplayer::AppState* update(FluffyMultiplayer::App&,

@@ -2,10 +2,30 @@
 
 namespace FluffyMultiplayer
 {
-  StateFailed::StateFailed()
+  StateFailed::StateFailed(std::string text, FluffyMultiplayer::AppState* s)
   {
-
+    outputStateCount=1;
+    std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
+    initSimpleText(fontPath, "Failed: "+text);
   }
+
+  StateFailed::StateFailed(std::string text, FluffyMultiplayer::AppState* s1,
+                           FluffyMultiplayer::AppState* s2)
+ {
+   outputStateCount=2;
+   std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
+   initSimpleText(fontPath, "Failed: "+text);
+ }
+
+  StateFailed::StateFailed(std::string text, FluffyMultiplayer::AppState* s1,
+                           FluffyMultiplayer::AppState* s2,
+                           FluffyMultiplayer::AppState* s3)
+  {
+    outputStateCount=3;
+    std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
+    initSimpleText(fontPath, "Failed: "+text);
+  }
+
 
   StateFailed::~StateFailed()
   {
@@ -14,7 +34,7 @@ namespace FluffyMultiplayer
 
   void StateFailed::render(sf::RenderWindow& window)
   {
-
+    window.draw(theText);
   }
 
 
@@ -23,6 +43,23 @@ namespace FluffyMultiplayer
                     std::queue<std::string>& sendDataQueue)
 
   {
+    // switch (outputStateCount)
+    // {
+    //   case 1:
+    //   {
+    //
+    //   }break;
+    //
+    //   case 2:
+    //   {
+    //
+    //   }break;
+    //
+    //   case 3:
+    //   {
+    //
+    //   }break;
+    // }
     return this;
   }
 
