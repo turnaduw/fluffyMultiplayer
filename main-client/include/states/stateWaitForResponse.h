@@ -10,6 +10,16 @@ namespace FluffyMultiplayer
 
   class StateWaitForResponse : public AppState
   {
+  private:
+    int timeoutCounter;
+    FluffyMultiplayer::AppState* state1;
+    FluffyMultiplayer::AppState* state2;
+    int responseCodeAcceptor;
+    std::string text;
+    std::string data;
+    bool buttonRetryPressed;
+    sf::Text timeouttxt;
+    int checkResponseCode(const std::string&);
   public:
     // StateWaitForResponse();
     StateWaitForResponse(std::string text, FluffyMultiplayer::AppState* retryState,
