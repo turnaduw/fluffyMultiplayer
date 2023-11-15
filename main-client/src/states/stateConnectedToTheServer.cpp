@@ -4,7 +4,8 @@ namespace FluffyMultiplayer
 {
   StateConnectedToTheServer::StateConnectedToTheServer()
   {
-
+    std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
+    initSimpleText(fontPath, "connected to the server.");
   }
 
   StateConnectedToTheServer::~StateConnectedToTheServer()
@@ -14,7 +15,7 @@ namespace FluffyMultiplayer
 
   void StateConnectedToTheServer::render(sf::RenderWindow& window)
   {
-
+    window.draw(theText);
   }
 
 
