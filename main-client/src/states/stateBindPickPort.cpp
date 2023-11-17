@@ -69,7 +69,7 @@ namespace FluffyMultiplayer
       if(isBusy==false)
         return new FluffyMultiplayer::StateConnectingToServer;
     } while(maxTry<=MC_STATE_BIND_PICK_PORT_TRY_COUNT);
-    return new FluffyMultiplayer::StateFailed("Bind or Pick port for client.",this, new FluffyMultiplayer::StateEnd);
+    return new FluffyMultiplayer::StateFailed("Bind or Pick port for client.",this, new FluffyMultiplayer::StateEnd,nullptr);
   }
 
 

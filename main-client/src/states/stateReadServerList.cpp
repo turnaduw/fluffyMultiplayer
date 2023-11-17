@@ -76,7 +76,7 @@ namespace FluffyMultiplayer
             return new FluffyMultiplayer::StateBindPickPort;
           }
         }
-      return new FluffyMultiplayer::StateFailed("Unable to open/read file: serverlist.txt\n", this , new FluffyMultiplayer::StateEnd);
+      return new FluffyMultiplayer::StateFailed("Unable to open/read file: serverlist\n", this , new FluffyMultiplayer::StateEnd,nullptr);
   }
 
 

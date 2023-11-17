@@ -12,15 +12,19 @@ namespace FluffyMultiplayer
   {
   private:
     int outputStateCount;
+    FluffyMultiplayer::AppState* state1;
+    FluffyMultiplayer::AppState* state2;
+    FluffyMultiplayer::AppState* state3;
+    std::string* requestData;
   public:
-    StateFailed(std::string, FluffyMultiplayer::AppState* ok);
+    StateFailed(std::string, FluffyMultiplayer::AppState* ok,std::string*);
 
-    StateFailed(std::string, FluffyMultiplayer::AppState* retry,
-                             FluffyMultiplayer::AppState* cancel_or_quit);
+    StateFailed(std::string,FluffyMultiplayer::AppState* retry,
+                             FluffyMultiplayer::AppState* cancel_or_quit,std::string*);
 
-    StateFailed(std::string, FluffyMultiplayer::AppState* retry,
+    StateFailed(std::string,FluffyMultiplayer::AppState* retry,
                              FluffyMultiplayer::AppState* cancel_or_quit,
-                             FluffyMultiplayer::AppState* etc);
+                             FluffyMultiplayer::AppState* skip,std::string*);
 
     ~StateFailed();
     void render(sf::RenderWindow&);
