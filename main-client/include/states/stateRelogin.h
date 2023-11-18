@@ -3,6 +3,9 @@
 
 #include "../appState.h"
 
+//file existant include
+#include <boost/filesystem.hpp>
+
 namespace FluffyMultiplayer
 {
   class App; // Forward declaration of App class
@@ -10,6 +13,10 @@ namespace FluffyMultiplayer
 
   class StateRelogin : public AppState
   {
+  private:
+    std::string req;
+    int findIndexOfValue(const std::string&, std::string);
+    bool searchForIdentity(std::string&, const std::string&,std::string, std::string,std::string);
   public:
     StateRelogin();
     ~StateRelogin();

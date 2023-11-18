@@ -6,7 +6,11 @@
 //convert string to int
 #include <cstdlib>
 
+//read file
 #include <fstream>
+
+//file existant include
+#include <boost/filesystem.hpp>
 
 namespace FluffyMultiplayer
 {
@@ -17,10 +21,10 @@ namespace FluffyMultiplayer
   {
   private:
     int findIndexOfChar(const std::string&, const char&);
+    FluffyMultiplayer::AnAddress getIpAndPort(const std::string&, std::string, std::string);
   public:
     StateReadServerList();
     ~StateReadServerList();
-    FluffyMultiplayer::AnAddress getIpAndPort(const std::string&, std::string, std::string);
     void render(sf::RenderWindow&);
     FluffyMultiplayer::AppState* update(FluffyMultiplayer::App&,
                       std::queue<std::string>&,

@@ -2,7 +2,7 @@
 
 namespace FluffyMultiplayer
 {
-  StateWriteIdentityToLocal::StateWriteIdentityToLocal()
+  StateWriteIdentityToLocal::StateWriteIdentityToLocal(std::string identity)
   {
 
   }

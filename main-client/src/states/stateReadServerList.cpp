@@ -60,23 +60,26 @@ namespace FluffyMultiplayer
                     std::queue<std::string>& sendDataQueue)
 
   {
-        std::string line;
         std::string filename = CLIENT_LOCAL_SERVER_LIST_FILE;
-        std::ifstream serverListFile (filename);
-        if (serverListFile.is_open())
+        if(boost::filesystem::exists(filename))
         {
-          while ( getline (serverListFile,line) )
+          std::string line;
+          std::ifstream serverListFile (filename);
+          if (serverListFile.is_open())
           {
-            //sperate ip and port and add it into list
-            app.addServer( getIpAndPort(line,MC_IP_PORT_SEPARATOR,MC_IP_PORT_ENDLINE) );
-          }
-          serverListFile.close();
-          if(app.getServerListCount()>=1)
-          {
-            return new FluffyMultiplayer::StateBindPickPort;
+            while ( getline (serverListFile,line) )
+            {
+              //sperate ip and port and add it into list
+              app.addServer( getIpAndPort(line,MC_IP_PORT_SEPARATOR,MC_IP_PORT_ENDLINE) );
+            }
+            serverListFile.close();
+            if(app.getServerListCount()>=1)
+            {
+              return new FluffyMultiplayer::StateBindPickPort;
+            }
           }
         }
-      return new FluffyMultiplayer::StateFailed("Unable to open/read file: serverlist.txt\n", this , new FluffyMultiplayer::StateEnd);
+      return new FluffyMultiplayer::StateFailed("Unable to open/read file: serverlist\n", this , new FluffyMultiplayer::StateEnd,nullptr);
   }
 
 

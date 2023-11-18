@@ -6,6 +6,7 @@ namespace FluffyMultiplayer
   {
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
     initSimpleText(fontPath, "Sending connection request to the server\nplease wait..");
+    req = std::to_string(MC_REQUEST_CONNECT) + MC_REQUEST_CLOSER;
   }
 
   StateConnectingToServer::~StateConnectingToServer()
@@ -26,12 +27,10 @@ namespace FluffyMultiplayer
   {
     if(app.getServerListCount()<=0)
     {
-      return new FluffyMultiplayer::StateFailed("all servers tested, could not connect.", new FluffyMultiplayer::StateReadServerList, new FluffyMultiplayer::StateEnd);
+      return new FluffyMultiplayer::StateFailed("all servers tested, could not connect.",new FluffyMultiplayer::StateReadServerList, new FluffyMultiplayer::StateEnd,nullptr);
     }
-      app.setServer(app.popServerAddress());
-      std::string req = std::to_string(MC_REQUEST_CONNECT) + MC_REQUEST_CLOSER;
-      sendDataQueue.push(req);
-      return new FluffyMultiplayer::StateWaitForResponse("Connecting to the server\nplease wait..", this, new FluffyMultiplayer::StateConnectedToTheServer, MS_RESPONSE_CONNECTION_ACCEPTED);
+    app.setServer(app.popServerAddress());
+    return new FluffyMultiplayer::StateWaitForResponse("Connecting to the server\nplease wait..",req, this, new FluffyMultiplayer::StateConnectedToTheServer, MS_RESPONSE_CONNECTION_ACCEPTED);
   }
 
 
@@ -41,7 +40,7 @@ namespace FluffyMultiplayer
     switch(event.type)
     {
       //keyboard
-      case sf::Event::KeyPressed:
+        case sf::Event::KeyPressed:
         {
           if(event.key.code == sf::Keyboard::Enter || event.key.code == sf::Keyboard::Return)
           {

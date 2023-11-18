@@ -22,6 +22,25 @@ namespace FluffyMultiplayer
      int gameMode;
      std::string address;
   };
+
+  //for StateWaitForResponse forms
+  /*because these forms need to receive same args passed into
+      state if state has received error to refill form automatically.*/
+  struct LoginFormData
+  {
+      std::array<std::string,2> _inputs;
+      std::array<std::string,2> _errors;
+      bool _saveLoginStatus;
+      std::string identity;
+  };
+  // struct RegisterFormData
+  // {
+  //
+  // };
+  // struct CreateLobbyFormData
+  // {
+  //
+  // };
 }
 
 #endif

@@ -20,7 +20,6 @@
 #include "../include/states/stateLogout.h"
 #include "../include/states/stateCreateLobbyForm.h"
 #include "../include/states/stateJoinLobby.h"
-#include "../include/states/stateMessage.h"
 #include "../include/states/stateFailed.h"
 #include "../include/states/stateShowLobbyDetails.h"
 

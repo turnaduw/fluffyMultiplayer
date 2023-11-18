@@ -14,17 +14,44 @@ namespace FluffyMultiplayer
     int timeoutCounter;
     FluffyMultiplayer::AppState* state1;
     FluffyMultiplayer::AppState* state2;
+    FluffyMultiplayer::AppState* state3;
     int responseCodeAcceptor;
+    int responseCodeAcceptor2;
     std::string text;
-    std::string data;
-    bool buttonRetryPressed;
+    std::string receivedData;
+    std::string requestData;
     sf::Text timeouttxt;
+    bool requestSent;
     int checkResponseCode(const std::string&);
+
+    //login form
+    FluffyMultiplayer::LoginFormData* loginData_ptr;
+
+
   public:
-    // StateWaitForResponse();
-    StateWaitForResponse(std::string text, FluffyMultiplayer::AppState* retryState,
+    // StateWaitForResponse(std::string text,const std::string& request);
+    StateWaitForResponse(std::string text,const std::string& request,
+                         FluffyMultiplayer::AppState* retryState,
                          FluffyMultiplayer::AppState* acceptedState,
                          int responseCodeAccepts);
+    StateWaitForResponse(std::string text,const std::string& request,
+                        FluffyMultiplayer::AppState* retryState,
+                        FluffyMultiplayer::AppState* acceptedState,
+                        FluffyMultiplayer::AppState* acceptedState2,
+                        int responseCodeAccepts,int responseCodeAccepts2);
+
+
+    StateWaitForResponse(std::string text,
+      FluffyMultiplayer::AppState* retry,
+      FluffyMultiplayer::LoginFormData loginFormdata,
+      FluffyMultiplayer::AppState* banned,
+      FluffyMultiplayer::AppState* success,
+      int bannedCode,int successCode); //for loginForm
+
+
+    // StateWaitForResponse(FluffyMultiplayer::RegisterFormD); //for registerForm
+    // StateWaitForResponse(); //for CreateLobbyForm
+
     ~StateWaitForResponse();
     void render(sf::RenderWindow&);
     FluffyMultiplayer::AppState* update(FluffyMultiplayer::App&,

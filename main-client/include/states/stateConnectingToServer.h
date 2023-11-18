@@ -17,12 +17,10 @@ namespace FluffyMultiplayer
   class StateConnectingToServer : public AppState
   {
   private:
-    int findIndexOfChar(const std::string&, const char&);
+    std::string req;
   public:
     StateConnectingToServer();
     ~StateConnectingToServer();
-    int generateRandomNumber(int,int);
-    bool isPortBusy(int);
     void render(sf::RenderWindow&);
     FluffyMultiplayer::AppState* update(FluffyMultiplayer::App&,
                       std::queue<std::string>&,

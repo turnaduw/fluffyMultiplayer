@@ -2,28 +2,34 @@
 
 namespace FluffyMultiplayer
 {
-  StateFailed::StateFailed(std::string text, FluffyMultiplayer::AppState* s)
+  StateFailed::StateFailed(std::string text,FluffyMultiplayer::AppState* s,std::string* request=nullptr)
   {
     outputStateCount=1;
+    requestData = request;
+    state1=s;
+    state2=nullptr;
+    state3=nullptr;
+    requestData=request;
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
     initSimpleText(fontPath, "Failed: "+text);
   }
 
-  StateFailed::StateFailed(std::string text, FluffyMultiplayer::AppState* s1,
-                           FluffyMultiplayer::AppState* s2)
+  StateFailed::StateFailed(std::string text,FluffyMultiplayer::AppState* s1,
+                           FluffyMultiplayer::AppState* s2,std::string* request=nullptr)
  {
+   StateFailed(text,s1,request);
    outputStateCount=2;
-   std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
-   initSimpleText(fontPath, "Failed: "+text);
+   state2=s2;
+   state3=nullptr;
  }
 
-  StateFailed::StateFailed(std::string text, FluffyMultiplayer::AppState* s1,
+  StateFailed::StateFailed(std::string text,FluffyMultiplayer::AppState* s1,
                            FluffyMultiplayer::AppState* s2,
-                           FluffyMultiplayer::AppState* s3)
+                           FluffyMultiplayer::AppState* s3,std::string* request=nullptr)
   {
+    StateFailed(text,s1,s2,request);
     outputStateCount=3;
-    std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
-    initSimpleText(fontPath, "Failed: "+text);
+    state3=s3;
   }
 
 
@@ -43,23 +49,23 @@ namespace FluffyMultiplayer
                     std::queue<std::string>& sendDataQueue)
 
   {
-    // switch (outputStateCount)
-    // {
-    //   case 1:
-    //   {
-    //
-    //   }break;
-    //
-    //   case 2:
-    //   {
-    //
-    //   }break;
-    //
-    //   case 3:
-    //   {
-    //
-    //   }break;
-    // }
+    switch (outputStateCount)
+    {
+      case 1:
+      {
+
+      }break;
+
+      case 2:
+      {
+
+      }break;
+
+      case 3:
+      {
+
+      }break;
+    }
     return this;
   }
 
