@@ -6,9 +6,9 @@ namespace FluffyMultiplayer
   {
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
     initSimpleText(fontPath, "Trying to read local account files\nto re-login into your account.\nplease wait...");
-    req = std::to_string(MC_REQUEST_LOGIN) + ""; //insert empty username for request to relogin
-    req += std::to_string(MC_REQUEST_DELIMITER) + ""; //insert empty password for request to relogin
-    req += std::to_string(MC_REQUEST_DELIMITER);
+    req = std::to_string(MC_REQUEST_LOGIN)+ ""; //insert empty username for request to relogin
+    req += MC_REQUEST_DELIMITER ""; //insert empty password for request to relogin
+    req += MC_REQUEST_DELIMITER;
   }
 
   StateRelogin::~StateRelogin()
@@ -25,12 +25,14 @@ namespace FluffyMultiplayer
   int StateRelogin::findIndexOfValue(const std::string& str, std::string value)
   {
     size_t found = str.find(value);
-    if (found != string::npos)
+    if (found != std::string::npos)
       return static_cast<int>(found);
     return -1;
   }
 
-  bool StateRelogin::searchForIdentity(std::string& identity, const std::string& line,std::string key, std::string sperator,std::string endline)
+  bool StateRelogin::searchForIdentity(std::string& identity,
+                  const std::string& line,std::string key,
+                  std::string sperator,std::string endline)
   {
     int indexKey = findIndexOfValue(line,key);
     int indexEndline = findIndexOfValue(line,endline);
@@ -67,10 +69,21 @@ namespace FluffyMultiplayer
       {
         while ( getline (appConfigFile,line) )
         {
-          if(searchForIdentity(identity,line,MC_APP_CONFIG_SEPERATOR,MC_APP_CONFIG_ENDLINE))
+          if
+          (
+            searchForIdentity
+            (
+              identity,
+              line,
+              std::string(MC_APP_CONFIG_IDENTITY_KEY),
+              std::string(MC_APP_CONFIG_SEPERATOR),
+              std::string(MC_APP_CONFIG_ENDLINE)
+            )
+          )
           {
             appConfigFile.close();
-            req += identity + MC_REQUEST_CLOSER;
+            req += identity + MC_REQUEST_DELIMITER;
+            req += MC_REQUEST_CLOSER;
             return new FluffyMultiplayer::StateWaitForResponse //will break loop
             (
               "waiting for response from server\nto re-login into account.\nplease wait..",
