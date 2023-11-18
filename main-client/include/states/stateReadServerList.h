@@ -6,7 +6,11 @@
 //convert string to int
 #include <cstdlib>
 
+//read file
 #include <fstream>
+
+//file existant include
+#include <boost/filesystem.hpp>
 
 namespace FluffyMultiplayer
 {
