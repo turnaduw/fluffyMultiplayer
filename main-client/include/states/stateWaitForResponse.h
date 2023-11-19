@@ -27,6 +27,9 @@ namespace FluffyMultiplayer
     //login form
     FluffyMultiplayer::LoginFormData* loginData_ptr;
 
+    //register form
+    FluffyMultiplayer::RegisterFormData* registerData_ptr;
+
 
   public:
     // StateWaitForResponse(std::string text,const std::string& request);
@@ -41,12 +44,20 @@ namespace FluffyMultiplayer
                         int responseCodeAccepts,int responseCodeAccepts2);
 
 
-    StateWaitForResponse(std::string text,
+    //for loginForm
+    StateWaitForResponse(std::string _text,
       FluffyMultiplayer::AppState* retry,
       FluffyMultiplayer::LoginFormData loginFormdata,
       FluffyMultiplayer::AppState* banned,
       FluffyMultiplayer::AppState* success,
-      int bannedCode,int successCode); //for loginForm
+      int bannedCode,int successCode);
+
+    //for reigsterForm
+    StateWaitForResponse(std::string _text,
+      FluffyMultiplayer::AppState* retry,
+      FluffyMultiplayer::RegisterFormData registerFormData,
+      FluffyMultiplayer::AppState* success,
+      int successCode);
 
 
     // StateWaitForResponse(FluffyMultiplayer::RegisterFormD); //for registerForm
