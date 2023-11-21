@@ -4,6 +4,48 @@
 
 namespace FluffyMultiplayer
 {
+  void App::sendData()
+  {
+    FluffyMultiplayer::DataSecurity dSecurity;
+    std::string data;
+    while(true)
+    {
+      FluffyMultiplayer::AnAddress server = getServerAddress();
+      if(getSendDataStatus() && sendDataQueue.size()>=1)
+      {
+          data = sendDataQueue.front();
+          dSecurity.encryptData(data);
+          socket.send(data, server.ip, server.port);
+          sendDataQueue.pop();
+      }
+    }
+  }
+
+  void App::receiveData()
+  {
+    FluffyMultiplayer::DataSecurity dSecurity;
+    std::string data;
+    while (true)
+    {
+      FluffyMultiplayer::AnAddress server = getServerAddress();
+      if(getReceiveDataStatus())
+      {
+        char receive_data[MC_RECEIVE_BUFFER];
+        udp::endpoint senderEndpoint;
+        size_t receive_length = socket.receive(receive_data,senderEndpoint);
+
+        if(receive_length >=1 &&
+            senderEndpoint.address() == server.ip &&
+            senderEndpoint.port() == server.port)
+        {
+          data = std::string(receive_data,receive_length);
+          dSecurity.decryptData(data);
+          receivedDataQueue.push(data);
+        }
+      }
+    }
+  }
+
   void App::init()
   {
     currentState = new FluffyMultiplayer::StateReadServerList;
@@ -23,7 +65,7 @@ namespace FluffyMultiplayer
     return temp;
   }
 
-  void App::run(std::queue<std::string>& received_data_queue, std::queue<std::string>& send_data_queue)
+  void App::run()
   {
 
     while (appWindow.isOpen())
@@ -42,7 +84,7 @@ namespace FluffyMultiplayer
        // Clear the whole window before rendering a new frame
        appWindow.clear();
 
-       currentState = currentState->update((*this),received_data_queue,send_data_queue);
+       currentState = currentState->update((*this),receivedDataQueue,sendDataQueue);
 
        // Draw some graphical entities
        currentState->render(appWindow);
@@ -78,6 +120,7 @@ namespace FluffyMultiplayer
   void App::setAppPort(unsigned short port)
   {
       appPort = port;
+      socket.changePort(appPort);
   }
 
   unsigned short App::getAppPort() const
