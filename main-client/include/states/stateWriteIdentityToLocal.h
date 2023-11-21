@@ -3,6 +3,8 @@
 
 #include "../appState.h"
 
+#include <fstream>
+
 namespace FluffyMultiplayer
 {
   class App; // Forward declaration of App class
@@ -10,6 +12,8 @@ namespace FluffyMultiplayer
 
   class StateWriteIdentityToLocal : public AppState
   {
+  private:
+    std::string identity;
   public:
     StateWriteIdentityToLocal(std::string identity);
     ~StateWriteIdentityToLocal();

@@ -33,10 +33,12 @@ namespace FluffyMultiplayer
       bool _saveLoginStatus;
       std::string identity;
   };
-  // struct RegisterFormData
-  // {
-  //
-  // };
+  struct RegisterFormData
+  {
+    std::array<std::string,3> _inputs;
+    std::array<std::string,3> _errors;
+    std::string identity;
+  };
   // struct CreateLobbyFormData
   // {
   //

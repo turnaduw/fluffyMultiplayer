@@ -10,8 +10,18 @@ namespace FluffyMultiplayer
 
   class StateRegisterForm : public AppState
   {
+  private:
+    std::array<std::string,5> label_text;
+
+    FluffyMultiplayer::RegisterFormData form_data;
+    void initForm();
+
+    std::array<sf::Text,3> input_lables;
+    std::array<sf::Sprite,3> input_sprite;
+    std::array<sf::Text,6> form_labels;
   public:
     StateRegisterForm();
+    StateRegisterForm(FluffyMultiplayer::RegisterFormData);
     ~StateRegisterForm();
     void render(sf::RenderWindow&);
     FluffyMultiplayer::AppState* update(FluffyMultiplayer::App&,

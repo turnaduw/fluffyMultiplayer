@@ -11,7 +11,7 @@ namespace FluffyMultiplayer
   class StateMainPage : public AppState
   {
   public:
-    StateMainPage();
+    StateMainPage(std::string);
     ~StateMainPage();
     void render(sf::RenderWindow&);
     FluffyMultiplayer::AppState* update(FluffyMultiplayer::App&,

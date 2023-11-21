@@ -2,7 +2,7 @@
 
 namespace FluffyMultiplayer
 {
-  StateMainPage::StateMainPage()
+  StateMainPage::StateMainPage(std::string identity)
   {
 
   }
