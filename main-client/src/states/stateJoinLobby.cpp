@@ -4,7 +4,8 @@ namespace FluffyMultiplayer
 {
   StateJoinLobby::StateJoinLobby()
   {
-
+    std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
+    initSimpleText(fontPath, "state joinLobby");
   }
 
   StateJoinLobby::~StateJoinLobby()
@@ -14,7 +15,7 @@ namespace FluffyMultiplayer
 
   void StateJoinLobby::render(sf::RenderWindow& window)
   {
-
+    window.draw(theText);
   }
 
 

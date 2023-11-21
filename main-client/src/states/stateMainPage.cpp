@@ -4,7 +4,8 @@ namespace FluffyMultiplayer
 {
   StateMainPage::StateMainPage(std::string identity)
   {
-
+    std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
+    initSimpleText(fontPath, "state mainPage");
   }
 
   StateMainPage::~StateMainPage()
@@ -14,7 +15,7 @@ namespace FluffyMultiplayer
 
   void StateMainPage::render(sf::RenderWindow& window)
   {
-
+    window.draw(theText);
   }
 
 

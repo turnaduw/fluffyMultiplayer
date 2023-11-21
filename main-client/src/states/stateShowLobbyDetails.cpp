@@ -4,7 +4,8 @@ namespace FluffyMultiplayer
 {
   StateShowLobbyDetials::StateShowLobbyDetials()
   {
-
+    std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
+    initSimpleText(fontPath, "state StateShowLobbyDetials");
   }
 
   StateShowLobbyDetials::~StateShowLobbyDetials()
@@ -14,7 +15,7 @@ namespace FluffyMultiplayer
 
   void StateShowLobbyDetials::render(sf::RenderWindow& window)
   {
-
+    window.draw(theText);
   }
 
 

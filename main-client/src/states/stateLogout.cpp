@@ -4,7 +4,8 @@ namespace FluffyMultiplayer
 {
   StateLogout::StateLogout()
   {
-
+    std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
+    initSimpleText(fontPath, "state logout");
   }
 
   StateLogout::~StateLogout()
@@ -14,7 +15,7 @@ namespace FluffyMultiplayer
 
   void StateLogout::render(sf::RenderWindow& window)
   {
-
+    window.draw(theText);
   }
 
 
