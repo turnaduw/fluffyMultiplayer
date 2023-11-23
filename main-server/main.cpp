@@ -33,6 +33,7 @@ namespace FluffyMultiplayer
         if(receive_length >=1)
         {
           std::string data = std::string(receive_data,receive_length);
+          std::cout << "received data =" << data << " senderip= " << receive_endpoint.address() << ":" << receive_endpoint.port() << std::endl;
           temp_queue =
           {
             processD.separateCode(data),

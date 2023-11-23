@@ -46,6 +46,7 @@ namespace FluffyMultiplayer
     }
 
     FluffyMultiplayer::AnAddress tempAddress = {ip,port};
+    std::cout << "from serverlist.txt server selected is: " << ip << ":" << port << std::endl;
     return tempAddress;
   }
 
