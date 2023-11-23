@@ -4,7 +4,8 @@ namespace FluffyMultiplayer
 {
   StateEnd::StateEnd()
   {
-
+    std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
+    initSimpleText(fontPath, "state end");
   }
 
   StateEnd::~StateEnd()
@@ -14,7 +15,7 @@ namespace FluffyMultiplayer
 
   void StateEnd::render(sf::RenderWindow& window)
   {
-
+    window.draw(theText);
   }
 
 

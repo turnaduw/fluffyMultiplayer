@@ -4,7 +4,8 @@ namespace FluffyMultiplayer
 {
   StateCreateLobbyForm::StateCreateLobbyForm()
   {
-
+    std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
+    initSimpleText(fontPath, "state createLobbyForm");
   }
 
   StateCreateLobbyForm::~StateCreateLobbyForm()
@@ -14,7 +15,7 @@ namespace FluffyMultiplayer
 
   void StateCreateLobbyForm::render(sf::RenderWindow& window)
   {
-
+    window.draw(theText);
   }
 
 

@@ -17,6 +17,7 @@ namespace FluffyMultiplayer
           dSecurity.encryptData(data);
           socket.send(data, server.ip, server.port);
           sendDataQueue.pop();
+          std::cout << "data sent = " << data << ";~;" << std::endl;
       }
     }
   }
@@ -39,6 +40,7 @@ namespace FluffyMultiplayer
             senderEndpoint.port() == server.port)
         {
           data = std::string(receive_data,receive_length);
+          std::cout << "received data = " << data << ";~;" << std::endl;
           dSecurity.decryptData(data);
           receivedDataQueue.push(data);
         }

@@ -228,7 +228,8 @@ namespace FluffyMultiplayer
         }
       }
     }
-    return this; //keep this state
+    return state1;
+    // return this; //keep this state
   }
 
 
