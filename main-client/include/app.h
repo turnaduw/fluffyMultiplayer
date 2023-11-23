@@ -50,6 +50,11 @@ namespace FluffyMultiplayer
       App(): appWindow(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), WINDOW_TITLE)
         , socket(io_context,MC_DEFAULT_PORT)
       {
+        //to avoid socket erros due to socket.bind(port) is not completely set.
+        //need to set port then active these parts
+        setSendDataStatus(false);
+        setReceiveDataStatus(false);
+
         receive_thread = boost::thread(&FluffyMultiplayer::App::receiveData, this);
         send_thread = boost::thread(&FluffyMultiplayer::App::sendData, this);
 
