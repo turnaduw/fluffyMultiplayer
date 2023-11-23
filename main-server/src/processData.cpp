@@ -36,6 +36,7 @@ namespace FluffyMultiplayer
 
     dataSecurity.encryptData(message);
 
+    std::cout << "send data =" << message << " receiver=" << receiver.address() << ":" << receiver.port() << std::endl;
     socket.send_to(boost::asio::buffer(message), receiver);
   }
 
@@ -121,14 +122,21 @@ namespace FluffyMultiplayer
   void ProcessData::process(udp::socket& socket, std::queue<FluffyMultiplayer::SocketDataQueue>& queue, FluffyMultiplayer::FluffyDatabase& db)
   {
       FluffyMultiplayer::SocketDataQueue currentItem;
+
+
+      bool elementProcessed = false; //a flag to avoid pop un-processed element
+      std::string receivedData;
+      boost::asio::ip::address senderIp;
+      unsigned short senderPort;
+
       for(int i=0; i<queue.size(); i++)
       {
         currentItem = queue.front();
-
-        bool elementProcessed = false; //a flag to avoid pop un-processed element
-        std::string receivedData = currentItem.data;
-        boost::asio::ip::address senderIp = currentItem.ip;
-        unsigned short senderPort = currentItem.port;
+        elementProcessed = false; //a flag to avoid pop un-processed element
+        receivedData = currentItem.data;
+        senderIp = currentItem.ip;
+        senderPort = currentItem.port;
+        std::cout << "senderIp="<<senderIp << " senderPort=" << senderPort << " received data=" << receivedData << std::endl;
         udp::endpoint receiverEndpoint(senderIp,senderPort);
 
         if(receivedData.length()>MS_RECEIVED_DATA_MINIMUM_LENGTH)
@@ -151,7 +159,7 @@ namespace FluffyMultiplayer
         };
 
 
-
+        std::cout << "process currentItem.code=" << currentItem.code << ";~;" << std::endl;
         switch (currentItem.code)
         {
           case MS_REQUEST_CONNECT:
