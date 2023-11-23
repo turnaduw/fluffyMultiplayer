@@ -117,7 +117,7 @@ namespace FluffyMultiplayer
     timeouttxt.setString("timedout press enter to retry.");
   }
 
-  StateWaitForResponse::StateWaitForResponse(std::string text,
+  StateWaitForResponse::StateWaitForResponse(std::string _text,
                       const std::string& request,
                       FluffyMultiplayer::AppState* retryState,
                       FluffyMultiplayer::AppState* acceptedState,
@@ -127,6 +127,13 @@ namespace FluffyMultiplayer
     StateWaitForResponse(text,request,retryState,acceptedState,responseCodeAccepts);
     responseCodeAcceptor2 = responseCodeAccepts2;
     state3 = acceptedState2;
+
+    std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
+    text = "Wait for response:\n"+ _text;
+    initSimpleText(fontPath, text);
+
+    timeouttxt.setFont(theFont);
+    timeouttxt.setString("timedout press enter to retry.");
   }
 
 
@@ -140,6 +147,7 @@ namespace FluffyMultiplayer
     std::string tempStr = _data.substr(MC_RESPONSE_POSITION_MIN_INDEX,MC_RESPONSE_POSITION_MAX_INDEX);
     const char* temp = tempStr.c_str();
     int code = std::atoi(temp);
+    std::cout << "checkResponseCode=" << code << ";~;" << std::endl;
     if(code>=MC_MINUMUM_RESPONSE_CODE)
       return code;
     return -1;
@@ -164,7 +172,11 @@ namespace FluffyMultiplayer
 
   {
     if(requestSent==false)
+    {
       sendDataQueue.push(requestData);
+      requestSent=true;
+    }
+
     //do counter minus to make timeout zero and left this state.
     if(timeoutCounter>0)
     {
@@ -228,8 +240,7 @@ namespace FluffyMultiplayer
         }
       }
     }
-    return state1;
-    // return this; //keep this state
+    return this; //keep this state
   }
 
 
