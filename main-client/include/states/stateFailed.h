@@ -16,6 +16,7 @@ namespace FluffyMultiplayer
     FluffyMultiplayer::AppState* state2;
     FluffyMultiplayer::AppState* state3;
     std::string* requestData;
+    std::string text;
   public:
     StateFailed(std::string, FluffyMultiplayer::AppState* ok,std::string*);
 
