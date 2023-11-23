@@ -29,6 +29,11 @@ namespace FluffyMultiplayer
     {
       return new FluffyMultiplayer::StateFailed("all servers tested, could not connect.",new FluffyMultiplayer::StateReadServerList, new FluffyMultiplayer::StateEnd,nullptr);
     }
+
+    //enable status for receive and send
+    app.setReceiveDataStatus(true);
+    app.setSendDataStatus(true);
+
     app.setServer(app.popServerAddress());
     return new FluffyMultiplayer::StateWaitForResponse("Connecting to the server\nplease wait..",req, this, new FluffyMultiplayer::StateConnectedToTheServer, MS_RESPONSE_CONNECTION_ACCEPTED);
   }
