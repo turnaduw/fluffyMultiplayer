@@ -22,7 +22,7 @@ namespace FluffyMultiplayer
       UdpSocket(boost::asio::io_context& io_context, unsigned short port)
           : socket(io_context, udp::endpoint(udp::v4(), port))
       {
-
+        socket.non_blocking(true);
       }
       ~UdpSocket();
 

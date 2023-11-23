@@ -6,20 +6,20 @@ namespace FluffyMultiplayer
 {
   void App::sendData()
   {
-    FluffyMultiplayer::DataSecurity dSecurity;
-    std::string data;
-    while(true)
-    {
-      FluffyMultiplayer::AnAddress server = getServerAddress();
-      if(getSendDataStatus() && sendDataQueue.size()>=1)
+      FluffyMultiplayer::DataSecurity dSecurity;
+      std::string data;
+      while(true)
       {
+        if(getSendDataStatus() && sendDataQueue.size()>=1)
+        {
+          FluffyMultiplayer::AnAddress server = getServerAddress();
           data = sendDataQueue.front();
           dSecurity.encryptData(data);
           socket.send(data, server.ip, server.port);
           sendDataQueue.pop();
-          std::cout << "data sent = " << data << ";~;" << std::endl;
+          std::cout << "data sent = " << data << " to " << server.ip << ":" << server.port << " size() = " << sendDataQueue.size() << std::endl;
+        }
       }
-    }
   }
 
   void App::receiveData()
@@ -28,24 +28,44 @@ namespace FluffyMultiplayer
     std::string data;
     while (true)
     {
-      FluffyMultiplayer::AnAddress server = getServerAddress();
-      if(getReceiveDataStatus())
+      try
       {
-        char receive_data[MC_RECEIVE_BUFFER];
-        udp::endpoint senderEndpoint;
-        size_t receive_length = socket.receive(receive_data,senderEndpoint);
-
-        if(receive_length >=1 &&
+        if(getReceiveDataStatus())
+        {
+          FluffyMultiplayer::AnAddress server = getServerAddress();
+          char receive_data[MC_RECEIVE_BUFFER];
+          udp::endpoint senderEndpoint;
+          size_t receive_length = socket.receive(receive_data,senderEndpoint);
+          if(receive_length >=1)
+          {
+            std::cout << "server ip,port=" << server.ip << ":" << server.port << std::endl;
+            std::cout << "sender ip,port=" << senderEndpoint.address() << ":" << senderEndpoint.port() << std::endl;
+          }
+          if(receive_length >=1 &&
             senderEndpoint.address() == server.ip &&
             senderEndpoint.port() == server.port)
-        {
-          data = std::string(receive_data,receive_length);
-          std::cout << "received data = " << data << ";~;" << std::endl;
-          dSecurity.decryptData(data);
-          receivedDataQueue.push(data);
+            {
+              data = std::string(receive_data,receive_length);
+              std::cout << "received data = " << data << ";~;" << std::endl;
+              dSecurity.decryptData(data);
+              receivedDataQueue.push(data);
+            }
+          }
         }
-      }
-    }
+        catch (std::exception& e)
+        {
+            std::string errorMsg = e.what();
+            if (errorMsg.find("receive_from: Resource temporarily unavailable") != std::string::npos)
+            {
+                continue;
+            }
+            else
+            {
+                throw;
+            }
+        }
+  }
+
   }
 
   void App::init()
