@@ -2,10 +2,11 @@
 
 namespace FluffyMultiplayer
 {
-  StateJoinLobby::StateJoinLobby()
+  StateJoinLobby::StateJoinLobby(FluffyMultiplayer::AnAddress target_address)
   {
+    gameServerAddress = target_address;
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
-    initSimpleText(fontPath, "state joinLobby");
+    initSimpleText(fontPath, "state joinLobby\n game has been launched.");
   }
 
   StateJoinLobby::~StateJoinLobby()
@@ -24,6 +25,7 @@ namespace FluffyMultiplayer
                     std::queue<std::string>& sendDataQueue)
 
   {
+    app.openGame(gameServerAddress);
     return this;
   }
 

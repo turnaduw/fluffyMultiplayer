@@ -10,8 +10,10 @@ namespace FluffyMultiplayer
 
   class StateJoinLobby : public AppState
   {
+  private:
+    FluffyMultiplayer::AnAddress gameServerAddress;
   public:
-    StateJoinLobby();
+    StateJoinLobby(FluffyMultiplayer::AnAddress);
     ~StateJoinLobby();
     void render(sf::RenderWindow&);
     FluffyMultiplayer::AppState* update(FluffyMultiplayer::App&,

@@ -53,9 +53,7 @@ namespace FluffyMultiplayer
         {
           if(event.key.code == sf::Keyboard::Enter || event.key.code == sf::Keyboard::Return)
           {
-            //join game
-            std::cout << "\njoin lobby has been confirmed.\n";
-            app.openGame(lobby.address);
+            return new FluffyMultiplayer::StateJoinLobby(lobby.address);
           }
           else
           {
