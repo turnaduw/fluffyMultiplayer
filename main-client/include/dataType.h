@@ -11,17 +11,17 @@ namespace FluffyMultiplayer
   };
   struct LobbyData
   {
-     int id;
      bool isLocked;
      bool isVoiceChatForbidden;
      bool isTextChatForbidden;
      bool isSpecterForbidden;
      bool lobbyStatusInGame;
      bool showLobbyInList;
+     int id;
      int maxPlayers;
      int currentPlayers;
      int gameMode;
-     AnAddress address;
+     FluffyMultiplayer::AnAddress address;
   };
 
   //for StateWaitForResponse forms

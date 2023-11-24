@@ -30,6 +30,9 @@ namespace FluffyMultiplayer
     //register form
     FluffyMultiplayer::RegisterFormData* registerData_ptr;
 
+    //get lobby info by lobby id
+    FluffyMultiplayer::LobbyData* lobbyData_ptr;
+
 
   public:
     // StateWaitForResponse(std::string text,const std::string& request);

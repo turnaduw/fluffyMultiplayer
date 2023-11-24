@@ -11,6 +11,7 @@ namespace FluffyMultiplayer
     int bannedCode,int successCode)
     {
       registerData_ptr=nullptr;
+      lobbyData_ptr=nullptr;
       //hold passed data into varaible for when need to pass into another state.
       loginData_ptr = new FluffyMultiplayer::LoginFormData;
       loginData_ptr->_inputs = _loginData._inputs;
@@ -56,6 +57,7 @@ namespace FluffyMultiplayer
     int successCode)
     {
       loginData_ptr=nullptr;
+      lobbyData_ptr=nullptr;
       //hold passed data into varaible for when need to pass into another state.
       registerData_ptr = new FluffyMultiplayer::RegisterFormData;
       registerData_ptr->_inputs = _registerFormData._inputs;
@@ -91,6 +93,60 @@ namespace FluffyMultiplayer
     }
 
 
+    //get lobby info by lobby id
+    StateWaitForResponse::StateWaitForResponse(std::string _text,
+      FluffyMultiplayer::AppState* retry,
+      FluffyMultiplayer::LobbyData _lobbyInfo,
+      FluffyMultiplayer::AppState* notfoundState,
+      int notfoundCode,
+      FluffyMultiplayer::AppState* successState,
+      int successCode)
+      {
+        registerData_ptr=nullptr;
+        loginData_ptr=nullptr;
+        //hold passed data into varaible for when need to pass into another state.
+        lobbyData_ptr = new FluffyMultiplayer::LobbyData;
+        lobbyData_ptr->id = _lobbyInfo.id;
+        lobbyData_ptr->isLocked = _lobbyInfo.isLocked;
+        lobbyData_ptr->isVoiceChatForbidden = _lobbyInfo.isVoiceChatForbidden;
+        lobbyData_ptr->isTextChatForbidden = _lobbyInfo.isTextChatForbidden;
+        lobbyData_ptr->isSpecterForbidden = _lobbyInfo.isSpecterForbidden;
+        lobbyData_ptr->lobbyStatusInGame = _lobbyInfo.lobbyStatusInGame;
+        lobbyData_ptr->showLobbyInList = _lobbyInfo.showLobbyInList;
+        lobbyData_ptr->maxPlayers = _lobbyInfo.maxPlayers;
+        lobbyData_ptr->currentPlayers = _lobbyInfo.currentPlayers;
+        lobbyData_ptr->gameMode = _lobbyInfo.gameMode;
+        lobbyData_ptr->address = _lobbyInfo.address;
+
+        requestSent=false; //turn off flag, will help to run receiveDataQueue.push once
+        timeoutCounter=MC_REQUEST_TIMEOUT;
+
+        //retry button
+        state1 = retry;
+
+        //second button
+        state2 = notfoundState;
+        responseCodeAcceptor = notfoundCode;
+
+        //third button
+        state3 = successState;
+        responseCodeAcceptor2 = successCode;
+
+        //split data from LoginFormData into a string req
+        std::string temp = std::to_string(MC_REQUEST_GET_LOBBY_INFO) + MC_REQUEST_DELIMITER;
+        temp += MC_REQUEST_CLOSER;
+        requestData = temp;
+
+
+        std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
+        text = "Wait for response:\n"+ _text;
+        initSimpleText(fontPath, text);
+
+        timeouttxt.setFont(theFont);
+        timeouttxt.setString("timedout press enter to retry.");
+      }
+
+
   StateWaitForResponse::StateWaitForResponse(std::string _text,
                        const std::string& request,
                        FluffyMultiplayer::AppState* retryState,
@@ -99,6 +155,7 @@ namespace FluffyMultiplayer
   {
     loginData_ptr=nullptr;
     registerData_ptr = nullptr;
+    lobbyData_ptr=nullptr;
 
     requestSent=false;
     timeoutCounter=MC_REQUEST_TIMEOUT;
@@ -190,9 +247,17 @@ namespace FluffyMultiplayer
         receiveDataQueue.pop();
         int resultRC = checkResponseCode(receivedData);
         if(resultRC == responseCodeAcceptor)
+        {
+          if(registerData_ptr!=nullptr)
+            app.setIdentity(registerData_ptr->identity); //save identity for app
           return state2; //accepted (first state passed) successfully
+        }
         else if(resultRC == responseCodeAcceptor2 && state3!=nullptr)
+        {
+          if(loginData_ptr!=nullptr)
+            app.setIdentity(loginData_ptr->identity); //save identity for app
           return state3; //second state passed successfully
+        }
         else
         {
           //login form
