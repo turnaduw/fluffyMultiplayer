@@ -33,6 +33,9 @@ namespace FluffyMultiplayer
     //get lobby info by lobby id
     FluffyMultiplayer::LobbyData* lobbyData_ptr;
 
+    //create lobby form
+    FluffyMultiplayer::CreateLobbyFormData* createLobbyData_ptr;
+
 
   public:
     // StateWaitForResponse(std::string text,const std::string& request);
@@ -62,9 +65,26 @@ namespace FluffyMultiplayer
       FluffyMultiplayer::AppState* success,
       int successCode);
 
+    //for (get lobby info by lobby id)
+    StateWaitForResponse(std::string _text,
+      FluffyMultiplayer::AppState* retry,
+      FluffyMultiplayer::LobbyData _lobbyInfo,
+      FluffyMultiplayer::AppState* notfoundState,
+      int notfoundCode,
+      FluffyMultiplayer::AppState* successState,
+      int successCode);
 
-    // StateWaitForResponse(FluffyMultiplayer::RegisterFormD); //for registerForm
-    // StateWaitForResponse(); //for CreateLobbyForm
+
+    //for CreateLobbyForm
+    StateWaitForResponse(std::string _text,
+      FluffyMultiplayer::LobbyData _lobbyInfo,
+      FluffyMultiplayer::AppState* retry,
+      FluffyMultiplayer::AppState* notfoundState,
+      int notfoundCode,
+      FluffyMultiplayer::AppState* successState,
+      int successCode);
+
+
 
     ~StateWaitForResponse();
     void render(sf::RenderWindow&);
