@@ -75,7 +75,7 @@ namespace FluffyMultiplayer
 
       void init();
       void run();
-      void clearIdentity()
+      void clearIdentity();
       void setIdentity(std::string);
       std::string getIdentity() const;
       FluffyMultiplayer::AnAddress getServerAddress() const;

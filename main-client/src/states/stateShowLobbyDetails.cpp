@@ -2,7 +2,14 @@
 
 namespace FluffyMultiplayer
 {
-  StateShowLobbyDetials::StateShowLobbyDetials(FluffyMultiplayer::LobbyData selectedLobby)
+
+  std::string StateShowLobbyDetails::boolToString(bool b)
+  {
+    std::string result = (b ? "true" : "false");
+    return result;
+  }
+
+  StateShowLobbyDetails::StateShowLobbyDetails(FluffyMultiplayer::LobbyData selectedLobby)
   {
     lobby = selectedLobby;
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
@@ -11,30 +18,30 @@ namespace FluffyMultiplayer
     lobbyAsText += "\nlobby maxplayers: " + std::to_string(selectedLobby.maxPlayers);
     lobbyAsText += "\nlobby currentplayers: " + std::to_string(selectedLobby.currentPlayers);
     lobbyAsText += "\nlobby gameMode: " + std::to_string(selectedLobby.gameMode);
-    lobbyAsText += "\nlobby address: " + std::to_string(selectedLobby.address.ip) + ":" + std::to_string(selectedLobby.address.port);
-    lobbyAsText += "\nis lobby locked:" + (selectedLobby.isLocked? "yes" : "no");
-    lobbyAsText += "\nis voice chat forbidden:" + (selectedLobby.isVoiceChatForbidden? "yes" : "no");
-    lobbyAsText += "\nis text chat forbidden:" + (selectedLobby.isTextChatForbidden? "yes" : "no");
-    lobbyAsText += "\nis specter forbidden:" + (selectedLobby.isSpecterForbidden? "yes" : "no");
-    lobbyAsText += "\nis lobby in-game:" + (selectedLobby.lobbyStatusInGame? "yes" : "no");
-    lobbyAsText += "\nlobby will show in lobbyList: " + (selectedLobby.showLobbyInList? "yes" : "no");
+    lobbyAsText += "\nlobby address: " + selectedLobby.address.ip.to_string() + ":" + std::to_string(selectedLobby.address.port);
+    lobbyAsText += "\nis lobby locked:" + boolToString(selectedLobby.isLocked);
+    lobbyAsText += "\nis voice chat forbidden:" + boolToString(selectedLobby.isVoiceChatForbidden);
+    lobbyAsText += "\nis text chat forbidden:" + boolToString(selectedLobby.isTextChatForbidden);
+    lobbyAsText += "\nis specter forbidden:" + boolToString(selectedLobby.isSpecterForbidden);
+    lobbyAsText += "\nis lobby in-game:" + boolToString(selectedLobby.lobbyStatusInGame);
+    lobbyAsText += "\nlobby will show in lobbyList: " + boolToString(selectedLobby.showLobbyInList);
 
-    std::string final=   "state StateShowLobbyDetials\nare you sure to join this lobby?\npress enter to join other keys to cancel.\n\nlobby=\n" + lobbyAsText;
+    std::string final=   "state StateShowLobbyDetails\nare you sure to join this lobby?\npress enter to join other keys to cancel.\n\nlobby=\n" + lobbyAsText;
     initSimpleText(fontPath,final);
   }
 
-  StateShowLobbyDetials::~StateShowLobbyDetials()
+  StateShowLobbyDetails::~StateShowLobbyDetails()
   {
 
   }
 
-  void StateShowLobbyDetials::render(sf::RenderWindow& window)
+  void StateShowLobbyDetails::render(sf::RenderWindow& window)
   {
     window.draw(theText);
   }
 
 
-  FluffyMultiplayer::AppState* StateShowLobbyDetials::update(FluffyMultiplayer::App& app,
+  FluffyMultiplayer::AppState* StateShowLobbyDetails::update(FluffyMultiplayer::App& app,
                     std::queue<std::string>& receiveDataQueue,
                     std::queue<std::string>& sendDataQueue)
 
@@ -43,7 +50,7 @@ namespace FluffyMultiplayer
   }
 
 
-  FluffyMultiplayer::AppState* StateShowLobbyDetials::eventHandle(FluffyMultiplayer::App& app,
+  FluffyMultiplayer::AppState* StateShowLobbyDetails::eventHandle(FluffyMultiplayer::App& app,
                             sf::Event& event)
   {
     switch(event.type)

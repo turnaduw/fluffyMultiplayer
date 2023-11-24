@@ -8,13 +8,14 @@ namespace FluffyMultiplayer
   class App; // Forward declaration of App class
   class AppState; // Forward declaration of AppState class
 
-  class StateShowLobbyDetials : public AppState
+  class StateShowLobbyDetails : public AppState
   {
   private:
     FluffyMultiplayer::LobbyData lobby;
   public:
-    StateShowLobbyDetials(FluffyMultiplayer::LobbyData);
-    ~StateShowLobbyDetials();
+    StateShowLobbyDetails(FluffyMultiplayer::LobbyData);
+    ~StateShowLobbyDetails();
+    std::string boolToString(bool);
     void render(sf::RenderWindow&);
     FluffyMultiplayer::AppState* update(FluffyMultiplayer::App&,
                       std::queue<std::string>&,

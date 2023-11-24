@@ -117,8 +117,8 @@ namespace FluffyMultiplayer
       for(int k=0; k<=10; k++) //each lobby has 11 element
       {
         posDelimiter = findIndexOfDelimiter(receivedData,MC_REQUEST_DELIMITER);
-        temp[k] = receiveData.substr(lastPosDelimiter,posDelimiter);
-        receiveData = receiveData.substr(posDelimiter,receiveData.length());
+        temp[k] = receivedData.substr(lastPosDelimiter,posDelimiter);
+        receivedData = receivedData.substr(posDelimiter,receivedData.length());
       }
       lobbyList.push_back(convertStringToLobby(temp));
     }
@@ -214,7 +214,7 @@ namespace FluffyMultiplayer
           return new FluffyMultiplayer::StateWaitForResponse
           (
             "waiting for response from server\nto receive entered lobby id info.\nplease wait..",
-            new FluffyMultiplayer::StateFailed("failed to receive response",this, new FluffyMultiplayer::StateEnd),
+            new FluffyMultiplayer::StateFailed("failed to receive response",this, new FluffyMultiplayer::StateEnd,nullptr),
             selectedLobby,
             new FluffyMultiplayer::StateFailed("that entered lobby id not found.", this,nullptr),
             MS_ERROR_FAILED_TO_GET_LOBBY_INFO_LOBBY_NOT_FOUND,

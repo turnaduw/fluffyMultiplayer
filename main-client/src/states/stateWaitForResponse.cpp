@@ -195,7 +195,7 @@ namespace FluffyMultiplayer
         temp += std::to_string(createLobbyData_ptr->isTextChatAllowed) + MC_REQUEST_DELIMITER;
         temp += std::to_string(createLobbyData_ptr->isVoiceChatAllowed) + MC_REQUEST_DELIMITER;
         temp += std::to_string(createLobbyData_ptr->isSpecterAllowed) + MC_REQUEST_DELIMITER;
-        temp += std::to_string(createLobbyData_ptr->password) + MC_REQUEST_DELIMITER;
+        temp += createLobbyData_ptr->password + MC_REQUEST_DELIMITER;
         temp += MC_REQUEST_CLOSER;
         requestData = temp;
 
@@ -321,6 +321,12 @@ namespace FluffyMultiplayer
         {
           if(loginData_ptr!=nullptr)
             app.setIdentity(loginData_ptr->identity); //save identity for app
+          if(createLobbyData_ptr!=nullptr)
+          {
+            std::string tempAd = createLobbyData_ptr->address.ip.to_string();
+            tempAd += std::to_string(createLobbyData_ptr->address.port);
+            return new FluffyMultiplayer::StateJoinLobby(tempAd);
+          }
           return state3; //second state passed successfully
         }
 

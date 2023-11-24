@@ -77,10 +77,10 @@ namespace FluffyMultiplayer
 
     //for CreateLobbyForm
     StateWaitForResponse(std::string _text,
-      FluffyMultiplayer::LobbyData _lobbyInfo,
       FluffyMultiplayer::AppState* retry,
-      FluffyMultiplayer::AppState* notfoundState,
-      int notfoundCode,
+      FluffyMultiplayer::CreateLobbyFormData _lobby,
+      FluffyMultiplayer::AppState* accountlimited,
+      int accountlimitedCode,
       FluffyMultiplayer::AppState* successState,
       int successCode);
 
