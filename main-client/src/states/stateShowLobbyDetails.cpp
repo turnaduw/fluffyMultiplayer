@@ -4,8 +4,23 @@ namespace FluffyMultiplayer
 {
   StateShowLobbyDetials::StateShowLobbyDetials(FluffyMultiplayer::LobbyData selectedLobby)
   {
+    lobby = selectedLobby;
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
-    initSimpleText(fontPath, "state StateShowLobbyDetials");
+    std::string lobbyAsText = "------------------------------------------------";
+    lobbyAsText += "\nlobby id: " + std::to_string(selectedLobby.id);
+    lobbyAsText += "\nlobby maxplayers: " + std::to_string(selectedLobby.maxPlayers);
+    lobbyAsText += "\nlobby currentplayers: " + std::to_string(selectedLobby.currentPlayers);
+    lobbyAsText += "\nlobby gameMode: " + std::to_string(selectedLobby.gameMode);
+    lobbyAsText += "\nlobby address: " + std::to_string(selectedLobby.address.ip) + ":" + std::to_string(selectedLobby.address.port);
+    lobbyAsText += "\nis lobby locked:" + (selectedLobby.isLocked? "yes" : "no");
+    lobbyAsText += "\nis voice chat forbidden:" + (selectedLobby.isVoiceChatForbidden? "yes" : "no");
+    lobbyAsText += "\nis text chat forbidden:" + (selectedLobby.isTextChatForbidden? "yes" : "no");
+    lobbyAsText += "\nis specter forbidden:" + (selectedLobby.isSpecterForbidden? "yes" : "no");
+    lobbyAsText += "\nis lobby in-game:" + (selectedLobby.lobbyStatusInGame? "yes" : "no");
+    lobbyAsText += "\nlobby will show in lobbyList: " + (selectedLobby.showLobbyInList? "yes" : "no");
+
+    std::string final=   "state StateShowLobbyDetials\nare you sure to join this lobby?\npress enter to join other keys to cancel.\n\nlobby=\n" + lobbyAsText;
+    initSimpleText(fontPath,final);
   }
 
   StateShowLobbyDetials::~StateShowLobbyDetials()
@@ -31,6 +46,24 @@ namespace FluffyMultiplayer
   FluffyMultiplayer::AppState* StateShowLobbyDetials::eventHandle(FluffyMultiplayer::App& app,
                             sf::Event& event)
   {
+    switch(event.type)
+    {
+      //keyboard
+      case sf::Event::KeyPressed:
+        {
+          if(event.key.code == sf::Keyboard::Enter || event.key.code == sf::Keyboard::Return)
+          {
+            //join game
+            std::cout << "\njoin lobby has been confirmed.\n";
+            app.openGame(lobby.address);
+          }
+          else
+          {
+            return new FluffyMultiplayer::StateMainPage;
+          }
+        }
+        break;
+    }
     return this;
   }
 }

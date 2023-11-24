@@ -10,6 +10,8 @@ namespace FluffyMultiplayer
 
   class StateShowLobbyDetials : public AppState
   {
+  private:
+    FluffyMultiplayer::LobbyData lobby;
   public:
     StateShowLobbyDetials(FluffyMultiplayer::LobbyData);
     ~StateShowLobbyDetials();

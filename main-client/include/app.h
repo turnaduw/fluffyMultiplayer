@@ -89,6 +89,7 @@ namespace FluffyMultiplayer
       bool getSendDataStatus() const;
       void setReceiveDataStatus(bool);
       void setSendDataStatus(bool);
+      void openGame(FluffyMultiplayer::AnAddress);
   };
 }
 
