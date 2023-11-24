@@ -10,8 +10,11 @@ namespace FluffyMultiplayer
 
   class StateCreateLobbyForm : public AppState
   {
+  private:
+    FluffyMultiplayer::CreateLobbyFormData lobbyData;
   public:
     StateCreateLobbyForm();
+    StateCreateLobbyForm(FluffyMultiplayer::CreateLobbyFormData);
     ~StateCreateLobbyForm();
     void render(sf::RenderWindow&);
     FluffyMultiplayer::AppState* update(FluffyMultiplayer::App&,

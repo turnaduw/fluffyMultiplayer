@@ -12,6 +12,7 @@ namespace FluffyMultiplayer
     {
       registerData_ptr=nullptr;
       lobbyData_ptr=nullptr;
+      createLobbyData_ptr=nullptr;
       //hold passed data into varaible for when need to pass into another state.
       loginData_ptr = new FluffyMultiplayer::LoginFormData;
       loginData_ptr->_inputs = _loginData._inputs;
@@ -57,6 +58,7 @@ namespace FluffyMultiplayer
     int successCode)
     {
       loginData_ptr=nullptr;
+      createLobbyData_ptr=nullptr;
       lobbyData_ptr=nullptr;
       //hold passed data into varaible for when need to pass into another state.
       registerData_ptr = new FluffyMultiplayer::RegisterFormData;
@@ -103,6 +105,7 @@ namespace FluffyMultiplayer
       int successCode)
       {
         registerData_ptr=nullptr;
+        createLobbyData_ptr=nullptr;
         loginData_ptr=nullptr;
         //hold passed data into varaible for when need to pass into another state.
         lobbyData_ptr = new FluffyMultiplayer::LobbyData;
@@ -148,6 +151,66 @@ namespace FluffyMultiplayer
       }
 
 
+    //create lobby form
+    StateWaitForResponse::StateWaitForResponse(std::string _text,
+      FluffyMultiplayer::AppState* retry,
+      FluffyMultiplayer::CreateLobbyFormData _lobby,
+      FluffyMultiplayer::AppState* accountlimited,
+      int accountlimitedCode,
+      FluffyMultiplayer::AppState* successState,
+      int successCode)
+      {
+        registerData_ptr=nullptr;
+        lobbyData_ptr=nullptr;
+        loginData_ptr=nullptr;
+
+        //hold passed data into varaible for when need to pass into another state.
+        createLobbyData_ptr = new FluffyMultiplayer::CreateLobbyFormData;
+        createLobbyData_ptr->gameMode = _lobby.gameMode;
+        createLobbyData_ptr->maxPlayers = _lobby.maxPlayers;
+        createLobbyData_ptr->isTextChatAllowed = _lobby.isTextChatAllowed;
+        createLobbyData_ptr->isVoiceChatAllowed = _lobby.isVoiceChatAllowed;
+        createLobbyData_ptr->isSpecterAllowed = _lobby.isSpecterAllowed;
+        createLobbyData_ptr->password = _lobby.password;
+        createLobbyData_ptr->globalErrors = _lobby.globalErrors;
+
+        requestSent=false; //turn off flag, will help to run receiveDataQueue.push once
+        timeoutCounter=MC_REQUEST_TIMEOUT;
+
+        //retry button
+        state1 = retry;
+
+        //second button
+        state2 = accountlimited;
+        responseCodeAcceptor = accountlimitedCode;
+
+        //third button
+        state3 = successState;
+        responseCodeAcceptor2 = successCode;
+
+        //create request
+        std::string temp = std::to_string(MC_REQUEST_CREATE_LOBBY) + MC_REQUEST_DELIMITER;
+        temp += std::to_string(createLobbyData_ptr->gameMode) + MC_REQUEST_DELIMITER;
+        temp += std::to_string(createLobbyData_ptr->maxPlayers) + MC_REQUEST_DELIMITER;
+        temp += std::to_string(createLobbyData_ptr->isTextChatAllowed) + MC_REQUEST_DELIMITER;
+        temp += std::to_string(createLobbyData_ptr->isVoiceChatAllowed) + MC_REQUEST_DELIMITER;
+        temp += std::to_string(createLobbyData_ptr->isSpecterAllowed) + MC_REQUEST_DELIMITER;
+        temp += std::to_string(createLobbyData_ptr->password) + MC_REQUEST_DELIMITER;
+        temp += MC_REQUEST_CLOSER;
+        requestData = temp;
+
+
+        std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
+        text = "Wait for response:\n"+ _text;
+        initSimpleText(fontPath, text);
+
+        timeouttxt.setFont(theFont);
+        timeouttxt.setString("timedout press enter to retry.");
+      }
+
+
+
+  //other
   StateWaitForResponse::StateWaitForResponse(std::string _text,
                        const std::string& request,
                        FluffyMultiplayer::AppState* retryState,
@@ -157,6 +220,7 @@ namespace FluffyMultiplayer
     loginData_ptr=nullptr;
     registerData_ptr = nullptr;
     lobbyData_ptr=nullptr;
+    createLobbyData_ptr=nullptr;
 
     requestSent=false;
     timeoutCounter=MC_REQUEST_TIMEOUT;
@@ -314,7 +378,22 @@ namespace FluffyMultiplayer
           }
 
           //create lobby form
-          //else if()
+          else if(state3!=nullptr && createLobbyData_ptr!=nullptr && timeoutCounter<=0)
+          {
+            switch (resultRC)
+            {
+              case MS_ERROR_FAILED_TO_LOBBY_CREATION_INVALID_IDENTITY:
+              case MS_ERROR_FAILED_TO_LOBBY_CREATION_CANT_OWN_TWO_LOBBY:
+              case MS_ERROR_FAILED_TO_LOBBY_CREATION_BAD_DATA_SYNTAX:
+              case MS_ERROR_FAILED_TO_CREATE_LOBBY:
+              default:
+              createLobbyData_ptr->globalErrors = resultRC;
+            }
+            return new FluffyMultiplayer::StateCreateLobbyForm(*createLobbyData_ptr);
+          }
+
+
+          //-------------------------
         }
       }
     }

@@ -40,10 +40,16 @@ namespace FluffyMultiplayer
     std::array<std::string,3> _errors;
     std::string identity;
   };
-  // struct CreateLobbyFormData
-  // {
-  //
-  // };
+  struct CreateLobbyFormData
+  {
+    int gameMode;
+    int maxPlayers;
+    bool isTextChatAllowed;
+    bool isVoiceChatAllowed;
+    bool isSpecterAllowed;
+    std::string password;
+    std::string globalErrors; //like you're limited, maxplayers is invalid and so
+  };
 }
 
 #endif
