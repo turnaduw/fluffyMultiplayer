@@ -11,7 +11,7 @@ namespace FluffyMultiplayer
   class StateShowLobbyDetials : public AppState
   {
   public:
-    StateShowLobbyDetials();
+    StateShowLobbyDetials(FluffyMultiplayer::LobbyData);
     ~StateShowLobbyDetials();
     void render(sf::RenderWindow&);
     FluffyMultiplayer::AppState* update(FluffyMultiplayer::App&,
