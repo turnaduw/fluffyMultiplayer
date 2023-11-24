@@ -12,10 +12,10 @@ namespace FluffyMultiplayer
   {
   private:
     FluffyMultiplayer::LobbyData lobby;
+    std::string boolToString(bool);
   public:
     StateShowLobbyDetails(FluffyMultiplayer::LobbyData);
     ~StateShowLobbyDetails();
-    std::string boolToString(bool);
     void render(sf::RenderWindow&);
     FluffyMultiplayer::AppState* update(FluffyMultiplayer::App&,
                       std::queue<std::string>&,
