@@ -11,6 +11,7 @@ namespace FluffyMultiplayer
   };
   struct LobbyData
   {
+     int id;
      bool isLocked;
      bool isVoiceChatForbidden;
      bool isTextChatForbidden;
@@ -20,7 +21,7 @@ namespace FluffyMultiplayer
      int maxPlayers;
      int currentPlayers;
      int gameMode;
-     std::string address;
+     AnAddress address;
   };
 
   //for StateWaitForResponse forms
