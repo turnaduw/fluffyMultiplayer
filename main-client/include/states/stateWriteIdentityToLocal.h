@@ -12,10 +12,8 @@ namespace FluffyMultiplayer
 
   class StateWriteIdentityToLocal : public AppState
   {
-  private:
-    std::string identity;
   public:
-    StateWriteIdentityToLocal(std::string identity);
+    StateWriteIdentityToLocal();
     ~StateWriteIdentityToLocal();
     void render(sf::RenderWindow&);
     FluffyMultiplayer::AppState* update(FluffyMultiplayer::App&,

@@ -61,7 +61,7 @@ namespace FluffyMultiplayer
             this,
             form_data,
             new FluffyMultiplayer::StateFailed("account is banned.\n",this,nullptr),
-            new FluffyMultiplayer::StateWriteIdentityToLocal(form_data.identity),
+            new FluffyMultiplayer::StateWriteIdentityToLocal,
             MS_ERROR_FAILED_TO_LOGIN_BANNED,
             MS_RESPONSE_SUCCESS_LOGIN
           );

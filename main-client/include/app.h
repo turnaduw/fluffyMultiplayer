@@ -25,6 +25,7 @@ namespace FluffyMultiplayer
   class App
   {
     private:
+      std::string identity;
       bool sendDataStatus;
       bool receiveDataStatus;
       unsigned short appPort;
@@ -74,6 +75,9 @@ namespace FluffyMultiplayer
 
       void init();
       void run();
+      void clearIdentity()
+      void setIdentity(std::string);
+      std::string getIdentity() const;
       FluffyMultiplayer::AnAddress getServerAddress() const;
       void setServer(FluffyMultiplayer::AnAddress);
       void addServer(FluffyMultiplayer::AnAddress);

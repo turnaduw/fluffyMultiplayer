@@ -117,6 +117,20 @@ namespace FluffyMultiplayer
 
   }
 
+  void App::clearIdentity()
+  {
+      identity="";
+  }
+  void App::setIdentity(std::string str)
+  {
+    identity=str;
+  }
+  std::string App::getIdentity() const
+  {
+    return identity;
+  }
+
+
   FluffyMultiplayer::AnAddress App::getServerAddress() const
   {
     return serverAddress;

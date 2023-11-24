@@ -62,7 +62,7 @@ namespace FluffyMultiplayer
             "waiting for response from server\nto register an account.\nplease wait..",
             this,
             form_data,
-            new FluffyMultiplayer::StateWriteIdentityToLocal(form_data.identity),
+            new FluffyMultiplayer::StateWriteIdentityToLocal,
             MS_RESPONSE_SUCCESS_REGISTER
           );
         }
