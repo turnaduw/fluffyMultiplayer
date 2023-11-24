@@ -134,6 +134,7 @@ namespace FluffyMultiplayer
 
         //split data from LoginFormData into a string req
         std::string temp = std::to_string(MC_REQUEST_GET_LOBBY_INFO) + MC_REQUEST_DELIMITER;
+        temp += std::to_string(lobbyData_ptr->id) + MC_REQUEST_DELIMITER;
         temp += MC_REQUEST_CLOSER;
         requestData = temp;
 
@@ -258,6 +259,18 @@ namespace FluffyMultiplayer
             app.setIdentity(loginData_ptr->identity); //save identity for app
           return state3; //second state passed successfully
         }
+
+        /*
+          get lobby info by entered lobby id:
+          we have to pass lobbyData into StateShowLobbyDetails, can not pass same
+          empty from StateMainPage so make state3 that is success to nullptr to
+          create a new situation to do this down condition
+        */
+        else if(resultRC == responseCodeAcceptor2 && state3==nullptr && lobbyData_ptr!=nullptr)
+        {
+          return new FluffyMultiplayer::StateShowLobbyDetails(*lobbyData_ptr);
+        }
+
         else
         {
           //login form

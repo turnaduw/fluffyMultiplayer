@@ -208,7 +208,9 @@ namespace FluffyMultiplayer
         isPedding=true;
         if(event.key.code == sf::Keyboard::Enter)
         {
-          //lobby id
+          //set lobby id
+          if(!enteredLobbyId.empty())
+            selectedLobby.id = convertToInt(enteredLobbyId);
           return new FluffyMultiplayer::StateWaitForResponse
           (
             "waiting for response from server\nto receive entered lobby id info.\nplease wait..",
@@ -216,7 +218,7 @@ namespace FluffyMultiplayer
             selectedLobby,
             new FluffyMultiplayer::StateFailed("that entered lobby id not found.", this,nullptr),
             MS_ERROR_FAILED_TO_GET_LOBBY_INFO_LOBBY_NOT_FOUND,
-            new FluffyMultiplayer::StateShowLobbyDetails(selectedLobby),
+            nullptr,
             MS_RESPONSE_SUCCESS_GET_LOBBY_INFO
           );
         }
