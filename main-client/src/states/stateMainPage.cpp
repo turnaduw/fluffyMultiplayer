@@ -227,7 +227,7 @@ namespace FluffyMultiplayer
         }
         else if(event.key.code == sf::Keyboard::Space)
         {
-          return new FluffyMultiplayer::StateCreateLobyForm(identity);
+          return new FluffyMultiplayer::StateCreateLobbyForm;
         }
         else if(event.key.code == sf::Keyboard::Backspace)
         {
