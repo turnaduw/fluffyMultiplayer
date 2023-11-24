@@ -9,7 +9,6 @@ namespace FluffyMultiplayer
     state1=s;
     state2=nullptr;
     state3=nullptr;
-    requestData=request;
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
     text = "Failed: "+_text;
     initSimpleText(fontPath, text);
