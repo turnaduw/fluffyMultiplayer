@@ -45,4 +45,23 @@
 #define MC_RESPONSE_POSITION_MIN_INDEX 0
 #define MC_RESPONSE_POSITION_MAX_INDEX 3
 
+
+
+
+//---------------------------- Form Elements
+#define FE_PATH_TO_ASSETS "./assets/uiComponents/"
+//TI means Text Input
+#define TI_TITLE_PERCENT 0
+#define TI_ERROR_PERCENT 0
+#define TI_INPUT_BOX_PERCENT 0
+#define TI_DEFAULT_FONT_SIZE 20
+#define TI_DEFAULT_FONT_PATH MC_PATH_TO_FONTS MC_DEFAULT_FONT
+#define TI_DEFAULT_BOX_SIZE_WIDTH 150
+#define TI_DEFAULT_BOX_SIZE_HEIGHT 100
+#define TI_TEXTURE_INPUT_BOX "textInput.png"
+
+//TIP means Text Input Password
+#define TIP_TEXTURE_BUTTON_VISIBLE_PASSWORD_ON "passwordVisible.png"
+#define TIP_TEXTURE_BUTTON_VISIBLE_PASSWORD_OFF "passwordInvisble.png"
+
 #endif
