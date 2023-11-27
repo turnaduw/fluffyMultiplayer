@@ -2,26 +2,22 @@
 
 namespace FluffyMultiplayer
 {
-  void StateLoginForm::initFormLabels()
-  {
-    label_text[0] = "username:";
-    label_text[1] = ""; //username error
-    label_text[2] = "password:";
-    label_text[3] = ""; //password error
-    label_text[4] = "save login";
-  }
 
   StateLoginForm::StateLoginForm()
   {
+    inputFocus = &usernameInput;
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
     initSimpleText(fontPath, "LOGIN FORM");
+    usernameInput.init("","","username:","enter username..");
   }
 
   StateLoginForm::StateLoginForm(FluffyMultiplayer::LoginFormData _data)
   {
+    inputFocus = &usernameInput;
     form_data = _data;
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
     initSimpleText(fontPath, "LOGIN FORM");
+    usernameInput.init(form_data._inputs[0],form_data._errors[0],"username:","enter username..");
   }
 
   StateLoginForm::~StateLoginForm()
@@ -32,6 +28,8 @@ namespace FluffyMultiplayer
   void StateLoginForm::render(sf::RenderWindow& window)
   {
     window.draw(theText);
+    if(inputFocus!=nullptr)
+      inputFocus->render(window);
   }
 
 
@@ -54,6 +52,10 @@ namespace FluffyMultiplayer
       {
         if(event.key.code == sf::Keyboard::Enter || event.key.code == sf::Keyboard::Return)
         {
+          if(inputFocus!=nullptr)
+          {
+            form_data._inputs[0] = inputFocus->getEnteredText();
+          }
           //go login..
           return new FluffyMultiplayer::StateWaitForResponse //will break loop
           (
@@ -70,8 +72,22 @@ namespace FluffyMultiplayer
         {
           return new FluffyMultiplayer::StateRegisterForm;
         }
-      }
-      break;
+        if(event.key.code == sf::Keyboard::Backspace)
+        {
+          if(inputFocus!=nullptr)
+            inputFocus->removeFromText();
+        }
+      }break;
+
+      case sf::Event::TextEntered:
+      {
+        if (event.text.unicode < 128)
+        {
+          if(inputFocus!=nullptr)
+            inputFocus->update(static_cast<char>(event.text.unicode));
+        }
+      }break;
+
     }
     return this;
   }

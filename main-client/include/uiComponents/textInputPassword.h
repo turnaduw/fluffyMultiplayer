@@ -24,8 +24,6 @@ namespace FluffyMultiplayer
       public:
         void appendToText(const std::string& _text)
         {
-          if(isFocus)
-          {
             passwordEntered += _text;
             if(isButtonVisiblePasswordClicked)
             {
@@ -37,7 +35,6 @@ namespace FluffyMultiplayer
               for(int i=1; i<passwordEntered.length(); i++)
                 enteredString += inviseChar;
             }
-          }
         }
 
         //from outside will call this and this function do bounds thing to switch sprites for bound

@@ -2,6 +2,7 @@
 #define H_STATE_LOGIN_FORM
 
 #include "../appState.h"
+#include "../uiComponents/textInput.h"
 
 namespace FluffyMultiplayer
 {
@@ -12,19 +13,9 @@ namespace FluffyMultiplayer
   {
   private:
     FluffyMultiplayer::LoginFormData form_data;
-    std::array<std::string,5> label_text;
+    FluffyMultiplayer::TextInput* inputFocus;
+    FluffyMultiplayer::TextInput usernameInput;
 
-    std::array<sf::Text,9> labels;
-    sf::Texture button_sprite;
-    std::array<sf::Sprite, 2> text_input_sprite;
-    std::array<sf::Sprite, 2> button_sprites;
-    sf::Texture text_input_texture;
-    sf::Texture login_texture;
-    std::array<sf::Texture, 2> saveLoginCheckBox_textures;
-    std::array<sf::Texture, 2> showPassword_texutres;
-    sf::Sprite showPassword_sprite;
-    sf::Sprite saveLoginCheckBox_sprite;
-    std::array<sf::FloatRect, 6> form_boundaries;
 
     void initFormLabels();
   public:
