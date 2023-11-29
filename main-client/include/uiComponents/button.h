@@ -80,7 +80,6 @@ namespace FluffyMultiplayer
               sf::Color bgColor=BUTTON_DEFAULT_BACKGROUND_COLOR,
               sf::Color fgColor=BUTTON_DEFAULT_FORGROUND_COLOR,
               int sizeX=BUTTON_DEFAULT_SIZE_WIDTH, int sizeY=BUTTON_DEFAULT_SIZE_HEIGHT,
-              sf::Style txtStyle=BUTTON_DEFAULT_STYLE,
               unsigned int txtSize=BUTTON_DEFAULT_FONT_SIZE)
       {
         isButtonClicked=false;
@@ -105,7 +104,7 @@ namespace FluffyMultiplayer
         buttonText.setFont(buttonFont);
         buttonText.setOutlineColor(forgroundColor);
         buttonText.setString(buttonString);
-        buttonText.setStyle(txtStyle);
+        buttonText.setStyle(BUTTON_DEFAULT_STYLE);
         buttonText.setCharacterSize(txtSize);
 
         //make text center of button sprite
