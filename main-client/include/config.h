@@ -75,4 +75,15 @@
 #define TIP_TEXTURE_BUTTON_VISIBLE_PASSWORD_ON "passwordVisibleButtonTexture.png"
 #define TIP_TEXTURE_BUTTON_VISIBLE_PASSWORD_OFF "passwordInvisbleButtonTexture.png"
 
+
+//button component
+#define BUTTON_TEXTURE "buttonTexture.png"
+#define BUTTON_DEFAULT_BACKGROUND_COLOR sf::Color::White
+#define BUTTON_DEFAULT_FORGROUND_COLOR sf::Color::Black
+#define BUTTON_DEFAULT_SIZE_WIDTH 20
+#define BUTTON_DEFAULT_SIZE_HEIGHT 10
+#define BUTTON_DEFAULT_STYLE sf::Text::Bold
+#define BUTTON_DEFAULT_FONT_SIZE 17
+#define BUTTON_DEFAULT_POS_X 10.0
+#DEFINE BUTTON_DEFAULT_POS_Y 10.0
 #endif
