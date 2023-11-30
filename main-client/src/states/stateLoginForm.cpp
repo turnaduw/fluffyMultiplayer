@@ -5,12 +5,12 @@ namespace FluffyMultiplayer
   void StateLoginForm::init()
   {
     inputFocus = &usernameInput;
-    buttonFocus = nullptr;
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
     initSimpleText(fontPath, "LOGIN FORM");
     setSimpleTextPosition(150.0, 5.0);
-    buttonGoToRegisterForm.init("Sign up", 100.0,300.0, sf::Color::Black,sf::Color::White, 60,30, 22);
-    buttonSubmit.init("submit", 300.0,300.0, sf::Color::Black,sf::Color::Green, 60,30, 22);
+    saveLoginCheckBox.init("save login", 300.0, 300.0, sf::Color::Black, sf::Color::White, 60,30, 22);
+    buttonGoToRegisterForm.init("Sign up", 100.0,400.0, sf::Color::Black,sf::Color::White, 60,30, 22);
+    buttonSubmit.init("submit", 300.0,400.0, sf::Color::Black,sf::Color::Green, 60,30, 22);
   }
 
   FluffyMultiplayer::AppState* StateLoginForm::formFinishedResult(bool isSubmit)
@@ -19,7 +19,8 @@ namespace FluffyMultiplayer
     {
       form_data._inputs[0] = usernameInput.getEnteredText();
       form_data._inputs[1] = passwordInput.getEnteredText();
-      //form_data.savelogin = ...
+      form_data._saveLoginStatus = saveLoginCheckBox.getStatus();
+
       //go login..
       return new FluffyMultiplayer::StateWaitForResponse
       (
@@ -51,6 +52,7 @@ namespace FluffyMultiplayer
     form_data = _data;
     usernameInput.init(form_data._inputs[0],form_data._errors[0],"username:","enter username..", 100.0, 100.0);
     passwordInput.init(form_data._inputs[1],form_data._errors[1],"password:","enter password..", 100.0, 200.0);
+    saveLoginCheckBox.setStatus(form_data._saveLoginStatus);
   }
 
   StateLoginForm::~StateLoginForm()
@@ -102,13 +104,11 @@ namespace FluffyMultiplayer
         else if(usernameInput.getInputBoxBound().contains(mousePosition))
         {
           std::cout << "mouse is clicked on username input" << std::endl;
-          buttonFocus = nullptr;
           inputFocus = &usernameInput;
         }
         else if(passwordInput.getInputBoxBound().contains(mousePosition))
         {
           std::cout << "mouse is clicked on password input" << std::endl;
-          buttonFocus = nullptr;
           inputFocus = &passwordInput;
         }
         else
@@ -124,53 +124,18 @@ namespace FluffyMultiplayer
       {
         if(event.key.code == sf::Keyboard::Enter || event.key.code == sf::Keyboard::Return)
         {
-          if(inputFocus==nullptr && buttonFocus == &buttonSubmit
-                  && !usernameInput.getEnteredText().empty()
+          if(!usernameInput.getEnteredText().empty()
                   && !passwordInput.getEnteredText().empty())
           {
             return formFinishedResult(true);
           }
-          else if(inputFocus==nullptr && buttonFocus == &buttonGoToRegisterForm)
-          {
-            return formFinishedResult(false);
-          }
           else
-            std::cout << "button no focused\n";
+            std::cout << "one or more of the inputs are empty, can not submit\n";
         }
         if(event.key.code == sf::Keyboard::Backspace)
         {
           if(inputFocus!=nullptr)
             inputFocus->removeFromText();
-        }
-        if(event.key.code == sf::Keyboard::Tab)
-        {
-          if((usernameInput.getEnteredText()).empty())
-          {
-            buttonFocus=nullptr;
-            inputFocus = &usernameInput;
-          }
-          else if((passwordInput.getEnteredText()).empty())
-          {
-            buttonFocus=nullptr;
-            inputFocus = &passwordInput;
-          }
-          else if(buttonFocus == nullptr)
-          {
-            inputFocus=nullptr;
-            buttonFocus=&buttonGoToRegisterForm;
-          }
-          else if(buttonFocus == &buttonGoToRegisterForm)
-          {
-            inputFocus=nullptr;
-            buttonFocus = &buttonSubmit;
-          }
-          else if(buttonFocus == &buttonSubmit)
-          {
-            inputFocus=nullptr;
-            buttonFocus = &buttonGoToRegisterForm;
-          }
-          else
-            std::cout << "form nowhere to focus\n";
         }
       }break;
 

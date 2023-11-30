@@ -4,6 +4,7 @@
 #include "../appState.h"
 #include "../uiComponents/textInput.h"
 #include "../uiComponents/button.h"
+#include "../uiComponents/checkBox.h"
 
 namespace FluffyMultiplayer
 {
@@ -17,11 +18,11 @@ namespace FluffyMultiplayer
 
     //focus
     FluffyMultiplayer::TextInput* inputFocus;
-    FluffyMultiplayer::Button* buttonFocus;
 
     //text inputs
     FluffyMultiplayer::TextInput usernameInput;
     FluffyMultiplayer::TextInput passwordInput;
+    FluffyMultiplayer::CheckBox saveLoginCheckBox;
 
     //buttons
     FluffyMultiplayer::Button buttonSubmit;
