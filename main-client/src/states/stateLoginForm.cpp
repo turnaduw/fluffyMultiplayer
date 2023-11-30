@@ -9,8 +9,33 @@ namespace FluffyMultiplayer
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
     initSimpleText(fontPath, "LOGIN FORM");
     setSimpleTextPosition(150.0, 5.0);
-    buttonGoToRegisterForm.init("register\naccount", 100.0,300.0, sf::Color::Black,sf::Color::White, 60,30, 22);
+    buttonGoToRegisterForm.init("Sign up", 100.0,300.0, sf::Color::Black,sf::Color::White, 60,30, 22);
     buttonSubmit.init("submit", 300.0,300.0, sf::Color::Black,sf::Color::Green, 60,30, 22);
+  }
+
+  FluffyMultiplayer::AppState* StateLoginForm::formFinishedResult(bool isSubmit)
+  {
+    if(isSubmit)
+    {
+      form_data._inputs[0] = usernameInput.getEnteredText();
+      form_data._inputs[1] = passwordInput.getEnteredText();
+      //form_data.savelogin = ...
+      //go login..
+      return new FluffyMultiplayer::StateWaitForResponse
+      (
+        "waiting for response from server\nto login into account.\nplease wait..",
+        this,
+        form_data,
+        new FluffyMultiplayer::StateFailed("account is banned.\n",this,nullptr),
+        new FluffyMultiplayer::StateWriteIdentityToLocal,
+        MS_ERROR_FAILED_TO_LOGIN_BANNED,
+        MS_RESPONSE_SUCCESS_LOGIN
+      );
+    }
+
+
+    //else
+    return new FluffyMultiplayer::StateRegisterForm;
   }
 
   StateLoginForm::StateLoginForm()
@@ -51,10 +76,47 @@ namespace FluffyMultiplayer
       return this;
   }
 
-
   FluffyMultiplayer::AppState* StateLoginForm::eventHandle(FluffyMultiplayer::App& app,
                             sf::Event& event)
   {
+
+    //mouse realtime
+    if(event.type == sf::Event::MouseButtonPressed)
+    {
+        mousePosition = app.appWindow.mapPixelToCoords(sf::Mouse::getPosition(app.appWindow));
+
+        if(buttonSubmit.getButtonBound().contains(mousePosition))
+        {
+          std::cout<<"mouse is clicked on button submit"<< std::endl;
+          if(!usernameInput.getEnteredText().empty()
+              && !passwordInput.getEnteredText().empty())
+          {
+            return formFinishedResult(true);
+          }
+        }
+        else if(buttonGoToRegisterForm.getButtonBound().contains(mousePosition))
+        {
+          std::cout << "mouse is clicked on buttn go to register form" << std::endl;
+          return formFinishedResult(false);
+        }
+        else if(usernameInput.getInputBoxBound().contains(mousePosition))
+        {
+          std::cout << "mouse is clicked on username input" << std::endl;
+          buttonFocus = nullptr;
+          inputFocus = &usernameInput;
+        }
+        else if(passwordInput.getInputBoxBound().contains(mousePosition))
+        {
+          std::cout << "mouse is clicked on password input" << std::endl;
+          buttonFocus = nullptr;
+          inputFocus = &passwordInput;
+        }
+        else
+          std::cout << "mouse clicked on nowhere. posx:"  << mousePosition.x
+                  <<  "\tposy:" << mousePosition.y << std::endl;
+    }
+
+
     switch(event.type)
     {
       //keyboard
@@ -66,23 +128,11 @@ namespace FluffyMultiplayer
                   && !usernameInput.getEnteredText().empty()
                   && !passwordInput.getEnteredText().empty())
           {
-            form_data._inputs[0] = usernameInput.getEnteredText();
-            form_data._inputs[1] = passwordInput.getEnteredText();
-            //go login..
-            return new FluffyMultiplayer::StateWaitForResponse //will break loop
-            (
-              "waiting for response from server\nto login into account.\nplease wait..",
-              this,
-              form_data,
-              new FluffyMultiplayer::StateFailed("account is banned.\n",this,nullptr),
-              new FluffyMultiplayer::StateWriteIdentityToLocal,
-              MS_ERROR_FAILED_TO_LOGIN_BANNED,
-              MS_RESPONSE_SUCCESS_LOGIN
-            );
+            return formFinishedResult(true);
           }
           else if(inputFocus==nullptr && buttonFocus == &buttonGoToRegisterForm)
           {
-            return new FluffyMultiplayer::StateRegisterForm;
+            return formFinishedResult(false);
           }
           else
             std::cout << "button no focused\n";

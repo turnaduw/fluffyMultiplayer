@@ -27,6 +27,12 @@ namespace FluffyMultiplayer
     FluffyMultiplayer::Button buttonSubmit;
     FluffyMultiplayer::Button buttonGoToRegisterForm;
 
+    //to avoid duplicate return code while calling them from event mouse, keyboard
+    FluffyMultiplayer::AppState* formFinishedResult(bool isSubmit);
+
+
+    //mouse event handel variable to delecre once, not per loop delcre
+    sf::Vector2f mousePosition;
 
     void init();
   public:
