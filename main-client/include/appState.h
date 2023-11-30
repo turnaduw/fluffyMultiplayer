@@ -29,6 +29,10 @@ namespace FluffyMultiplayer
       if(isBold)
         theText.setStyle(sf::Text::Bold);
     }
+    void setSimpleTextPosition(float x, float y)
+    {
+      theText.setPosition(x,y);
+    }
 
   public:
     virtual void render(sf::RenderWindow&)=0;
