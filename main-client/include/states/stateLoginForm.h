@@ -3,6 +3,7 @@
 
 #include "../appState.h"
 #include "../uiComponents/textInput.h"
+#include "../uiComponents/button.h"
 
 namespace FluffyMultiplayer
 {
@@ -13,11 +14,21 @@ namespace FluffyMultiplayer
   {
   private:
     FluffyMultiplayer::LoginFormData form_data;
+
+    //focus
     FluffyMultiplayer::TextInput* inputFocus;
+    FluffyMultiplayer::Button* buttonFocus;
+
+    //text inputs
     FluffyMultiplayer::TextInput usernameInput;
+    FluffyMultiplayer::TextInput passwordInput;
+
+    //buttons
+    FluffyMultiplayer::Button buttonSubmit;
+    FluffyMultiplayer::Button buttonGoToRegisterForm;
 
 
-    void initFormLabels();
+    void init();
   public:
     StateLoginForm();
     StateLoginForm(FluffyMultiplayer::LoginFormData); //if form failed re-fills form automatically
