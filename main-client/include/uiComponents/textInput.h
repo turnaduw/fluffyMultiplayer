@@ -126,13 +126,14 @@ namespace FluffyMultiplayer
         inputBoxTexturePath = FE_PATH_TO_ASSETS TI_TEXTURE_INPUT_BOX;
         inputBoxTexture.loadFromFile(inputBoxTexturePath);
         inputBoxSprite.setTexture(inputBoxTexture);
-        inputBoxBound = inputBoxSprite.getGlobalBounds();
-
 
 
         //init default size and postion
         setSize(TI_DEFAULT_SIZE);
         setPosition(posx,posy);
+
+        //get bound must placed after setPosition to works fine
+        inputBoxBound = inputBoxSprite.getGlobalBounds();
       }
 
       void setTitle(std::string _title, std::string _error)
