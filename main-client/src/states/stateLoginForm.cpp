@@ -67,6 +67,7 @@ namespace FluffyMultiplayer
     passwordInput.render(window);
     buttonSubmit.render(window);
     buttonGoToRegisterForm.render(window);
+    saveLoginCheckBox.render(window);
   }
 
 
@@ -95,6 +96,11 @@ namespace FluffyMultiplayer
           {
             return formFinishedResult(true);
           }
+        }
+        else if(saveLoginCheckBox.getBound().contains(mousePosition))
+        {
+          std::cout << "mouse is lciked on checkbox" << std::endl;
+          saveLoginCheckBox.clickedOnCheckBox();
         }
         else if(buttonGoToRegisterForm.getButtonBound().contains(mousePosition))
         {
