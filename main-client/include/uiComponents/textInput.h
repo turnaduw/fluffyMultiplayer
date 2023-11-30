@@ -19,7 +19,6 @@ namespace FluffyMultiplayer
       //size and position TextInput
       sf::Vector2i boxSize;
       sf::Vector2f position;
-      sf::Vector2f origin;
 
       // variables
       std::string enteredString;
@@ -66,15 +65,12 @@ namespace FluffyMultiplayer
       {
         position.x = x;
         position.y = y;
-        origin.x = x - boxSize.x/2;
-        origin.y = y - boxSize.y/2;
 
-
-        //re-position elements from origin
-        titleText.setPosition(x,0); //(origin.x - TI_TITLE_PADDING_X, origin.y - TI_TITLE_PADDING_Y);
-        errorText.setPosition(origin.x, 0); //(origin.x + TI_ERROR_PADDING_X, origin.y - TI_ERROR_PADDING_Y);
-        inputBoxSprite.setPosition(x, origin.y); //(origin.x - TI_INPUTBOX_PADDING_X, origin.y + TI_INPUTBOX_PADDING_Y);
-        mainText.setPosition(inputBoxSprite.getPosition().x, inputBoxSprite.getPosition().y);
+        //re-position elements
+        titleText.setPosition(position.x+TI_TITLE_PADDING_X, position.y-TI_TITLE_PADDING_Y);
+        errorText.setPosition(position.x+TI_ERROR_PADDING_X, position.y-TI_ERROR_PADDING_Y); //(origin.x + TI_ERROR_PADDING_X, origin.y - TI_ERROR_PADDING_Y);
+        inputBoxSprite.setPosition(position.x, position.y); //(origin.x - TI_INPUTBOX_PADDING_X, origin.y + TI_INPUTBOX_PADDING_Y);
+        mainText.setPosition(inputBoxSprite.getPosition().x+boxSize.y/3, inputBoxSprite.getPosition().y+boxSize.y/6);
       }
 
       void setSize(int width, int height)
@@ -84,7 +80,9 @@ namespace FluffyMultiplayer
       }
 
       void init(std::string strEntered="", std::string strError="",
-            std::string strTitle="", std::string strPlaceholder="")
+            std::string strTitle="",
+            std::string strPlaceholder="",
+            float posx=TI_DEFAULT_POSITION_X, float posy=TI_DEFAULT_POSITION_Y)
       {
         isPlaceHolderEnabled=true;
 
@@ -117,9 +115,10 @@ namespace FluffyMultiplayer
 
 
         //set color
-        titleText.setFillColor(TI_DEFAULT_COLOR);
-        errorText.setFillColor(TI_DEFAULT_COLOR);
-        mainText.setFillColor(TI_DEFAULT_COLOR);
+        titleText.setFillColor(TI_DEFAULT_FORGROUND_COLOR);
+        errorText.setFillColor(TI_DEFAULT_FORGROUND_COLOR);
+        mainText.setFillColor(TI_DEFAULT_FORGROUND_COLOR);
+        inputBoxSprite.setColor(TI_DEFAULT_BACKGROUND_COLOR);
 
         setStrings();
 
@@ -130,15 +129,10 @@ namespace FluffyMultiplayer
         inputBoxBound = inputBoxSprite.getGlobalBounds();
 
 
-        //set a default position
-        titleText.setPosition(TI_TITLE_PADDING_X,TI_TITLE_PADDING_Y);
-        errorText.setPosition(TI_ERROR_PADDING_X,TI_ERROR_PADDING_Y);
-        mainText.setPosition(TI_INPUTBOX_PADDING_X,TI_INPUTBOX_PADDING_Y);
-        inputBoxSprite.setPosition(TI_INPUTBOX_PADDING_X, TI_INPUTBOX_PADDING_Y);
 
         //init default size and postion
         setSize(TI_DEFAULT_SIZE);
-        setPosition(TI_DEFAULT_POSITION_X, TI_DEFAULT_POSITION_Y); //before this one must setSize called
+        setPosition(posx,posy);
       }
 
       void setTitle(std::string _title, std::string _error)

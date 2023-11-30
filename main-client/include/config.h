@@ -54,18 +54,19 @@
 //TI means Text Input
 #define TI_DEFAULT_FONT_PATH MC_PATH_TO_FONTS MC_DEFAULT_FONT
 #define TI_DEFAULT_FONT_SIZE 17
-#define TI_DEFAULT_COLOR sf::Color::Black
+#define TI_DEFAULT_FORGROUND_COLOR sf::Color::Black
+#define TI_DEFAULT_BACKGROUND_COLOR sf::Color::White
 #define TI_DEFAULT_SIZE 100,70
 #define TI_DEFAULT_STYLE sf::Text::Bold
-#define TI_DEFAULT_POSITION_X 100
-#define TI_DEFAULT_POSITION_Y 100
+#define TI_DEFAULT_POSITION_X 400
+#define TI_DEFAULT_POSITION_Y 250
 
-#define TI_TITLE_PADDING_X (0.0,0.0)
-#define TI_TITLE_PADDING_Y (0.0,0.0)
-#define TI_ERROR_PADDING_X (0.0,0.0)
-#define TI_ERROR_PADDING_Y (0.0,0.0)
-#define TI_INPUTBOX_PADDING_X (0.0,0.0) //also mainText will this this
-#define TI_INPUTBOX_PADDING_Y (0.0,0.0) //also mainText will this this
+#define TI_TITLE_PADDING_X 0.0
+#define TI_TITLE_PADDING_Y 25.0
+#define TI_ERROR_PADDING_X 200.0
+#define TI_ERROR_PADDING_Y 25.0
+#define TI_INPUTBOX_PADDING_X 0.0 //also mainText will this this
+#define TI_INPUTBOX_PADDING_Y 0.0 //also mainText will this this
 #define TI_TEXTURE_INPUT_BOX "textInputTexture.png"
 
 
