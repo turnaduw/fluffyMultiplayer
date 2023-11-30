@@ -84,6 +84,11 @@ namespace FluffyMultiplayer
       {
         isButtonClicked=false;
 
+        //set color
+        setBackgroundColor(bgColor);
+        setForgroundColor(fgColor);
+
+        //must first set size then set position (because of origin calculation)
         setSize(sizeX,sizeY);
         setPosition<float>(posX,posY);
 
@@ -92,7 +97,7 @@ namespace FluffyMultiplayer
         buttonTexture.loadFromFile(buttonTexturePath);
         buttonSprite.setColor(backgroundColor);
         buttonSprite.setTexture(buttonTexture);
-        buttonSprite.setOrigin(buttonOrigin);
+        // buttonSprite.setOrigin(buttonOrigin);
         buttonSprite.setPosition(buttonPosition);
         buttonBound = buttonSprite.getGlobalBounds();
 
@@ -108,8 +113,7 @@ namespace FluffyMultiplayer
         buttonText.setCharacterSize(txtSize);
 
         //make text center of button sprite
-        buttonText.setPosition(buttonSprite.getPosition().x - buttonSize.x/2,
-                buttonSprite.getPosition().y - buttonSize.y/2);
+        buttonText.setPosition(buttonPosition.x + buttonSize.x/3, buttonPosition.y + buttonSize.y/3);
       }
 
       void render(sf::RenderWindow& window)
@@ -140,6 +144,11 @@ namespace FluffyMultiplayer
       Button(std::string txt)
       {
         init(txt);
+      }
+
+      Button()
+      {
+        init();
       }
 
       ~Button()
