@@ -29,7 +29,6 @@ namespace FluffyMultiplayer
       bool isButtonClicked;
       sf::Vector2i buttonSize;
       sf::Vector2f buttonPosition;
-      sf::Vector2f buttonOrigin;
 
 
     public:
@@ -38,9 +37,6 @@ namespace FluffyMultiplayer
       {
         buttonPosition.x = x;
         buttonPosition.y = y;
-
-        buttonOrigin.x = x - buttonSize.x/2;
-        buttonOrigin.y = y - buttonSize.y/2;
       }
 
       sf::FloatRect getButtonBound() const
@@ -97,7 +93,6 @@ namespace FluffyMultiplayer
         buttonTexture.loadFromFile(buttonTexturePath);
         buttonSprite.setColor(backgroundColor);
         buttonSprite.setTexture(buttonTexture);
-        // buttonSprite.setOrigin(buttonOrigin);
         buttonSprite.setPosition(buttonPosition);
         buttonBound = buttonSprite.getGlobalBounds();
 
