@@ -2,6 +2,8 @@
 #define H_STATE_REGISTER_FORM
 
 #include "../appState.h"
+#include "../uiComponents/textInput.h"
+#include "../uiComponents/button.h"
 
 namespace FluffyMultiplayer
 {
@@ -11,14 +13,28 @@ namespace FluffyMultiplayer
   class StateRegisterForm : public AppState
   {
   private:
-    std::array<std::string,5> label_text;
-
     FluffyMultiplayer::RegisterFormData form_data;
     void initForm();
 
-    std::array<sf::Text,3> input_lables;
-    std::array<sf::Sprite,3> input_sprite;
-    std::array<sf::Text,6> form_labels;
+    //focus input
+    FluffyMultiplayer::TextInput* inputFocus;
+
+    //text inputs
+    FluffyMultiplayer::TextInput emailInput;
+    FluffyMultiplayer::TextInput usernameInput;
+    FluffyMultiplayer::TextInput passwordInput;
+
+
+    //buttons
+    FluffyMultiplayer::Button buttonSubmit;
+    FluffyMultiplayer::Button buttonGoToLoginForm;
+
+    //to avoid duplicate return code while calling them from event mouse, keyboard
+    FluffyMultiplayer::AppState* formFinishedResult(bool isSubmit);
+
+    //mouse event handel variable to delecre once, not per loop delcre
+    sf::Vector2f mousePosition;
+
   public:
     StateRegisterForm();
     StateRegisterForm(FluffyMultiplayer::RegisterFormData);

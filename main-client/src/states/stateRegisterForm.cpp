@@ -4,26 +4,50 @@ namespace FluffyMultiplayer
 {
   void StateRegisterForm::initForm()
   {
-    label_text[0] = "username:";
-    label_text[1] = ""; //username error
-    label_text[2] = "email:";
-    label_text[3] = ""; //email error
-    label_text[4] = "password";
-    label_text[5] = ""; //password error
-
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
     initSimpleText(fontPath, "REGISTER FORM");
+    setSimpleTextPosition(150.0, 5.0);
+    buttonGoToLoginForm.init("Sign In", 100.0,400.0, sf::Color::Black,sf::Color::White, 60,30, 22);
+    buttonSubmit.init("submit", 300.0,400.0, sf::Color::Black,sf::Color::Green, 60,30, 22);
+    inputFocus = &emailInput;
   }
 
+  FluffyMultiplayer::AppState* StateRegisterForm::formFinishedResult(bool isSubmit)
+  {
+    if(isSubmit)
+    {
+      form_data._inputs[0] = usernameInput.getEnteredText();
+      form_data._inputs[1] = passwordInput.getEnteredText();
+      form_data._inputs[2] = emailInput.getEnteredText();
+      //go register..
+      return new FluffyMultiplayer::StateWaitForResponse //will break loop
+      (
+        "waiting for response from server\nto register an account.\nplease wait..",
+        this,
+        form_data,
+        new FluffyMultiplayer::StateWriteIdentityToLocal,
+        MS_RESPONSE_SUCCESS_REGISTER
+      );
+    }
+
+    //else
+    return new FluffyMultiplayer::StateLoginForm;
+  }
   StateRegisterForm::StateRegisterForm()
   {
     initForm();
+    emailInput.init("","","email:","enter email..", 100.0, 100.0);
+    usernameInput.init("","","username:","enter username..", 100.0, 200.0);
+    passwordInput.init("","","password:","enter password..", 100.0, 300.0);
   }
 
   StateRegisterForm::StateRegisterForm(FluffyMultiplayer::RegisterFormData data)
   {
     form_data=data;
     initForm();
+    emailInput.init(form_data._inputs[0],form_data._errors[0],"email:","enter email..", 100.0, 100.0);
+    usernameInput.init(form_data._inputs[1],form_data._errors[1],"username:","enter username..", 100.0, 200.0);
+    passwordInput.init(form_data._inputs[2],form_data._errors[2],"password:","enter password..", 100.0, 300.0);
   }
 
   StateRegisterForm::~StateRegisterForm()
@@ -34,6 +58,11 @@ namespace FluffyMultiplayer
   void StateRegisterForm::render(sf::RenderWindow& window)
   {
     window.draw(theText);
+    emailInput.render(window);
+    usernameInput.render(window);
+    passwordInput.render(window);
+    buttonSubmit.render(window);
+    buttonGoToLoginForm.render(window);
   }
 
 
@@ -49,6 +78,47 @@ namespace FluffyMultiplayer
   FluffyMultiplayer::AppState* StateRegisterForm::eventHandle(FluffyMultiplayer::App& app,
                             sf::Event& event)
   {
+    //mouse realtime
+    if(event.type == sf::Event::MouseButtonPressed)
+    {
+        mousePosition = app.appWindow.mapPixelToCoords(sf::Mouse::getPosition(app.appWindow));
+
+        if(buttonSubmit.getButtonBound().contains(mousePosition))
+        {
+          std::cout<<"mouse is clicked on button submit"<< std::endl;
+          if(!usernameInput.getEnteredText().empty()
+              && !passwordInput.getEnteredText().empty()
+              && !emailInput.getEnteredText().empty())
+          {
+            return formFinishedResult(true);
+          }
+        }
+        else if(buttonGoToLoginForm.getButtonBound().contains(mousePosition))
+        {
+          std::cout << "mouse is clicked on buttn go to login form" << std::endl;
+          return formFinishedResult(false);
+        }
+        else if(emailInput.getInputBoxBound().contains(mousePosition))
+        {
+          std::cout << "mouse is clicked on email input" << std::endl;
+          inputFocus = &emailInput;
+        }
+        else if(usernameInput.getInputBoxBound().contains(mousePosition))
+        {
+          std::cout << "mouse is clicked on username input" << std::endl;
+          inputFocus = &usernameInput;
+        }
+        else if(passwordInput.getInputBoxBound().contains(mousePosition))
+        {
+          std::cout << "mouse is clicked on password input" << std::endl;
+          inputFocus = &passwordInput;
+        }
+        else
+          std::cout << "mouse clicked on nowhere. posx:"  << mousePosition.x
+                  <<  "\tposy:" << mousePosition.y << std::endl;
+    }
+
+
     switch(event.type)
     {
       //keyboard
@@ -56,22 +126,28 @@ namespace FluffyMultiplayer
       {
         if(event.key.code == sf::Keyboard::Enter || event.key.code == sf::Keyboard::Return)
         {
-          //go register..
-          return new FluffyMultiplayer::StateWaitForResponse //will break loop
-          (
-            "waiting for response from server\nto register an account.\nplease wait..",
-            this,
-            form_data,
-            new FluffyMultiplayer::StateWriteIdentityToLocal,
-            MS_RESPONSE_SUCCESS_REGISTER
-          );
+          if(!usernameInput.getEnteredText().empty()
+              && !passwordInput.getEnteredText().empty()
+              && !emailInput.getEnteredText().empty())
+                  return formFinishedResult(true);
         }
-        if(event.key.code == sf::Keyboard::Space)
+
+        if(event.key.code == sf::Keyboard::Backspace)
         {
-          return new FluffyMultiplayer::StateLoginForm;
+          if(inputFocus!=nullptr)
+            inputFocus->removeFromText();
         }
-      }
-      break;
+      }break;
+
+
+      case sf::Event::TextEntered:
+      {
+        if (event.text.unicode < 128)
+        {
+          if(inputFocus != nullptr)
+            inputFocus->update(static_cast<char>(event.text.unicode));
+        }
+      }break;
     }
     return this;
   }
