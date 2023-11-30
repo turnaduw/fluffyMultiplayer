@@ -7,7 +7,7 @@
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
 #define WINDOW_TITLE "Fluffy Multiplayer App"
-
+#define WINDOW_BACKGROUND_COLOR sf::Color(40,42,48)
 #define FORM_HIDE_CHARECTER '*'
 #define STATES_ASSET_PATH "./assets/states/"
 

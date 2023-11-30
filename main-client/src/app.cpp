@@ -111,7 +111,7 @@ namespace FluffyMultiplayer
        }
 
        // Clear the whole window before rendering a new frame
-       appWindow.clear(sf::Color::Green);
+       appWindow.clear(WINDOW_BACKGROUND_COLOR);
 
        currentState = currentState->update((*this),receivedDataQueue,sendDataQueue);
 
