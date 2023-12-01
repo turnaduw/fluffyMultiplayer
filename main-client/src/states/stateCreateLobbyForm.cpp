@@ -38,7 +38,7 @@ namespace FluffyMultiplayer
       return new FluffyMultiplayer::StateWaitForResponse
       (
         "waiting for response from server\nto create lobby.\nplease wait..",
-        new FluffyMultiplayer::StateFailed("failed to create lobby..", this, new FluffyMultiplayer::StateEnd ,nullptr),
+        this,
         lobbyData,
         new FluffyMultiplayer::StateFailed("cannot createlobby your account is limited\n", new FluffyMultiplayer::StateMainPage ,nullptr),
         MS_ERROR_FAILED_TO_LOBBY_CREATION_FORBIDDEN_FOR_YOU,
@@ -80,6 +80,14 @@ namespace FluffyMultiplayer
   void StateCreateLobbyForm::render(sf::RenderWindow& window)
   {
     window.draw(theText);
+    passwordInput.render(window);
+    gameModeSpinBox.render(window);
+    maxPlayersSpinBox.render(window);
+    specterCheckBox.render(window);
+    voiceChatCheckBox.render(window);
+    textChatCheckBox.render(window);
+    buttonSubmit.render(window);
+    buttonCancel.render(window);
   }
 
 
