@@ -98,7 +98,7 @@ namespace FluffyMultiplayer
         spinBoxButtonSprites[1].setTexture(spinBoxButtonTexture);
 
         //rotate sprite for spinDown button
-        spinBoxButtonSprites[1].rotate(180.f);
+        spinBoxButtonSprites[1].setRotation(180.f);
 
 
         //button text init
@@ -112,11 +112,12 @@ namespace FluffyMultiplayer
         spinBoxText.setString(spinBoxString);
         spinBoxText.setStyle(SPINBOX_DEFAULT_STYLE);
         spinBoxText.setCharacterSize(txtSize);
+        spinBoxText.setString(spinBoxString+items[currentItem]);
 
         //make text center of button sprite
         spinBoxText.setPosition(spinBoxPosition);
-        spinBoxButtonSprites[0].setPosition(spinBoxPosition.x SPINBOX_SPINUP_BUTTON_PADDING_X, spinBoxPosition.y SPINBOX_SPINUP_BUTTON_PADDING_Y);
-        spinBoxButtonSprites[1].setPosition(spinBoxPosition.x SPINBOX_SPINDOWN_BUTTON_PADDING_X, spinBoxPosition.y SPINBOX_SPINDOWN_BUTTON_PADDING_Y);
+        spinBoxButtonSprites[0].setPosition(spinBoxPosition.x + SPINBOX_SPIN_BUTTON_PADDING_X, spinBoxPosition.y - SPINBOX_SPIN_BUTTON_PADDING_Y);
+        spinBoxButtonSprites[1].setPosition(spinBoxPosition.x + SPINBOX_SPIN_BUTTON_PADDING_X + spinBoxButtonTexture.getSize().x, spinBoxPosition.y + SPINBOX_SPIN_BUTTON_PADDING_Y);
 
         spinBoxButtonBounds[0] = spinBoxButtonSprites[0].getGlobalBounds();
         spinBoxButtonBounds[1] = spinBoxButtonSprites[1].getGlobalBounds();
