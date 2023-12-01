@@ -4,10 +4,11 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include "../config.h"
+#include "uiComponent.h"
 
 namespace FluffyMultiplayer
 {
-  class Button
+  class Button : public UiComponent
   {
     private:
 

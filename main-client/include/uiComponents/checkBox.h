@@ -6,10 +6,11 @@
 #include <array>
 #include <string>
 #include "../config.h"
+#include "uiComponent.h"
 
 namespace FluffyMultiplayer
 {
-  class CheckBox
+  class CheckBox : public UiComponent
   {
     private:
 

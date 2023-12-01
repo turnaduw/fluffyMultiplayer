@@ -7,10 +7,11 @@
 #include <vector>
 #include <string>
 #include "../config.h"
+#include "uiComponent.h"
 
 namespace FluffyMultiplayer
 {
-  class SpinBox
+  class SpinBox : public UiComponent
   {
     private:
 

@@ -5,11 +5,11 @@
 #include <SFML/Graphics.hpp>
 #include <array>
 #include "../config.h"
-
+#include "uiComponent.h"
 
 namespace FluffyMultiplayer
 {
-  class TextInput
+  class TextInput : public UiComponent
   {
     protected:
       std::string fontPath;
