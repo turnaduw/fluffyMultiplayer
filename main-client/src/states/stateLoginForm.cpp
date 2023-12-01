@@ -8,6 +8,8 @@ namespace FluffyMultiplayer
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
     initSimpleText(fontPath, "LOGIN FORM");
     setSimpleTextPosition(150.0, 5.0);
+    usernameInput.init("","","username:","enter username..", 100.0, 100.0);
+    passwordInput.init("","","password:","enter password..", 100.0, 200.0);
     saveLoginCheckBox.init("save login", 100.0, 300.0, sf::Color::Black, sf::Color::White, 22);
     buttonGoToRegisterForm.init("Sign up", 100.0,400.0, sf::Color::Black,sf::Color::White, 60,30, 22);
     buttonSubmit.init("submit", 300.0,400.0, sf::Color::Black,sf::Color::Green, 60,30, 22);
@@ -42,16 +44,18 @@ namespace FluffyMultiplayer
   StateLoginForm::StateLoginForm()
   {
     init();
-    usernameInput.init("","","username:","enter username..", 100.0, 100.0);
-    passwordInput.init("","","password:","enter password..", 100.0, 200.0);
   }
 
   StateLoginForm::StateLoginForm(FluffyMultiplayer::LoginFormData _data)
   {
     init();
     form_data = _data;
-    usernameInput.init(form_data._inputs[0],form_data._errors[0],"username:","enter username..", 100.0, 100.0);
-    passwordInput.init(form_data._inputs[1],form_data._errors[1],"password:","enter password..", 100.0, 200.0);
+    
+    //apply passed data into form element
+    usernameInput.setText(form_data._inputs[0]);
+    usernameInput.setError(form_data._errors[0]);
+    passwordInput.setText(form_data._inputs[1]);
+    passwordInput.setError(form_data._errors[1]);
     saveLoginCheckBox.setStatus(form_data._saveLoginStatus);
   }
 

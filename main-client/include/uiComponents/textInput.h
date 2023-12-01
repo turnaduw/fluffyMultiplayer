@@ -136,15 +136,23 @@ namespace FluffyMultiplayer
         inputBoxBound = inputBoxSprite.getGlobalBounds();
       }
 
-      void setTitle(std::string _title, std::string _error)
+      void setTitles(std::string _title, std::string _error)
       {
         errorString = _error;
         titleString = _title;
+        setStrings();
+      }
+
+      void setError(std::string err)
+      {
+        errorString = err;
+        setStrings();
       }
 
       void setText(std::string str)
       {
         enteredString = str;
+        setStrings();
       }
 
       void setPlaceholder(std::string str)

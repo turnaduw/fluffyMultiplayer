@@ -7,6 +7,9 @@ namespace FluffyMultiplayer
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
     initSimpleText(fontPath, "REGISTER FORM");
     setSimpleTextPosition(150.0, 5.0);
+    emailInput.init("","","email:","enter email..", 100.0, 100.0);
+    usernameInput.init("","","username:","enter username..", 100.0, 200.0);
+    passwordInput.init("","","password:","enter password..", 100.0, 300.0);
     buttonGoToLoginForm.init("Sign In", 100.0,400.0, sf::Color::Black,sf::Color::White, 60,30, 22);
     buttonSubmit.init("submit", 300.0,400.0, sf::Color::Black,sf::Color::Green, 60,30, 22);
     inputFocus = &emailInput;
@@ -36,18 +39,18 @@ namespace FluffyMultiplayer
   StateRegisterForm::StateRegisterForm()
   {
     initForm();
-    emailInput.init("","","email:","enter email..", 100.0, 100.0);
-    usernameInput.init("","","username:","enter username..", 100.0, 200.0);
-    passwordInput.init("","","password:","enter password..", 100.0, 300.0);
   }
 
   StateRegisterForm::StateRegisterForm(FluffyMultiplayer::RegisterFormData data)
   {
     form_data=data;
     initForm();
-    emailInput.init(form_data._inputs[0],form_data._errors[0],"email:","enter email..", 100.0, 100.0);
-    usernameInput.init(form_data._inputs[1],form_data._errors[1],"username:","enter username..", 100.0, 200.0);
-    passwordInput.init(form_data._inputs[2],form_data._errors[2],"password:","enter password..", 100.0, 300.0);
+    emailInput.setText(form_data._inputs[0]);
+    emailInput.setError(form_data._errors[0]);
+    usernameInput.setText(form_data._inputs[1]);
+    usernameInput.setError(form_data._errors[1]);
+    passwordInput.setText(form_data._inputs[2]);
+    passwordInput.setError(form_data._errors[2]);
   }
 
   StateRegisterForm::~StateRegisterForm()
