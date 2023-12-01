@@ -4,8 +4,8 @@
 //MC means MainClient
 
 //window
-#define WINDOW_WIDTH 800
-#define WINDOW_HEIGHT 600
+#define WINDOW_WIDTH 1000
+#define WINDOW_HEIGHT 800
 #define WINDOW_TITLE "Fluffy Multiplayer App"
 #define WINDOW_BACKGROUND_COLOR sf::Color(40,42,48)
 #define FORM_HIDE_CHARECTER '*'
@@ -45,6 +45,8 @@
 #define MC_RESPONSE_POSITION_MIN_INDEX 0
 #define MC_RESPONSE_POSITION_MAX_INDEX 3
 
+#define GAME_MODE_LIST {"Mensch","Chess","TicTacToe"}
+#define MAX_PLAYER_LIST {"2","4","6","8","10"}
 
 
 
