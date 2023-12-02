@@ -18,7 +18,7 @@ namespace FluffyMultiplayer
       if(!font.loadFromFile(finalPath))
       {
         std::cout << "could not load font from path:" << finalPath << " trying to load default font for ui compnent." << std::endl;
-        font.loadFromFile(UI_COMPONENT_FONT_DEFAULT)
+        font.loadFromFile(UI_COMPONENT_FONT_DEFAULT);
       }
       text.setFont(font);
       return finalPath;
