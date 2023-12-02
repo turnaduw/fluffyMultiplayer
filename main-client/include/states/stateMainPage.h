@@ -2,6 +2,9 @@
 #define H_STATE_MAIN_PAGE
 
 #include "../appState.h"
+#include "../uiComponents/textInput.h"
+#include "../uiComponents/button.h"
+#include "../uiComponents/pictureButton.h"
 
 namespace FluffyMultiplayer
 {
@@ -11,12 +14,10 @@ namespace FluffyMultiplayer
   class StateMainPage : public AppState
   {
   private:
-    std::string enteredLobbyId;
     std::vector<FluffyMultiplayer::LobbyData> lobbyList;
     FluffyMultiplayer::LobbyData selectedLobby;
 
     bool isPedding;//to make a popup as loading plase wait, avoid multiple requests from client
-    sf::Text stateIsBusyText;
 
 
     bool updateLobbyList();
@@ -33,6 +34,32 @@ namespace FluffyMultiplayer
     int refreshLobbyTimeoutCounter;
     std::string receivedData;
     bool successToRefreshLobbyList;
+
+    //to avoid duplicate return code while calling them from event mouse, keyboard
+    FluffyMultiplayer::AppState* formFinishedResult(bool isSubmit);
+    //mouse event handel variable to delecre once, not per loop delcre
+    sf::Vector2f mousePosition;
+
+
+    // ---------------- UI
+
+    sf::Text stateIsBusyText;
+
+    sf::Vertex line[2];
+
+    //focus
+    FluffyMultiplayer::TextInput* inputFocus;
+
+    //text inputs
+    FluffyMultiplayer::TextInput lobbyIdInput;
+
+    //buttons
+    FluffyMultiplayer::Button buttonSubmitLobbyId;
+    FluffyMultiplayer::Button buttonCreateLobby;
+    FluffyMultiplayer::PictureButton buttonLogout;
+    FluffyMultiplayer::PictureButton buttonRefreshLobbyList;
+    FluffyMultiplayer::PictureButton buttonQuit;
+
 
   public:
     StateMainPage();

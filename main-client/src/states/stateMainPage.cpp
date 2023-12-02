@@ -7,12 +7,34 @@ namespace FluffyMultiplayer
     refreshLobbyListCounter=MC_MAIN_PAGE_LOBBY_LIST_REFRESH_TIMER;
     isPedding=false;
 
+    //titles
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
     initSimpleText(fontPath, "state mainPage");
-
-
+    setSimpleTextPosition(150.0, 5.0);
     stateIsBusyText.setFont(theFont);
     stateIsBusyText.setString("StateMainPage action pedding...\n please wait..");
+
+    //text inputs
+    inputFocus = &lobbyIdInput;
+    lobbyIdInput.init("","","lobby id","enter lobby id to join", 50.0, 100.0);
+
+    //buttons
+    buttonSubmitLobbyId.init("join", 200.0,300.0, sf::Color::Black, sf::Color::White, 60,30, 22);
+
+    buttonLogout.init("LogOut", PICTURE_BUTTON_LOGOUT_TEXTURE , 550.0,400.0, sf::Color::Black,sf::Color::White, 22);
+    buttonRefreshLobbyList.init("Refresh lobby list", PICTURE_BUTTON_REFRESH_LOBBY_LIST_TEXTURE , 450.0,500.0, sf::Color::Black,sf::Color::White, 22);
+
+    buttonCreateLobby.init("create lobby", 700.0,600.0, sf::Color::Black,sf::Color::White, 60,30, 22);
+
+    buttonQuit.init("quit", PICTURE_BUTTON_QUIT_TEXTURE, 800.0,700.0, sf::Color::Black,sf::Color::White, 22);
+
+
+    //line
+    line[0] = sf::Vertex(sf::Vector2f(0, 250));
+    line[1] = sf::Vertex(sf::Vector2f(800, 250));
+
+    //items.
+
   }
 
   StateMainPage::~StateMainPage()
@@ -25,7 +47,16 @@ namespace FluffyMultiplayer
     if(isPedding==true)
       window.draw(stateIsBusyText);
     else
+    {
       window.draw(theText);
+      lobbyIdInput.render(window);
+      buttonSubmitLobbyId.render(window);
+      buttonCreateLobby.render(window);
+      buttonLogout.render(window);
+      buttonRefreshLobbyList.render(window);
+      buttonQuit.render(window);
+      window.draw(line, 2, sf::Lines);
+    }
   }
 
 
@@ -133,6 +164,7 @@ namespace FluffyMultiplayer
                     std::queue<std::string>& sendDataQueue)
 
   {
+    /*
     if(refreshLobbyListCounter>=1)
     {
       refreshLobbyListCounter--;
@@ -188,11 +220,34 @@ namespace FluffyMultiplayer
       isPedding=false;
       refreshLobbyListCounter=MC_MAIN_PAGE_LOBBY_LIST_REFRESH_TIMER;
     }
-
+    */
 
     return this;
   }
 
+
+  FluffyMultiplayer::AppState* StateMainPage::formFinishedResult(bool byId)
+  {
+    if(byId)
+    {
+      std::string lobbyIdValue = lobbyIdInput.getEnteredText();
+      if(!lobbyIdValue.empty())
+      {
+        selectedLobby.id = convertToInt(lobbyIdValue);
+      }
+    }
+
+    return new FluffyMultiplayer::StateWaitForResponse
+    (
+      "waiting for response from server\nto receive entered lobby id info.\nplease wait..",
+      this, //new FluffyMultiplayer::StateFailed("failed to receive response",this, new FluffyMultiplayer::StateEnd,nullptr),
+      selectedLobby,
+      new FluffyMultiplayer::StateFailed("that entered lobby id not found.", this,nullptr),
+      MS_ERROR_FAILED_TO_GET_LOBBY_INFO_LOBBY_NOT_FOUND,
+      nullptr, //in statewait will call StateShowLobbyDetails
+      MS_RESPONSE_SUCCESS_GET_LOBBY_INFO
+    );
+  }
 
   FluffyMultiplayer::AppState* StateMainPage::eventHandle(FluffyMultiplayer::App& app,
                             sf::Event& event)
@@ -200,49 +255,78 @@ namespace FluffyMultiplayer
     if(isPedding==true) //state is busy
       return this;
 
+    if(event.type == sf::Event::MouseButtonPressed)
+    {
+      inputFocus = nullptr;
+
+      mousePosition = app.appWindow.mapPixelToCoords(sf::Mouse::getPosition(app.appWindow));
+
+      if(lobbyIdInput.getInputBoxBound().contains(mousePosition))
+      {
+        inputFocus = &lobbyIdInput;
+      }
+      else if(buttonCreateLobby.getButtonBound().contains(mousePosition))
+      {
+        return new FluffyMultiplayer::StateCreateLobbyForm;
+      }
+      else if(buttonSubmitLobbyId.getButtonBound().contains(mousePosition))
+      {
+        return formFinishedResult(true);
+      }
+      else if(buttonLogout.getButtonBound().contains(mousePosition))
+      {
+        return new FluffyMultiplayer::StateLogout;
+      }
+      else if(buttonRefreshLobbyList.getButtonBound().contains(mousePosition))
+      {
+        std::cout << "button refresh lobby list clicked." << std::endl;
+      }
+      else if(buttonQuit.getButtonBound().contains(mousePosition))
+      {
+        return new FluffyMultiplayer::StateEnd;
+      }
+
+      // if(lobbyList.size()>=1)
+      // {
+      //   for(auto element : lobbyList)
+      //   {
+      //     if(element.getBound().contains(mousePosition))
+      //     {
+      //       std::cout << "clicked on lobby from lobby list lobby id=" << element.id << std::endl;
+      //       // return new FluffyMultiplayer::StateShowLobbyDetails(selectedLobby);
+      //     }
+      //   }
+      // }
+    }
+
+
     switch(event.type)
     {
       //keyboard
       case sf::Event::KeyPressed:
       {
         isPedding=true;
-        if(event.key.code == sf::Keyboard::Enter)
+        if(event.key.code == sf::Keyboard::Enter || event.key.code == sf::Keyboard::Return)
         {
-          //set lobby id
-          if(!enteredLobbyId.empty())
-            selectedLobby.id = convertToInt(enteredLobbyId);
-          return new FluffyMultiplayer::StateWaitForResponse
-          (
-            "waiting for response from server\nto receive entered lobby id info.\nplease wait..",
-            new FluffyMultiplayer::StateFailed("failed to receive response",this, new FluffyMultiplayer::StateEnd,nullptr),
-            selectedLobby,
-            new FluffyMultiplayer::StateFailed("that entered lobby id not found.", this,nullptr),
-            MS_ERROR_FAILED_TO_GET_LOBBY_INFO_LOBBY_NOT_FOUND,
-            nullptr,
-            MS_RESPONSE_SUCCESS_GET_LOBBY_INFO
-          );
+            return formFinishedResult(true);
         }
-        else if(event.key.code == sf::Keyboard::Return)
+        if(event.key.code == sf::Keyboard::Backspace)
         {
-          //selected lobby
-          return new FluffyMultiplayer::StateShowLobbyDetails(selectedLobby);
-        }
-        else if(event.key.code == sf::Keyboard::Space)
-        {
-          return new FluffyMultiplayer::StateCreateLobbyForm;
-        }
-        else if(event.key.code == sf::Keyboard::Backspace)
-        {
-          return new FluffyMultiplayer::StateLogout;
-        }
-        else if(event.key.code == sf::Keyboard::LAlt)
-        {
-          return new FluffyMultiplayer::StateEnd;
+          if(inputFocus!=nullptr)
+            inputFocus->removeFromText();
         }
         else
           isPedding=false;//not routed into other state
-      }
-      break;
+      }break;
+
+      case sf::Event::TextEntered:
+      {
+        if (event.text.unicode < 128)
+        {
+          if(inputFocus != nullptr)
+            inputFocus->update(static_cast<char>(event.text.unicode));
+        }
+      }break;
     }
     return this;
   }
