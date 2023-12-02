@@ -24,6 +24,7 @@ namespace FluffyMultiplayer
                     std::queue<std::string>& sendDataQueue)
 
   {
+    app.close();
     return this;
   }
 
