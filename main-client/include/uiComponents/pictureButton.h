@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <string>
 #include "../config.h"
 #include "uiComponent.h"
 
@@ -12,57 +13,45 @@ namespace FluffyMultiplayer
   {
     private:
 
-      //button box
-      std::string buttonTexturePath;
-      sf::Texture buttonTexture;
-      sf::Sprite buttonSprite;
-      sf::FloatRect buttonBound;
+      //checkbox
+      std::string pictureButtonButtonTexturePath;
+      sf::Texture pictureButtonButtonTexture;
+
       sf::Color backgroundColor;
+      sf::Sprite pictureButtonButtonSprite;
+      sf::FloatRect pictureButtonButtonBound;
 
       //button text
+      sf::Font pictureButtonFont;
       std::string fontPath;
-      sf::Font buttonFont;
-      std::string buttonString;
-      sf::Text buttonText;
+      std::string pictureButtonString;
+      sf::Text pictureButtonText;
       sf::Color forgroundColor;
 
-
-      bool isButtonClicked;
-      sf::Vector2f buttonPosition;
+      bool isClicked;
+      sf::Vector2f pictureButtonPosition;
 
 
     public:
+      void clickOnButton()
+      {
+        isClicked=true;
+      }
 
       template <typename T> void setPosition(T x,T y)
       {
-        buttonPosition.x = x;
-        buttonPosition.y = y;
+        pictureButtonPosition.x = x;
+        pictureButtonPosition.y = y;
       }
 
       sf::FloatRect getButtonBound() const
       {
-        return buttonBound;
-      }
-
-      void setForgroundColor(sf::Color color)
-      {
-        forgroundColor =  color;
-      }
-
-      void setBackgroundColor(sf::Color color)
-      {
-        backgroundColor = color;
-      }
-
-
-      void clickOnButton()
-      {
-        isButtonClicked=true;
+        return pictureButtonButtonBound;
       }
 
       bool getButtonStatus() const
       {
-        return isButtonClicked;
+        return isClicked;
       }
 
 
@@ -70,62 +59,48 @@ namespace FluffyMultiplayer
               float posX=BUTTON_DEFAULT_POS_X, float posY=BUTTON_DEFAULT_POS_Y,
               sf::Color bgColor=BUTTON_DEFAULT_BACKGROUND_COLOR,
               sf::Color fgColor=BUTTON_DEFAULT_FORGROUND_COLOR,
-              int sizeX=BUTTON_DEFAULT_SIZE_WIDTH, int sizeY=BUTTON_DEFAULT_SIZE_HEIGHT,
               unsigned int txtSize=BUTTON_DEFAULT_FONT_SIZE)
       {
-        isButtonClicked=false;
-
-        //set color
-        // setBackgroundColor(bgColor);
-        setForgroundColor(fgColor);
+        isClicked = false;
 
         //must first set size then set position (because of origin calculation)
         setPosition<float>(posX,posY);
 
         //button init
-        buttonTexturePath = FE_PATH_TO_ASSETS + txture;
-        buttonTexture.loadFromFile(buttonTexturePath);
-        // buttonSprite.setColor(backgroundColor);
-        buttonSprite.setTexture(buttonTexture);
-        buttonSprite.setPosition(buttonPosition);
-        buttonBound = buttonSprite.getGlobalBounds();
+        pictureButtonButtonTexturePath = txture;
+        componentLoadTexture(pictureButtonButtonTexture,pictureButtonButtonTexturePath);
+
+        // pictureButtonButtonSprite.setColor(backgroundColor);
+        pictureButtonButtonSprite.setTexture(pictureButtonButtonTexture);
 
 
         //button text init
-        buttonString = btnText;
-        fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
-        buttonFont.loadFromFile(fontPath);
-        buttonText.setFont(buttonFont);
-        buttonText.setOutlineColor(forgroundColor);
-        buttonText.setString(buttonString);
-        buttonText.setStyle(BUTTON_DEFAULT_STYLE);
-        buttonText.setCharacterSize(txtSize);
+        pictureButtonString = btnText;
+        fontPath = componentLoadAndSetFont(pictureButtonText,pictureButtonFont);
+        pictureButtonText.setOutlineColor(forgroundColor);
+        pictureButtonText.setString(pictureButtonString);
+        pictureButtonText.setStyle(BUTTON_DEFAULT_STYLE);
+        pictureButtonText.setCharacterSize(txtSize);
 
         //make text center of button sprite
-        buttonText.setPosition(buttonPosition.x + PICTURE_BUTTON_TEXT_POS_X, buttonPosition.y + PICTURE_BUTTON_TEXT_POS_Y);
+        pictureButtonButtonSprite.setPosition(pictureButtonPosition);
+        pictureButtonText.setPosition(pictureButtonPosition.x + PICTURE_BUTTON_TEXT_POS_X,
+            pictureButtonPosition.y + PICTURE_BUTTON_TEXT_POS_Y);
+
+        pictureButtonButtonBound = pictureButtonButtonSprite.getGlobalBounds();
       }
 
       void render(sf::RenderWindow& window)
       {
-        window.draw(buttonSprite);
-        window.draw(buttonText);
+        window.draw(pictureButtonText);
+        window.draw(pictureButtonButtonSprite);
       }
 
-      PictureButton(std::string txt, std::string txture,
-              float posx, float posy,
-              sf::Color bgcolor, sf::Color fgcolor,
-              int sizex, int sizey)
-      {
-        init(txt,txture,posx,posy,bgcolor,fgcolor,sizex,sizey);
-      }
-
-      PictureButton(std::string txt,std::string txture,
-              float posx, float posy,
+      PictureButton(std::string txt, std::string txture, float posx, float posy,
               sf::Color bgcolor, sf::Color fgcolor)
       {
-        init(txt,txture,posx,posy,bgcolor,fgcolor);
+        init(txt, txture, posx,posy,bgcolor,fgcolor);
       }
-
 
       PictureButton(std::string txt, std::string txture, float posx, float posy)
       {
@@ -139,7 +114,7 @@ namespace FluffyMultiplayer
 
       PictureButton()
       {
-        init();
+        // init();
       }
 
       ~PictureButton()
