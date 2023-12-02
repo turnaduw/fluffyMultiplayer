@@ -91,6 +91,13 @@
 #define BUTTON_DEFAULT_POS_Y 10.0
 
 
+//picture button component
+#define PICTURE_BUTTON_REFRESH_LOBBY_LIST_TEXTURE "pictureButtonRefreshLobbyListTexture.png"
+#define PICTURE_BUTTON_LOGOUT_TEXTURE "pictureButtonLogoutTexture.png"
+#define PICTURE_BUTTON_QUIT_TEXTURE "pictureButtonQuitTexture.png"
+#define PICTURE_BUTTON_TEXT_POS_X 0.0
+#define PICTURE_BUTTON_TEXT_POS_Y 35.0
+
 //checkBox component
 #define CHECKBOX_DEFAULT_TEXT "checkbox"
 #define CHECKBOX_CHECKED_TEXTURE "checkBoxCheckedTexture.png"
