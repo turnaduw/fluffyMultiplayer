@@ -81,6 +81,11 @@ namespace FluffyMultiplayer
     appWindow.setFramerateLimit(60);
 
   }
+  void App::close()
+  {
+    std::cout << "app has been safely closed." << std::endl;
+    appWindow.close();
+  }
 
   int App::getServerListCount() const
   {

@@ -74,6 +74,7 @@ namespace FluffyMultiplayer
       }
 
       void init();
+      void close();
       void run();
       void clearIdentity();
       void setIdentity(std::string);
