@@ -48,6 +48,8 @@
 #define GAME_MODE_LIST {"Mensch","Chess","TicTacToe"}
 #define MAX_PLAYER_LIST {"2","4","6","8","10"}
 
+#define UI_COMPONENT_TEXTURE_DEFAULT "./somewhere/componentTextureNotFound.png"
+#define UI_COMPONENT_FONT_DEFAULT "./somewhere/componentFontNotFound.ttf"
 
 
 //---------------------------- Form Elements
