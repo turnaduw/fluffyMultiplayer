@@ -133,4 +133,9 @@
 #define SPINBOX_SPIN_BUTTON_PADDING_Y 35
 
 
+//icon text component
+#define ICON_TEXT_TEXT_PADDING_X +10.0
+#define ICON_TEXT_TEXT_PADDING_Y +50.0
+#define ICON_TEXT_DEFAULT_FONT_SIZE 17
+#define ICON_TEXT_DEFAULT_STYLE sf::Text::Bold
 #endif
