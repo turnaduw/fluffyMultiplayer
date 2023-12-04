@@ -1,7 +1,7 @@
 #!/bin/bash
 compileMain="main.cpp ./include/*.h ./include/states/*.h ./include/uiComponents/*.h ./src/*.cpp ./src/states/*.cpp -o mc.run -std=c++11 -lboost_system -lboost_filesystem -lboost_thread -lsfml-graphics -lsfml-window -lsfml-system -pthread -lpthread"
 PS3="Select compile type: "
-select compileMode in normal debug run
+select compileMode in normal debug run runViaGDB
 do
   case $REPLY in
     1)
@@ -18,6 +18,10 @@ do
           ;;
     3)
           ./mc.run
+          break
+          ;;
+    4)
+          gdb ./mc.run
           break
           ;;
     *)
