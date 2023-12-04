@@ -25,6 +25,11 @@ namespace FluffyMultiplayer
         textText.setString(str);
       }
 
+      void setFontSize(unsigned int size)
+      {
+        textText.setCharacterSize(size);
+      }
+
       void initText(std::string str,float x, float y)
       {
         componentLoadAndSetFont(textText,textFont);
