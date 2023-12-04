@@ -5,6 +5,15 @@
 #include "../uiComponents/textInput.h"
 #include "../uiComponents/button.h"
 #include "../uiComponents/pictureButton.h"
+#include "../uiComponents/lobbyCell.h"
+#include "../config.h"
+#include <array>
+#include <vector>
+#include <string>
+
+//random number
+#include <cstdlib>
+#include <ctime>
 
 namespace FluffyMultiplayer
 {
@@ -14,8 +23,14 @@ namespace FluffyMultiplayer
   class StateMainPage : public AppState
   {
   private:
+
+    //lobby
     std::vector<FluffyMultiplayer::LobbyData> lobbyList;
     FluffyMultiplayer::LobbyData selectedLobby;
+
+    std::vector<std::string> lobbyGameModeTexturePathList;
+
+
 
     bool isPedding;//to make a popup as loading plase wait, avoid multiple requests from client
 
@@ -60,6 +75,11 @@ namespace FluffyMultiplayer
     FluffyMultiplayer::PictureButton buttonRefreshLobbyList;
     FluffyMultiplayer::PictureButton buttonQuit;
 
+
+    //lobby
+    std::array<FluffyMultiplayer::LobbyCell,MAX_LOBBY_CELL_LOAD> lobbyCells;
+    void initAllLobbyCells();
+    int genrate_random_number(int ,int);
 
   public:
     StateMainPage();

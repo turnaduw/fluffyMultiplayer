@@ -2,10 +2,48 @@
 
 namespace FluffyMultiplayer
 {
+
+  int StateMainPage::genrate_random_number(int min, int max)
+  {
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
+    int randomNumber = std::rand() % (max - min + 1) + min;
+    return randomNumber;
+  }
+
+  void StateMainPage::initAllLobbyCells()
+  {
+    int tempId=1;
+    int maxplayers,currentplayers,gamemode;
+    for(int lobbies=0; lobbies<MAX_LOBBY_CELL_LOAD; lobbies++)
+    {
+      for(float y=0; y<static_cast<float>(WINDOW_WIDTH); y+=100.0)
+      {
+        for(float x=0; x<static_cast<float>(WINDOW_WIDTH); x+=100.0)
+        {
+          tempId++;
+          maxplayers = genrate_random_number(1,20);
+          currentplayers = genrate_random_number(0,maxplayers);
+          gamemode = genrate_random_number(0,2);
+          bool temp[6];
+          for(int i=0; i<=5; i++)
+          {
+            temp[i] = static_cast<bool>(genrate_random_number(0,1));
+          }
+
+          FluffyMultiplayer::LobbyData manualLobbyA = {temp[0],temp[1],temp[2],temp[3],temp[4],temp[5],tempId,maxplayers,currentplayers,gamemode};
+          lobbyCells[tempId-1].init(&lobbyGameModeTexturePathList, manualLobbyA, x, y);
+        }
+      }
+    }
+  }
+
   StateMainPage::StateMainPage()
   {
     refreshLobbyListCounter=MC_MAIN_PAGE_LOBBY_LIST_REFRESH_TIMER;
     isPedding=false;
+
+    //set game mode textures list
+    lobbyGameModeTexturePathList = GAME_MODE_TEXTURE_LIST;
 
     //titles
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
@@ -33,7 +71,17 @@ namespace FluffyMultiplayer
     line[0] = sf::Vertex(sf::Vector2f(0, 250));
     line[1] = sf::Vertex(sf::Vector2f(800, 250));
 
-    //items.
+
+
+    //lobbies
+    // if(lobbyList.size()>0)
+    {
+      FluffyMultiplayer::LobbyData manualLobbyA = {false,true,true,true,true,true,1,10,2,1};
+      lobbyCells[0].init(&lobbyGameModeTexturePathList, manualLobbyA, 200.0, 500.0);
+    }
+
+    initAllLobbyCells();
+
 
   }
 
@@ -56,6 +104,15 @@ namespace FluffyMultiplayer
       buttonRefreshLobbyList.render(window);
       buttonQuit.render(window);
       window.draw(line, 2, sf::Lines);
+
+
+      if(lobbyCells.size()>0)
+      {
+        for(int i=0; i<=MAX_LOBBY_CELL_LOAD-1; i++)
+        {
+          lobbyCells[i].render(window);
+        }
+      }
     }
   }
 
