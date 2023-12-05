@@ -12,15 +12,17 @@ namespace FluffyMultiplayer
 
   void StateMainPage::initAllLobbyCells()
   {
-    int tempId=1;
     int maxplayers,currentplayers,gamemode;
+    float x = 0.0;
+    float y = 0.0;
+    int lid=1;
     for(int lobbies=0; lobbies<MAX_LOBBY_CELL_LOAD; lobbies++)
     {
-      for(float y=0; y<static_cast<float>(WINDOW_WIDTH); y+=100.0)
+      lid++;
+      // for(float y=0; y<10; y+=100.0)
       {
-        for(float x=0; x<static_cast<float>(WINDOW_WIDTH); x+=100.0)
+        // for(float x=0; x<5; x+=100.0)
         {
-          tempId++;
           maxplayers = genrate_random_number(1,20);
           currentplayers = genrate_random_number(0,maxplayers);
           gamemode = genrate_random_number(0,2);
@@ -30,8 +32,10 @@ namespace FluffyMultiplayer
             temp[i] = static_cast<bool>(genrate_random_number(0,1));
           }
 
-          FluffyMultiplayer::LobbyData manualLobbyA = {temp[0],temp[1],temp[2],temp[3],temp[4],temp[5],tempId,maxplayers,currentplayers,gamemode};
-          lobbyCells[tempId-1].init(&lobbyGameModeTexturePathList, manualLobbyA, x, y);
+          FluffyMultiplayer::LobbyData manualLobbyA = {temp[0],temp[1],temp[2],temp[3],temp[4],temp[5],lid,maxplayers,currentplayers,gamemode};
+          lobbyCells[lobbies].init(&lobbyGameModeTexturePathList, manualLobbyA, x, y);
+          x+=100.0;
+          y+=50.0;
         }
       }
     }
@@ -74,12 +78,6 @@ namespace FluffyMultiplayer
 
 
     //lobbies
-    // if(lobbyList.size()>0)
-    {
-      FluffyMultiplayer::LobbyData manualLobbyA = {false,true,true,true,true,true,1,10,2,1};
-      lobbyCells[0].init(&lobbyGameModeTexturePathList, manualLobbyA, 200.0, 500.0);
-    }
-
     initAllLobbyCells();
 
 
@@ -105,13 +103,9 @@ namespace FluffyMultiplayer
       buttonQuit.render(window);
       window.draw(line, 2, sf::Lines);
 
-
-      if(lobbyCells.size()>0)
+      for(int i=0; i<MAX_LOBBY_CELL_LOAD; i++)
       {
-        for(int i=0; i<=MAX_LOBBY_CELL_LOAD-1; i++)
-        {
-          lobbyCells[i].render(window);
-        }
+        lobbyCells[i].render(window);
       }
     }
   }
@@ -342,18 +336,19 @@ namespace FluffyMultiplayer
       {
         return new FluffyMultiplayer::StateEnd;
       }
+      else //is an element of lobby list
+      {
+        FluffyMultiplayer::LobbyData clickedLobby;
+        for(int i=0; i<MAX_LOBBY_CELL_LOAD; i++)
+        {
+          if(lobbyCells[i].getButtonBound().contains(mousePosition))
+          {
+            clickedLobby = lobbyCells[i].getLobbyData();
+            std::cout << "clicked on lobby from lobby list lobby id=" << clickedLobby.id << std::endl;
+          }
+        }
+      }
 
-      // if(lobbyList.size()>=1)
-      // {
-      //   for(auto element : lobbyList)
-      //   {
-      //     if(element.getBound().contains(mousePosition))
-      //     {
-      //       std::cout << "clicked on lobby from lobby list lobby id=" << element.id << std::endl;
-      //       // return new FluffyMultiplayer::StateShowLobbyDetails(selectedLobby);
-      //     }
-      //   }
-      // }
     }
 
 
