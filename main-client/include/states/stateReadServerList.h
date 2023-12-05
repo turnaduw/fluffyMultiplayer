@@ -12,6 +12,9 @@
 //file existant include
 #include <boost/filesystem.hpp>
 
+#include <vector>
+#include <string>
+
 namespace FluffyMultiplayer
 {
   class App; // Forward declaration of App class

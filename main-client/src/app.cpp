@@ -38,15 +38,15 @@ namespace FluffyMultiplayer
           size_t receive_length = socket.receive(receive_data,senderEndpoint);
           if(receive_length >=1)
           {
-            std::cout << "server ip,port=" << server.ip << ":" << server.port << std::endl;
-            std::cout << "sender ip,port=" << senderEndpoint.address() << ":" << senderEndpoint.port() << std::endl;
+            //if this dont call maybe sometimes thread starts and another section change ip n port in that time and time ip,port still wrong make program wrong
+            server = getServerAddress();
           }
           if(receive_length >=1 &&
             senderEndpoint.address() == server.ip &&
             senderEndpoint.port() == server.port)
             {
               data = std::string(receive_data,receive_length);
-              std::cout << "received data = " << data << ";~;" << std::endl;
+              std::cout << "received from: " <<  senderEndpoint.address() << ":" << senderEndpoint.port() << " data = " << data << "]" << std::endl;
               dSecurity.decryptData(data);
               receivedDataQueue.push(data);
             }

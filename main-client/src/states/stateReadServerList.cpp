@@ -27,11 +27,25 @@ namespace FluffyMultiplayer
     boost::asio::ip::address ip = boost::asio::ip::address::from_string(MC_SERVER_DEFAULT_IP);
     unsigned short port = MC_SERVER_DEFAULT_PORT;
 
+    //to check some invalid ip's like 0.0.0.0
+    std::vector<std::string> server_ip_not_allowed = MC_SERVER_IP_NOT_ALLOWED_LIST;
+    FluffyMultiplayer::AnAddress tempAddress = {ip,port};
+
     int indexSeparator = findIndexOfChar( line, static_cast<char>(separator[0]) );
     int indexEndline = findIndexOfChar ( line, static_cast<char>(endline[0]) );
 
     //convert line into ip and port but type is string
     std::string ip_str = line.substr(0,indexSeparator);
+    for(auto element : server_ip_not_allowed)
+    {
+      if(element == ip_str)
+      {
+        std::cout << "from serverlist.txt server ip is not allowed so selected is default: " << ip << ":" << port << std::endl;
+        return tempAddress;
+      }
+    }
+
+
     std::string port_str = line.substr(indexSeparator+1, indexEndline);
 
     //to avoid return invalid ip or port instead return a default values
@@ -44,9 +58,7 @@ namespace FluffyMultiplayer
       //convert string ip into udp ip
       ip = boost::asio::ip::address::from_string(ip_str);
     }
-
-    FluffyMultiplayer::AnAddress tempAddress = {ip,port};
-    std::cout << "from serverlist.txt server selected is: " << ip << ":" << port << std::endl;
+    tempAddress = {ip,port};
     return tempAddress;
   }
 
