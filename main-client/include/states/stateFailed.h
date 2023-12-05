@@ -2,6 +2,8 @@
 #define H_STATE_FAILED
 
 #include "../appState.h"
+#include "../uiComponents/button.h"
+#include <array>
 
 namespace FluffyMultiplayer
 {
@@ -17,6 +19,12 @@ namespace FluffyMultiplayer
     FluffyMultiplayer::AppState* state3;
     std::string* requestData;
     std::string text;
+
+    //ui
+    std::array<FluffyMultiplayer::Button,3> buttons;
+    //mouse event handel variable to delecre once, not per loop delcre
+    sf::Vector2f mousePosition;
+    
   public:
     StateFailed(std::string, FluffyMultiplayer::AppState* ok,std::string*);
 

@@ -2,6 +2,7 @@
 #define H_STATE_WAIT_FOR_RESPONSE
 
 #include "../appState.h"
+#include "../uiComponents/button.h"
 
 namespace FluffyMultiplayer
 {
@@ -36,6 +37,10 @@ namespace FluffyMultiplayer
     //create lobby form
     FluffyMultiplayer::CreateLobbyFormData* createLobbyData_ptr;
 
+
+    FluffyMultiplayer::Button buttonRetry;
+    //mouse event handel variable to delecre once, not per loop delcre
+    sf::Vector2f mousePosition;
 
   public:
     // StateWaitForResponse(std::string text,const std::string& request);

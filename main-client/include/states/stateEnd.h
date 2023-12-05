@@ -2,6 +2,7 @@
 #define H_STATE_END
 
 #include "../appState.h"
+#include "../uiComponents/button.h"
 
 namespace FluffyMultiplayer
 {
@@ -10,6 +11,13 @@ namespace FluffyMultiplayer
 
   class StateEnd : public AppState
   {
+  private:
+    FluffyMultiplayer::Button buttonConfirm;
+    FluffyMultiplayer::Button buttonCancel;
+
+    //mouse event handel variable to delecre once, not per loop delcre
+    sf::Vector2f mousePosition;
+
   public:
     StateEnd();
     ~StateEnd();

@@ -26,8 +26,11 @@ namespace FluffyMultiplayer
     lobbyAsText += "\nis lobby in-game:" + boolToString(selectedLobby.lobbyStatusInGame);
     lobbyAsText += "\nlobby will show in lobbyList: " + boolToString(selectedLobby.showLobbyInList);
 
-    std::string final=   "state StateShowLobbyDetails\nare you sure to join this lobby?\npress enter to join other keys to cancel.\n\nlobby=\n" + lobbyAsText;
+    std::string final=   "state StateShowLobbyDetails\nare you sure to join this lobby?\npress enter to join other keys to cancel.\n\nlobby=\n\n" + lobbyAsText;
     initSimpleText(fontPath,final);
+
+    buttonConfirm.init("Join",200.0,200.0, sf::Color::Black, sf::Color::White, 60,30, 22);
+    buttonCancel.init("Cancel",400.0,200.0, sf::Color::Black, sf::Color::White, 60,30, 22);
   }
 
   StateShowLobbyDetails::~StateShowLobbyDetails()
@@ -38,6 +41,8 @@ namespace FluffyMultiplayer
   void StateShowLobbyDetails::render(sf::RenderWindow& window)
   {
     window.draw(theText);
+    buttonConfirm.render(window);
+    buttonCancel.render(window);
   }
 
 
@@ -53,6 +58,27 @@ namespace FluffyMultiplayer
   FluffyMultiplayer::AppState* StateShowLobbyDetails::eventHandle(FluffyMultiplayer::App& app,
                             sf::Event& event)
   {
+    //mouse realtime
+    if(event.type == sf::Event::MouseButtonPressed)
+    {
+        mousePosition = app.appWindow.mapPixelToCoords(sf::Mouse::getPosition(app.appWindow));
+
+        if(buttonConfirm.getButtonBound().contains(mousePosition))
+        {
+          std::cout<<"mouse is clicked on button confirm"<< std::endl;
+          return new FluffyMultiplayer::StateJoinLobby(lobby.address);
+        }
+        else if(buttonCancel.getButtonBound().contains(mousePosition))
+        {
+          std::cout<<"mouse is clicked on button cancel"<< std::endl;
+          return new FluffyMultiplayer::StateMainPage;
+        }
+    }
+
+
+
+
+
     switch(event.type)
     {
       //keyboard

@@ -47,6 +47,7 @@ namespace FluffyMultiplayer
 
       timeouttxt.setFont(theFont);
       timeouttxt.setString("timedout press enter to retry.");
+      buttonRetry.init("Retry", 200.0,200.0, sf::Color::Black,sf::Color::White, 60,30, 22);
     }
 
 
@@ -92,6 +93,7 @@ namespace FluffyMultiplayer
 
       timeouttxt.setFont(theFont);
       timeouttxt.setString("timedout press enter to retry.");
+      buttonRetry.init("Retry", 200.0,200.0, sf::Color::Black,sf::Color::White, 60,30, 22);
     }
 
 
@@ -148,6 +150,7 @@ namespace FluffyMultiplayer
 
         timeouttxt.setFont(theFont);
         timeouttxt.setString("timedout press enter to retry.");
+        buttonRetry.init("Retry", 200.0,200.0, sf::Color::Black,sf::Color::White, 60,30, 22);
       }
 
 
@@ -206,6 +209,7 @@ namespace FluffyMultiplayer
 
         timeouttxt.setFont(theFont);
         timeouttxt.setString("timedout press enter to retry.");
+        buttonRetry.init("Retry", 200.0,200.0, sf::Color::Black,sf::Color::White, 60,30, 22);
       }
 
 
@@ -237,6 +241,7 @@ namespace FluffyMultiplayer
 
     timeouttxt.setFont(theFont);
     timeouttxt.setString("timedout press enter to retry.");
+    buttonRetry.init("Retry", 200.0,200.0, sf::Color::Black,sf::Color::White, 60,30, 22);
   }
 
   StateWaitForResponse::StateWaitForResponse(std::string _text,
@@ -256,6 +261,7 @@ namespace FluffyMultiplayer
 
     timeouttxt.setFont(theFont);
     timeouttxt.setString("timedout press enter to retry.");
+    buttonRetry.init("Retry", 200.0,200.0, sf::Color::Black,sf::Color::White, 60,30, 22);
   }
 
 
@@ -280,6 +286,7 @@ namespace FluffyMultiplayer
     if(timeoutCounter<=0)
     {
       window.draw(timeouttxt);
+      buttonRetry.render(window);
     }
     else
     {
@@ -410,6 +417,19 @@ namespace FluffyMultiplayer
   FluffyMultiplayer::AppState* StateWaitForResponse::eventHandle(FluffyMultiplayer::App& app,
                             sf::Event& event)
   {
+    //mouse realtime
+    if(event.type == sf::Event::MouseButtonPressed)
+    {
+        mousePosition = app.appWindow.mapPixelToCoords(sf::Mouse::getPosition(app.appWindow));
+
+        if(buttonRetry.getButtonBound().contains(mousePosition))
+        {
+          std::cout<<"mouse is clicked on button retry"<< std::endl;
+          if(state1!=nullptr)
+            return state1;
+        }
+    }
+
     switch(event.type)
     {
       //keyboard

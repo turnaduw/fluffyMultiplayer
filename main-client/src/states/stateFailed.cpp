@@ -12,6 +12,7 @@ namespace FluffyMultiplayer
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
     text = "Failed: "+_text;
     initSimpleText(fontPath, text);
+    buttons[0].init("OK",200.0,200.0, sf::Color::Black, sf::Color::White, 60,30, 22);
   }
 
   StateFailed::StateFailed(std::string _text,FluffyMultiplayer::AppState* s1,
@@ -24,6 +25,9 @@ namespace FluffyMultiplayer
    std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
    text = "Failed: "+_text;
    initSimpleText(fontPath, text);
+   buttons[0].init("Retry",200.0,200.0, sf::Color::Black, sf::Color::White, 60,30, 22);
+   buttons[1].init("Cancel/Quit",400.0,200.0, sf::Color::Red, sf::Color::White, 60,30, 22);
+
  }
 
   StateFailed::StateFailed(std::string _text,FluffyMultiplayer::AppState* s1,
@@ -36,6 +40,9 @@ namespace FluffyMultiplayer
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
     text = "Failed: "+_text;
     initSimpleText(fontPath, text);
+    buttons[0].init("Retry",200.0,200.0, sf::Color::Black, sf::Color::White, 60,30, 22);
+    buttons[1].init("Cancel/Quit",400.0,200.0, sf::Color::Red, sf::Color::White, 60,30, 22);
+    buttons[2].init("Skip",300.0,500.0, sf::Color::Black, sf::Color::White, 60,30, 22);
   }
 
 
@@ -47,6 +54,26 @@ namespace FluffyMultiplayer
   void StateFailed::render(sf::RenderWindow& window)
   {
     window.draw(theText);
+    switch (outputStateCount)
+    {
+      case 1:
+      {
+        buttons[0].render(window);
+      }break;
+
+      case 2:
+      {
+        buttons[0].render(window);
+        buttons[1].render(window);
+      }break;
+
+      case 3:
+      {
+        buttons[0].render(window);
+        buttons[1].render(window);
+        buttons[2].render(window);
+      }break;
+    }
   }
 
 
@@ -62,6 +89,29 @@ namespace FluffyMultiplayer
   FluffyMultiplayer::AppState* StateFailed::eventHandle(FluffyMultiplayer::App& app,
                             sf::Event& event)
   {
+    //mouse realtime
+    if(event.type == sf::Event::MouseButtonPressed)
+    {
+        mousePosition = app.appWindow.mapPixelToCoords(sf::Mouse::getPosition(app.appWindow));
+
+        if(buttons[0].getButtonBound().contains(mousePosition))
+        {
+          std::cout<<"mouse is clicked on button retry/ok"<< std::endl;
+          return state1;
+        }
+        else if(buttons[1].getButtonBound().contains(mousePosition))
+        {
+          std::cout<<"mouse is clicked on button cancel/quit"<< std::endl;
+          return state2;
+        }
+        else if(buttons[2].getButtonBound().contains(mousePosition))
+        {
+          std::cout<<"mouse is clicked on button skip"<< std::endl;
+          return state3;
+        }
+    }
+
+
     switch(event.type)
     {
       //keyboard
@@ -72,15 +122,18 @@ namespace FluffyMultiplayer
             case 1:
             {
               if(state1!=nullptr)
-                return state1;
+              {
+                if(event.key.code == sf::Keyboard::Q)
+                  return state1;
+              }
             }break;
             case 2:
             {
               if(state1!=nullptr && state2!=nullptr)
               {
-                if(event.key.code == sf::Keyboard::Enter)
+                if(event.key.code == sf::Keyboard::Q)
                   return state1;
-                else
+                else if(event.key.code == sf::Keyboard::W)
                   return state2;
               }
             }break;
@@ -88,11 +141,11 @@ namespace FluffyMultiplayer
             {
               if(state1!=nullptr && state2!=nullptr && state3!=nullptr)
               {
-                if(event.key.code == sf::Keyboard::Enter)
+                if(event.key.code == sf::Keyboard::Q)
                   return state1;
-                else if(event.key.code == sf::Keyboard::Space)
+                else if(event.key.code == sf::Keyboard::W)
                   return state2;
-                else
+                else if(event.key.code == sf::Keyboard::E)
                   return state3;
               }
             }break;
