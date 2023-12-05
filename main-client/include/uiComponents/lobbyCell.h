@@ -23,6 +23,7 @@ namespace FluffyMultiplayer
       sf::Sprite button;
       sf::Texture buttonTexture;
       std::string buttonTexturePath;
+      sf::FloatRect buttonBound;
 
       //status elements
       FluffyMultiplayer::Icon iconVoiceChatStatus;
@@ -36,6 +37,12 @@ namespace FluffyMultiplayer
 
 
     public:
+
+      sf::FloatRect getButtonBound() const
+      {
+        return buttonBound;
+      }
+
       FluffyMultiplayer::LobbyData getLobbyData() const
       {
         return lobbyInfo;
@@ -49,6 +56,9 @@ namespace FluffyMultiplayer
         componentLoadTexture(buttonTexture,buttonTexturePath);
         button.setTexture(buttonTexture);
         button.setPosition(x,y);
+        // button.rotate(LOBBY_CELL_ROTATE_VALUE);
+        buttonBound = button.getGlobalBounds();
+
 
         //set received data into local
         lobbyInfo = lobby_data;
@@ -176,7 +186,6 @@ namespace FluffyMultiplayer
 
 
         //rotate all inited elements
-        button.rotate(LOBBY_CELL_ROTATE_VALUE);
         // iconVoiceChatStatus.rotate(LOBBY_CELL_ROTATE_VALUE);
         // iconTextChatStatus.rotate(LOBBY_CELL_ROTATE_VALUE);
         // iconSpecterStatus.rotate(LOBBY_CELL_ROTATE_VALUE);
