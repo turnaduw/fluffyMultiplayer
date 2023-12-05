@@ -8,9 +8,7 @@
 //convert string to int
 #include <cstdlib>
 
-#include "error-list.h"
-#include "internal-error-list.h"
-#include "response-list.h"
+#include "server-request-response-list.h"
 
 #include "config.h"
 

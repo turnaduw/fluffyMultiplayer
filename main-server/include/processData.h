@@ -1,10 +1,8 @@
 #ifndef H_PROCESS_DATA_CLASS
 #define H_PROCESS_DATA_CLASS
 
-#include "error-list.h"
-#include "internal-error-list.h"
-#include "request-list.h"
-#include "response-list.h"
+#include "server-request-response-list.h"
+
 
 #include "config.h" //acess to MS_DATA_CODE_INDEX_A & ...B & ...C
 
