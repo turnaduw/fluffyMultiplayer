@@ -34,8 +34,15 @@ namespace FluffyMultiplayer
       responseCodeAcceptor2 = successCode;
 
       //split data from LoginFormData into a string req
+
+
+      //get computer host id
+      long hostId = gethostid();
+
+
       std::string temp = std::to_string(MC_REQUEST_LOGIN) +  _loginData._inputs[0]+ MC_REQUEST_DELIMITER;
       temp += _loginData._inputs[1] +MC_REQUEST_DELIMITER;
+      temp += std::to_string(hostId) + MC_REQUEST_DELIMITER; //hardwareId
       temp += "" MC_REQUEST_DELIMITER; //empty identity
       temp += MC_REQUEST_CLOSER;
       requestData = temp;
@@ -79,10 +86,17 @@ namespace FluffyMultiplayer
       //third button
       state3 = nullptr;
 
+
+
       //split data from LoginFormData into a string req
-      std::string temp = std::to_string(MC_REQUEST_LOGIN) +  registerData_ptr->_inputs[0]+ MC_REQUEST_DELIMITER;
+      //get computer host id
+      long hostId = gethostid();
+
+
+      std::string temp = std::to_string(MC_REQUEST_REGISTER) +  registerData_ptr->_inputs[0]+ MC_REQUEST_DELIMITER;
       temp += registerData_ptr->_inputs[1] +MC_REQUEST_DELIMITER;
       temp += registerData_ptr->_inputs[2] +MC_REQUEST_DELIMITER;
+      temp += std::to_string(hostId) + MC_REQUEST_DELIMITER; //hardwareId
       temp += MC_REQUEST_CLOSER;
       requestData = temp;
 
@@ -193,6 +207,7 @@ namespace FluffyMultiplayer
 
         //create request
         std::string temp = std::to_string(MC_REQUEST_CREATE_LOBBY) + MC_REQUEST_DELIMITER;
+        // temp += identityt
         temp += std::to_string(createLobbyData_ptr->gameMode) + MC_REQUEST_DELIMITER;
         temp += std::to_string(createLobbyData_ptr->maxPlayers) + MC_REQUEST_DELIMITER;
         temp += std::to_string(createLobbyData_ptr->isTextChatAllowed) + MC_REQUEST_DELIMITER;

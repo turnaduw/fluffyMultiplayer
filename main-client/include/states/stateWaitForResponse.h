@@ -4,6 +4,9 @@
 #include "../appState.h"
 #include "../uiComponents/button.h"
 
+//to get host id from computer
+#include <unistd.h>
+
 namespace FluffyMultiplayer
 {
   class App; // Forward declaration of App class

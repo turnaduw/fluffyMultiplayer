@@ -52,10 +52,10 @@ namespace FluffyMultiplayer
     //search then remove ip n port from client list
   }
 
-  std::vector<int> ProcessData::dataIndexes(const std::string& data, const std::string& delimiter)
+  std::vector<int> ProcessData::dataIndexes(const std::string& data, const std::string& delimiter) const
   {
     std::vector<int> result;
-    for(int i=0; i<=data.length()-1; i++)
+    for(int i=0; i<data.length(); i++)
     {
       int index = data.find(delimiter);
       if (index != std::string::npos)
@@ -72,13 +72,14 @@ namespace FluffyMultiplayer
       endIndex = data.length()-1;
 
     std::vector<int>indexes = dataIndexes(data,delimiter);
-    for(int i=0; i<=indexes.size(); i++)
+    for(int i=0; i<indexes.size(); i++)
     {
       int index=indexes[i];
       if(index<startIndex) //skip, because startIndex is not not included.
         continue;
 
-      result.push_back(data.substr(index,endIndex));
+      std::cout << "dataSeparator() , data=" << data.substr(index,endIndex) << std::endl;
+      // result.push_back(data.substr(index,endIndex));
     }
     return result;
   }
@@ -189,7 +190,26 @@ namespace FluffyMultiplayer
             if(checkConnection())
             {
               std::vector<std::string>data = dataSeparator(receivedData, MS_DATA_DELIMITER, MS_DATA_START_AT_INDEX);
-              FluffyMultiplayer::LoginClientData client = { data[0], data[1], data[2], data[3] };
+              FluffyMultiplayer::LoginClientData client;
+              switch (data.size())
+              {
+                case 1:
+                  client = { data[0] , "" , "" , "" };
+                    break;
+
+                case 2:
+                  client = { data[0], data[1] , "" , "" };
+                  break;
+
+                case 3:
+                  client = { data[0], data[1], data[2] , ""};
+                  break;
+
+                case 4:
+                  client = { data[0], data[1], data[2], data[3] };
+                  break;
+              }
+              // FluffyMultiplayer::LoginClientData client = { data[0], data[1], data[2], data[3] };
 
               //data check
               if(isDataValidated(client))
@@ -212,7 +232,26 @@ namespace FluffyMultiplayer
             if(checkConnection())
             {
               std::vector<std::string>data = dataSeparator(receivedData, MS_DATA_DELIMITER, MS_DATA_START_AT_INDEX);
-              FluffyMultiplayer::RegisterClientData client = { data[0], data[1], data[2], data[3] };
+              FluffyMultiplayer::RegisterClientData client;
+              switch(data.size())
+              {
+                case 1:
+                  client = { data[0] , "" , "" , "" };
+                    break;
+
+                case 2:
+                  client = { data[0], data[1] , "" , "" };
+                  break;
+
+                case 3:
+                  client = { data[0], data[1], data[2] , ""};
+                  break;
+
+                case 4:
+                  client = { data[0], data[1], data[2], data[3] };
+                  break;
+              }
+              // FluffyMultiplayer::RegisterClientData client = { data[0], data[1], data[2], data[3] };
 
               if(isDataValidated(client))
               {
