@@ -45,7 +45,7 @@ namespace FluffyMultiplayer
     void disconnectClient(const boost::asio::ip::address&, const unsigned short&);
 
     std::vector<int> dataIndexes(const std::string&, const std::string&) const;
-    std::vector<std::string> dataSeparator(const std::string&, std::string, int,int);
+    std::vector<std::string> dataSeparator(const std::string&, std::string, int);
 
     int separateCode(const std::string&); //means requesst code
 

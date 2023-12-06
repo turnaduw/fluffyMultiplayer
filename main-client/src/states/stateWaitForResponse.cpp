@@ -93,9 +93,9 @@ namespace FluffyMultiplayer
       long hostId = gethostid();
 
 
-      std::string temp = std::to_string(MC_REQUEST_REGISTER) +  registerData_ptr->_inputs[0]+ MC_REQUEST_DELIMITER;
+      std::string temp = std::to_string(MC_REQUEST_REGISTER) +  registerData_ptr->_inputs[2]+ MC_REQUEST_DELIMITER;
+      temp += registerData_ptr->_inputs[0] +MC_REQUEST_DELIMITER;
       temp += registerData_ptr->_inputs[1] +MC_REQUEST_DELIMITER;
-      temp += registerData_ptr->_inputs[2] +MC_REQUEST_DELIMITER;
       temp += std::to_string(hostId) + MC_REQUEST_DELIMITER; //hardwareId
       temp += MC_REQUEST_CLOSER;
       requestData = temp;

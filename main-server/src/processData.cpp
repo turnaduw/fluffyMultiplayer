@@ -55,21 +55,33 @@ namespace FluffyMultiplayer
   std::vector<int> ProcessData::dataIndexes(const std::string& data, const std::string& delimiter) const
   {
     std::vector<int> result;
+    std::string str;
+    str = data;
+
+    int index;
     for(int i=0; i<data.length(); i++)
     {
-      int index = data.find(delimiter);
-      if (index != std::string::npos)
-        result.push_back(index);
+      if(str.empty())
+        break;
+
+      index = str.find(delimiter);
+      if (index == std::string::npos) //delimiter not found
+        break;
+
+      str = str.substr(index+delimiter.length() ,str.length()-1);
+      result.push_back(index);
     }
+    for(int e: result)
+      std::cout << "e=" << e << std::endl;
+
     return result;
   }
 
 
-  std::vector<std::string> ProcessData::dataSeparator(const std::string& data, std::string delimiter, int startIndex=0, int endIndex=0)
+  std::vector<std::string> ProcessData::dataSeparator(const std::string& data, std::string delimiter, int startIndex=0)
   {
     std::vector<std::string> result;
-    if(endIndex==0)
-      endIndex = data.length()-1;
+    std::string str = data;
 
     std::vector<int>indexes = dataIndexes(data,delimiter);
     for(int i=0; i<indexes.size(); i++)
@@ -78,8 +90,9 @@ namespace FluffyMultiplayer
       if(index<startIndex) //skip, because startIndex is not not included.
         continue;
 
-      std::cout << "dataSeparator() , data=" << data.substr(index,endIndex) << std::endl;
-      // result.push_back(data.substr(index,endIndex));
+      std::cout << "dataSeparator() , data=" << str << std::endl;
+      result.push_back(str.substr(0,index-delimiter.length()));
+      str = str.substr(index+delimiter.length() ,str.length()-1);
     }
     return result;
   }
@@ -89,34 +102,34 @@ namespace FluffyMultiplayer
 
   bool ProcessData::isDataValidated(FluffyMultiplayer::RegisterClientData& client)
   {
-    if(  client.username.length() < MS_CLIENT_MINIMUM_USERNAME_LENGTH || client.username.length() > MS_CLIENT_MAXIMUM_USERNAME_LENGTH
-      || client.password.length() < MS_CLIENT_MINIMUM_PASSWORD_LENGTH || client.password.length() > MS_CLIENT_MAXIMUM_PASSWORD_LENGTH
-      || client.hardwareId.length() < MS_CLIENT_MINIMUM_HARDWAREID_LENGTH || client.hardwareId.length() > MS_CLIENT_MAXIMUM_HARDWAREID_LENGTH
-      || client.email.length() < MS_CLIENT_MINIMUM_EMAIL_LENGTH || client.email.length() > MS_CLIENT_MAXIMUM_EMAIL_LENGTH)
-    {
-      return false;
-    }
+    // if(  client.username.length() < MS_CLIENT_MINIMUM_USERNAME_LENGTH || client.username.length() > MS_CLIENT_MAXIMUM_USERNAME_LENGTH
+    //   || client.password.length() < MS_CLIENT_MINIMUM_PASSWORD_LENGTH || client.password.length() > MS_CLIENT_MAXIMUM_PASSWORD_LENGTH
+    //   || client.hardwareId.length() < MS_CLIENT_MINIMUM_HARDWAREID_LENGTH || client.hardwareId.length() > MS_CLIENT_MAXIMUM_HARDWAREID_LENGTH
+    //   || client.email.length() < MS_CLIENT_MINIMUM_EMAIL_LENGTH || client.email.length() > MS_CLIENT_MAXIMUM_EMAIL_LENGTH)
+    // {
+    //   return false;
+    // }
     return true;
   }
   bool ProcessData::isDataValidated(FluffyMultiplayer::CreateLobbyData& data)
   {
-    if(  data.identity.length() < MS_CLIENT_MINIMUM_IDENTITY_LENGTH
-      || data.identity.length() > MS_CLIENT_MAXIMUM_IDENTITY_LENGTH)
-    {
-      return false;
-    }
+    // if(  data.identity.length() < MS_CLIENT_MINIMUM_IDENTITY_LENGTH
+    //   || data.identity.length() > MS_CLIENT_MAXIMUM_IDENTITY_LENGTH)
+    // {
+    //   return false;
+    // }
     return true;
   }
 
   bool ProcessData::isDataValidated(FluffyMultiplayer::LoginClientData& client)
   {
-    if(  client.username.length() < MS_CLIENT_MINIMUM_USERNAME_LENGTH || client.username.length() > MS_CLIENT_MAXIMUM_USERNAME_LENGTH
-      || client.password.length() < MS_CLIENT_MINIMUM_PASSWORD_LENGTH || client.password.length() > MS_CLIENT_MAXIMUM_PASSWORD_LENGTH
-      || client.hardwareId.length() < MS_CLIENT_MINIMUM_HARDWAREID_LENGTH || client.hardwareId.length() > MS_CLIENT_MAXIMUM_HARDWAREID_LENGTH
-      || client.oldIdentity.length() < MS_CLIENT_MINIMUM_IDENTITY_LENGTH || client.oldIdentity.length() > MS_CLIENT_MAXIMUM_IDENTITY_LENGTH)
-    {
-      return false;
-    }
+    // if(  client.username.length() < MS_CLIENT_MINIMUM_USERNAME_LENGTH || client.username.length() > MS_CLIENT_MAXIMUM_USERNAME_LENGTH
+    //   || client.password.length() < MS_CLIENT_MINIMUM_PASSWORD_LENGTH || client.password.length() > MS_CLIENT_MAXIMUM_PASSWORD_LENGTH
+    //   || client.hardwareId.length() < MS_CLIENT_MINIMUM_HARDWAREID_LENGTH || client.hardwareId.length() > MS_CLIENT_MAXIMUM_HARDWAREID_LENGTH
+    //   || client.oldIdentity.length() < MS_CLIENT_MINIMUM_IDENTITY_LENGTH || client.oldIdentity.length() > MS_CLIENT_MAXIMUM_IDENTITY_LENGTH)
+    // {
+    //   return false;
+    // }
     return true;
   }
 
@@ -251,6 +264,7 @@ namespace FluffyMultiplayer
                   client = { data[0], data[1], data[2], data[3] };
                   break;
               }
+              std::cout << "processData REQ REQISGER PASSED CLinet info, email=" << client.email << "\nusername=" << client.username << "\npassword=" << client.password << "\nhardwareid=" << client.hardwareId << std::endl;
               // FluffyMultiplayer::RegisterClientData client = { data[0], data[1], data[2], data[3] };
 
               if(isDataValidated(client))

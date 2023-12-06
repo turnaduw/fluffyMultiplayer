@@ -157,6 +157,7 @@ namespace FluffyMultiplayer
 
   int FluffyDatabase::registerClient(const FluffyMultiplayer::RegisterClientData& client, std::string& outputIdentity)
   {
+    std::cout << "client info recieved to register is: \nemail=" << client.email << "\nusername=" << client.username << "\npassword=" << client.password << "\nhardwareid=" << client.hardwareId << std::endl;
       //search for that email address.
       std::string basic_query = "SELECT id FROM fm_client WHERE username=";
       basic_query += client.username + ";";
@@ -185,7 +186,7 @@ namespace FluffyMultiplayer
         basic_query = "SELECT id FROM fm_client WHERE username='";
         basic_query += client.username + ";";
         std::string result =  search_in_db(basic_query);
-        int clientId = FluffyMultiplayer::convertStringToInt(result.substr(3,result.length())); //count of charecter id + a '=' is 3 so result is on [3]
+        int clientId = FluffyMultiplayer::convertStringToInt(result.substr(3,result.length()-1)); //count of charecter id + a '=' is 3 so result is on [3]
         if(clientId<=0)
           return MS_ERROR_FAILED_TO_REGISTER_CLIENT; //failed to get client id
 
