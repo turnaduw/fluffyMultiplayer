@@ -51,20 +51,20 @@ namespace FluffyMultiplayer
 
   bool FluffyDataSecurity::isPasswordEasy(const std::string& password)
   {
-    if(password.empty() || password.size() < MS_CLIENT_MINIMUM_PASSWORD_LENGTH)
-      return true;
-
-    boost::regex pattern("[a-zA-Z]"); //password contains only alphabet
-    boost::regex pattern2("[a-z]+"); //password contains only alphabet
-    boost::regex pattern3("[A-Z]+"); //password contains only alphabet
-    boost::regex pattern4("\\d+"); //password contains only digits
-
-
-    if( boost::regex_match(password,pattern) ||
-        boost::regex_match(password,pattern2) ||
-        boost::regex_match(password,pattern3) ||
-        boost::regex_match(password,pattern4) )
-      return true;
+    // if(password.empty() || password.size() < MS_CLIENT_MINIMUM_PASSWORD_LENGTH)
+    //   return true;
+    //
+    // boost::regex pattern("[a-zA-Z]"); //password contains only alphabet
+    // boost::regex pattern2("[a-z]+"); //password contains only alphabet
+    // boost::regex pattern3("[A-Z]+"); //password contains only alphabet
+    // boost::regex pattern4("\\d+"); //password contains only digits
+    //
+    //
+    // if( boost::regex_match(password,pattern) ||
+    //     boost::regex_match(password,pattern2) ||
+    //     boost::regex_match(password,pattern3) ||
+    //     boost::regex_match(password,pattern4) )
+    //   return true;
 
     return false;
   }

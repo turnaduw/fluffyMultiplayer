@@ -39,8 +39,9 @@ namespace FluffyMultiplayer
             processD.separateCode(data),
             receive_endpoint.address(),
             receive_endpoint.port(),
-            std::string(data[MS_DATA_START_AT_INDEX],data.length()-1)
+            data
           };
+          std::cout << "\t\tdatadata=" << data << std::endl;
 
           std::cout << "data packaged= " << temp_queue.data << std::endl;
           receivedDataQueue.push(temp_queue);
