@@ -40,10 +40,12 @@ namespace FluffyMultiplayer
 
       // Close the file
       theFile.close();
+      std::cout << "success to wrote identity(" << app.getIdentity() << "on " CLIENT_LOCAL_APP_CONFIG_FILE << std::endl;
       return new FluffyMultiplayer::StateMainPage;
     }
     catch (std::exception& e)
     {
+      std::cout << "failed to wrote identity(" << app.getIdentity() << "on " CLIENT_LOCAL_APP_CONFIG_FILE << std::endl;
       return new FluffyMultiplayer::StateFailed
       (
         "failed to write identity to local files.\n",
