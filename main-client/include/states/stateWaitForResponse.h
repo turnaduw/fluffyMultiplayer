@@ -7,6 +7,9 @@
 //to get host id from computer
 #include <unistd.h>
 
+#include <vector>
+#include <string>
+
 namespace FluffyMultiplayer
 {
   class App; // Forward declaration of App class
@@ -27,6 +30,10 @@ namespace FluffyMultiplayer
     sf::Text timeouttxt;
     bool requestSent;
     int checkResponseCode(const std::string&);
+
+    std::string getIdentityFromResponsedData(const std::string& _data,std::string delimter,std::string closer);
+    // std::vector<std::string> dataSeparator(const std::string&, std::string, std::string, int);
+    // std::vector<std::string> responsedData;
 
     //login form
     FluffyMultiplayer::LoginFormData* loginData_ptr;

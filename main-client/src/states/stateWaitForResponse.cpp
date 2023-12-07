@@ -296,6 +296,57 @@ namespace FluffyMultiplayer
     return -1;
   }
 
+  /*
+  std::vector<std::string> StateWaitForResponse::dataSeparator(const std::string& _data, std::string delimiter, std::string closer, int ignoreFirstCharectersIndex=0)
+  {
+    int index;
+    std::vector<std::string> result;
+    std::string str=_data;
+
+
+    if(ignoreFirstCharectersIndex>0)
+        str = str.substr(ignoreFirstCharectersIndex, str.length()-1);
+
+
+    if(str.empty())
+    {
+      std::cout << "dataSeparator full-broke. reaseon(data is empty)" << std::endl;
+      return result;
+    }
+
+
+
+    if(str.find(closer) == std::string::npos)
+    {
+      std::cout << "dataSeparator full-broke. reaseon(closer not found after data)" << std::endl;
+      return result;
+    }
+    else
+      str = str.substr(0, (str.length()-1)+closer.length()); //remove closer from data
+
+
+
+    if (str.find(delimiter) == std::string::npos)
+    {
+      std::cout << "dataSeparator full-broke. reaseon(delimiter not found in data)" << std::endl;
+      return result;
+    }
+
+
+    for(int i=0; i<_data.length(); i++)
+    {
+      index = str.find(delimiter);
+      str = str.substr(index+delimiter.length() ,str.length()-1);
+      result.push_back(str);
+    }
+    return result;
+  }*/
+
+  std::string StateWaitForResponse::getIdentityFromResponsedData(const std::string& _data,std::string delimiter,std::string closer)
+  {
+    return _data.substr(MC_DATA_START_AT_INDEX, _data.length()-(1+delimiter.length()+closer.length()));
+  }
+
   void StateWaitForResponse::render(sf::RenderWindow& window)
   {
     if(timeoutCounter<=0)
@@ -336,13 +387,34 @@ namespace FluffyMultiplayer
         if(resultRC == responseCodeAcceptor)
         {
           if(registerData_ptr!=nullptr)
-            app.setIdentity(registerData_ptr->identity); //save identity for app
+          {
+            // responsedData = dataSeparator(receivedData, MC_RESPONSE_DELIMITER, MC_RESPONSE_CLOSER, MC_DATA_START_AT_INDEX);
+            // if(responsedData.size()>0)
+            // {
+              // registerData_ptr->identity = responsedData[0];
+              registerData_ptr->identity = getIdentityFromResponsedData(receivedData,MC_RESPONSE_DELIMITER,MC_RESPONSE_CLOSER);
+              app.setIdentity(registerData_ptr->identity); //save identity for app
+            // }
+            // else
+              // std::cout << "register response is success but identity not received/found." << std::endl;
+          }
           return state2; //accepted (first state passed) successfully
         }
         else if(resultRC == responseCodeAcceptor2 && state3!=nullptr)
         {
           if(loginData_ptr!=nullptr)
-            app.setIdentity(loginData_ptr->identity); //save identity for app
+          {
+            // responsedData = dataSeparator(receivedData, MC_RESPONSE_DELIMITER, MC_RESPONSE_CLOSER, MC_DATA_START_AT_INDEX);
+            // if(responsedData.size()>0)
+            // {
+              // loginData_ptr->identity = responsedData[0];
+              loginData_ptr->identity = getIdentityFromResponsedData(receivedData,MC_RESPONSE_DELIMITER,MC_RESPONSE_CLOSER);
+              app.setIdentity(loginData_ptr->identity); //save identity for app
+            // }
+            // else
+              // std::cout << "login response is success but identity not received/found." << std::endl;
+          }
+
           if(createLobbyData_ptr!=nullptr)
           {
             std::string tempAd = createLobbyData_ptr->address.ip.to_string();

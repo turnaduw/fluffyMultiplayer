@@ -34,6 +34,8 @@ namespace FluffyMultiplayer
     if(data.length()>1)
       message+=data;
 
+    message+=MS_DATA_DELIMITER; //add delimiter after data
+    message+=MS_REQUEST_CLOSER; //add closer to endof all messages.
     dataSecurity.encryptData(message);
 
     std::cout << "send data =" << message << " receiver=" << receiver.address() << ":" << receiver.port() << std::endl;
