@@ -88,7 +88,6 @@ namespace FluffyMultiplayer
       if(index<startIndex) //skip, because startIndex is not not included.
         continue;
 
-      std::cout << "dataSeparator() , data=" << str << std::endl;
       result.push_back(str.substr(0,index)); //-delimiter.length()));
       str = str.substr(index+delimiter.length() ,str.length()-1);
     }
@@ -247,22 +246,21 @@ namespace FluffyMultiplayer
               switch(data.size())
               {
                 case 1:
-                  client = { data[0] , "" , "" , "" };
+                  client = { data[0].substr(MS_DATA_START_AT_INDEX,data[0].length()-1) , "" , "" , "" };
                     break;
 
                 case 2:
-                  client = { data[0], data[1] , "" , "" };
+                  client = { data[0].substr(MS_DATA_START_AT_INDEX,data[0].length()-1), data[1] , "" , "" };
                   break;
 
                 case 3:
-                  client = { data[0], data[1], data[2] , ""};
+                  client = { data[0].substr(MS_DATA_START_AT_INDEX,data[0].length()-1), data[1], data[2] , ""};
                   break;
 
                 case 4:
-                  client = { data[0], data[1], data[2], data[3] };
+                  client = { data[0].substr(MS_DATA_START_AT_INDEX,data[0].length()-1), data[1], data[2], data[3] };
                   break;
               }
-              std::cout << "processData REQ REQISGER PASSED CLinet info, email=" << client.email << "\nusername=" << client.username << "\npassword=" << client.password << "\nhardwareid=" << client.hardwareId << std::endl;
               // FluffyMultiplayer::RegisterClientData client = { data[0], data[1], data[2], data[3] };
 
               if(isDataValidated(client))
