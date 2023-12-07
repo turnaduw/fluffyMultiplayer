@@ -71,8 +71,6 @@ namespace FluffyMultiplayer
       str = str.substr(index+delimiter.length() ,str.length()-1);
       result.push_back(index);
     }
-    for(int e: result)
-      std::cout << "e=" << e << std::endl;
 
     return result;
   }
@@ -91,7 +89,7 @@ namespace FluffyMultiplayer
         continue;
 
       std::cout << "dataSeparator() , data=" << str << std::endl;
-      result.push_back(str.substr(0,index-delimiter.length()));
+      result.push_back(str.substr(0,index)); //-delimiter.length()));
       str = str.substr(index+delimiter.length() ,str.length()-1);
     }
     return result;
