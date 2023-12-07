@@ -344,7 +344,7 @@ namespace FluffyMultiplayer
 
   std::string StateWaitForResponse::getIdentityFromResponsedData(const std::string& _data,std::string delimiter,std::string closer)
   {
-    return _data.substr(MC_DATA_START_AT_INDEX, _data.length()-(1+delimiter.length()+closer.length()));
+    return _data.substr(MC_DATA_START_AT_INDEX, _data.length() - 6);
   }
 
   void StateWaitForResponse::render(sf::RenderWindow& window)
