@@ -32,7 +32,7 @@ namespace FluffyMultiplayer
     int rc;
     // Create a table for client
     const char* createTableClient = "CREATE TABLE IF NOT EXISTS fm_client("
-                                 "id INTEGER," //AUTOINCREMENT
+                                 "id INTEGER PRIMARY KEY AUTOINCREMENT," //
                                  "email TEXT NOT NULL,"
                                  "username TEXT NOT NULL,"
                                  "password TEXT NOT NULL,"
@@ -40,8 +40,8 @@ namespace FluffyMultiplayer
                                  "isBanned BOOLEAN DEFAULT 0,"
                                  "isLobbyCreationLimited BOOLEAN DEFAULT 0,"
                                  "isAdmin BOOLEAN DEFAULT 0,"
-                                 "registerDate DATETIME DEFAULT CURRENT_TIMESTAMP,"
-                                 "PRIMARY KEY (id,email,username) );";
+                                 "registerDate DATETIME DEFAULT CURRENT_TIMESTAMP);";
+                                 // "PRIMARY KEY (email,username) );";
     rc = sqlite3_exec(db, createTableClient, nullptr, 0, &errMsg);
     if (rc != SQLITE_OK)
     {
@@ -159,14 +159,14 @@ namespace FluffyMultiplayer
   {
     std::cout << "client info recieved to register is: \nemail=" << client.email << "\nusername=" << client.username << "\npassword=" << client.password << "\nhardwareid=" << client.hardwareId << std::endl;
       //search for that email address.
-      std::string basic_query = "SELECT id FROM fm_client WHERE username=";
-      basic_query += client.username + ";";
+      std::string basic_query = "SELECT id FROM fm_client WHERE username='";
+      basic_query += client.username + "';";
       if(isExists_in_db(basic_query))
         return MS_ERROR_FAILED_TO_REGISTER_EMIAL_EXISTS;
 
       //search for that username
-      basic_query = "SELECT id FROM fm_client WHERE email=";
-      basic_query += client.email + ";";
+      basic_query = "SELECT id FROM fm_client WHERE email='";
+      basic_query += client.email + "';";
       if(isExists_in_db(basic_query))
         return MS_ERROR_FAILED_TO_REGISTER_USERNAME_EXISTS;
 
@@ -184,7 +184,7 @@ namespace FluffyMultiplayer
       {
         //search for created client id..
         basic_query = "SELECT id FROM fm_client WHERE username='";
-        basic_query += client.username + ";";
+        basic_query += client.username + "';";
         std::string result =  search_in_db(basic_query);
         int clientId = FluffyMultiplayer::convertStringToInt(result.substr(3,result.length()-1)); //count of charecter id + a '=' is 3 so result is on [3]
         if(clientId<=0)
@@ -213,7 +213,7 @@ namespace FluffyMultiplayer
     {
       //insert into database
       std::string basic_query = "SELECT isBanned,id,password FROM fm_client WHERE username='";
-      basic_query += client.username + "');";
+      basic_query += client.username + "';";
       std::string result = search_in_db(basic_query);
       if(result.length()<MS_MINIMUM_RETURNED_DATA_BY_SQL_SEARCH)
         return MS_ERROR_FAILED_TO_LOGIN_NOT_EXISTS; //98% chance to account not found because in some case maybe database is not abled to return query's response.
@@ -331,7 +331,7 @@ namespace FluffyMultiplayer
 
     //insert identity for client
     std::string basic_query = "DELETE FROM fm_client_login WHERE clientId='";
-    basic_query += std::to_string(clientId) + "');";
+    basic_query += std::to_string(clientId) + "';";
     if(query_to_db(basic_query))
     {
       basic_query = "INSERT INTO fm_client_login (identity,clientId) VALUES('";
