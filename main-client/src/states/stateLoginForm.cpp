@@ -23,6 +23,12 @@ namespace FluffyMultiplayer
       form_data._inputs[1] = passwordInput.getEnteredText();
       form_data._saveLoginStatus = saveLoginCheckBox.getStatus();
 
+      FluffyMultiplayer::AppState* res = nullptr;
+      if(form_data._saveLoginStatus)
+        res = new FluffyMultiplayer::StateWriteIdentityToLocal;
+      else
+         res = new FluffyMultiplayer::StateMainPage;
+
       //go login..
       return new FluffyMultiplayer::StateWaitForResponse
       (
@@ -30,7 +36,7 @@ namespace FluffyMultiplayer
         this,
         form_data,
         new FluffyMultiplayer::StateFailed("account is banned.\n",this,nullptr),
-        new FluffyMultiplayer::StateWriteIdentityToLocal,
+        res,
         MS_ERROR_FAILED_TO_LOGIN_BANNED,
         MS_RESPONSE_SUCCESS_LOGIN
       );
