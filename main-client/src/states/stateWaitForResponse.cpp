@@ -18,6 +18,7 @@ namespace FluffyMultiplayer
       loginData_ptr->_inputs = _loginData._inputs;
       loginData_ptr->_errors = _loginData._errors;
       loginData_ptr->_saveLoginStatus = _loginData._saveLoginStatus;
+      loginData_ptr->identity = _loginData.identity;
 
       requestSent=false; //turn off flag, will help to run receiveDataQueue.push once
       timeoutCounter=MC_REQUEST_TIMEOUT;
@@ -43,7 +44,7 @@ namespace FluffyMultiplayer
       std::string temp = std::to_string(MC_REQUEST_LOGIN) +  _loginData._inputs[0]+ MC_REQUEST_DELIMITER;
       temp += _loginData._inputs[1] +MC_REQUEST_DELIMITER;
       temp += std::to_string(hostId) + MC_REQUEST_DELIMITER; //hardwareId
-      temp += "" MC_REQUEST_DELIMITER; //empty identity
+      temp += loginData_ptr->identity + MC_REQUEST_DELIMITER; //identity for first time is empty, this is used when trying to relogin
       temp += MC_REQUEST_CLOSER;
       requestData = temp;
 
