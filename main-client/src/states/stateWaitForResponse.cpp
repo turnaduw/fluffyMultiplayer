@@ -43,20 +43,23 @@ namespace FluffyMultiplayer
 
 
       // choose is it login or relogin
-      std::string requestCode;
+      std::string temp;
       if(_loginData._inputs[0].empty() && _loginData._inputs[1].empty())
-        requestCode = std::to_string(MC_REQUEST_RELOGIN);
+      {
+        temp =  std::to_string(MC_REQUEST_RELOGIN);
+        temp += std::to_string(hostId) + MC_REQUEST_DELIMITER; //hardwareId
+        temp += loginData_ptr->identity + MC_REQUEST_DELIMITER;
+        temp += MC_REQUEST_CLOSER;
+      }
       else
-        requestCode = std::to_string(MC_REQUEST_LOGIN);
-
-
-      std::string temp =  requestCode +  _loginData._inputs[0]+ MC_REQUEST_DELIMITER;
-      temp += _loginData._inputs[1] +MC_REQUEST_DELIMITER;
-      temp += std::to_string(hostId) + MC_REQUEST_DELIMITER; //hardwareId
-      temp += loginData_ptr->identity + MC_REQUEST_DELIMITER; //identity for first time is empty, this is used when trying to relogin
-      temp += MC_REQUEST_CLOSER;
+      {
+        temp =  std::to_string(MC_REQUEST_LOGIN) +  _loginData._inputs[0]+ MC_REQUEST_DELIMITER;
+        temp += _loginData._inputs[1] +MC_REQUEST_DELIMITER;
+        temp += std::to_string(hostId) + MC_REQUEST_DELIMITER; //hardwareId
+        temp += loginData_ptr->identity + MC_REQUEST_DELIMITER; //identity for first time is empty, this is used when trying to relogin
+        temp += MC_REQUEST_CLOSER;
+      }
       requestData = temp;
-
 
       std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
       text = "Wait for response:\n"+ _text;
