@@ -40,7 +40,7 @@ namespace FluffyMultiplayer
                                  "isBanned BOOLEAN DEFAULT 0,"
                                  "isLobbyCreationLimited BOOLEAN DEFAULT 0,"
                                  "isAdmin BOOLEAN DEFAULT 0,"
-                                 "registerDate DATETIME DEFAULT CURRENT_TIMESTAMP);";
+                                 "registerDate DATETIME DEFAULT (datetime('now','localtime')));";
                                  // "PRIMARY KEY (email,username) );";
     rc = sqlite3_exec(db, createTableClient, nullptr, 0, &errMsg);
     if (rc != SQLITE_OK)
@@ -63,7 +63,7 @@ namespace FluffyMultiplayer
                              "specterForbidden BOOLEAN DEFAULT 0,"
                              "lobbyStatus BOOLEAN DEFAULT 0,"
                              "showLobbyOnList BOOLEAN DEFAULT 1,"
-                             "creationDate DATETIME DEFAULT CURRENT_TIMESTAMP,"
+                             "creationDate DATETIME DEFAULT (datetime('now','localtime')),"
                              "FOREIGN KEY(owner) REFERENCES fm_client(id),"
                              "PRIMARY KEY (id,owner) );";
     rc = sqlite3_exec(db, createTableLobby, nullptr, 0, &errMsg);
@@ -77,7 +77,7 @@ namespace FluffyMultiplayer
     const char* createClientLogin = "CREATE TABLE IF NOT EXISTS fm_client_login("
                              "clientId INTEGER,"
                              "identity TEXT,"
-                             "loginDate DATETIME DEFAULT CURRENT_TIMESTAMP,"
+                             "loginDate DATETIME DEFAULT (datetime('now','localtime')),"
                              "FOREIGN KEY(clientId) REFERENCES fm_client(id),"
                              "PRIMARY KEY(clientId, identity) );";
     rc = sqlite3_exec(db, createClientLogin, nullptr, 0, &errMsg);
@@ -166,14 +166,11 @@ namespace FluffyMultiplayer
 
   int FluffyDatabase::reloginClient(const FluffyMultiplayer::LoginClientData& client, std::string& outputIdentity)
   {
-      if(!isIdentityExists(client.oldIdentity))
-        return MS_ERROR_FAILED_TO_RELOGIN_IDENTITY_INVALID_OR_NOT_EXISTS;
-
       std::cout << "relogin client identity = " << client.oldIdentity << std::endl;
 
       //search for that oldIdentity from fm_client_login
       std::string basic_query = "SELECT clientId FROM fm_client_login WHERE identity='";
-      basic_query += client.oldIdentity + "');";
+      basic_query += client.oldIdentity + "';";
       std::string result = search_in_db(basic_query);
 
       if(result.length()<MS_MINIMUM_RETURNED_DATA_BY_SQL_SEARCH)
@@ -181,21 +178,22 @@ namespace FluffyMultiplayer
 
 
       // set client id,        jump 4 charecter because of field title for example is:  id=123
-      int clientId = FluffyMultiplayer::convertStringToInt(result.substr(3,result.length()-1));
+
+      int clientId = FluffyMultiplayer::convertStringToInt(result.substr(9,result.length()));
       if(clientId<=0)
-        return MS_ERROR_FAILED_TO_LOGIN_CLIENT; //failed to get client id
+        return MS_ERROR_FAILED_TO_RELOGIN; //failed to get client id
 
 
       //search for that oldIdentity from fm_client_login
       basic_query = "SELECT loginDate FROM fm_client_login WHERE identity='";
-      basic_query += client.oldIdentity + "');";
+      basic_query += client.oldIdentity + "';";
       result = search_in_db(basic_query);
 
 
       // set loginDate        jump 4 charecter because of field title for example is:  id=123
       std::string date = result.substr(10,result.length()-1);
       if(date.empty())
-        return MS_ERROR_FAILED_TO_LOGIN_CLIENT; //failed to get loginDate
+        return MS_ERROR_FAILED_TO_RELOGIN; //failed to get loginDate
 
 
       //get current time and compare with loginDate + expireDate
