@@ -6,9 +6,9 @@ namespace FluffyMultiplayer
   {
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
     initSimpleText(fontPath, "Trying to read local account files\nto re-login into your account.\nplease wait...");
-    reloginData._inputs[0] = ""; //username
-    reloginData._inputs[1] = ""; //password
-    reloginData._saveLoginStatus=false;
+
+    //when do relogin successfully server will return a new identity and its better to save when we logged in via relogin
+    reloginData._saveLoginStatus=true;
 
     std::cout << "trying to re-login into account." << std::endl;
   }
