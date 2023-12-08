@@ -95,7 +95,7 @@ namespace FluffyMultiplayer
                       new FluffyMultiplayer::StateFailed("could not relogin\n", new FluffyMultiplayer::StateLoginForm ,nullptr),
                   },
               res,
-              std::std::vector<int>
+              std::vector<int>
                   {
                       MS_ERROR_FAILED_TO_RELOGIN_IDENTITY_INVALID_OR_NOT_EXISTS,
                       MS_ERROR_FAILED_TO_RELOGIN_IDENTITY_EXPIRED,

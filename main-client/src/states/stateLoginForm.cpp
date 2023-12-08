@@ -37,7 +37,7 @@ namespace FluffyMultiplayer
         form_data,
         std::vector<FluffyMultiplayer::AppState*> {new FluffyMultiplayer::StateFailed("account is banned.\n",this,nullptr)},
         res,
-        std::std::vector<int> {MS_ERROR_FAILED_TO_LOGIN_BANNED},
+        std::vector<int> {MS_ERROR_FAILED_TO_LOGIN_BANNED},
         MS_RESPONSE_SUCCESS_LOGIN
       );
     }
