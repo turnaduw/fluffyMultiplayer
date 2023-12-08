@@ -242,8 +242,7 @@ namespace FluffyMultiplayer
     std::string clientId = search_in_db(basic_query);
 
     //convert received data into int
-    const char* cxx = clientId.c_str();
-    int cid = std::atoi(cxx);
+    int cid = FluffyMultiplayer::convertStringToInt(clientId);
     if(cid>=1)
       return cid;
     return -1; //not found
@@ -303,42 +302,52 @@ namespace FluffyMultiplayer
 
   int FluffyDatabase::loginClient(const FluffyMultiplayer::LoginClientData& client, std::string& outputIdentity)
   {
-    if(client.oldIdentity.length()<=0)
+    if(client.oldIdentity.empty())
     {
-      //insert into database
+      //get client data if username matches
       std::cout << "loginClient will do query, client info:\nusername=" << client.username << "\npassword=" << client.password << "\nhardwareid=" << client.hardwareId << "\nold_identity=" << client.oldIdentity << std::endl;
-      std::string basic_query = "SELECT isBanned,id,password FROM fm_client WHERE username='";
-      basic_query += client.username + "';";
+      std::string basic_query = "SELECT id FROM fm_client WHERE username='";
+      basic_query += client.username + "' AND password='";
+      basic_query += client.password + "';";
       std::string result = search_in_db(basic_query);
-      std::cout << "result login=" << result << std::endl;
+      std::cout << "result login id=" << result << std::endl;
+
+      //check result is not empty that means client exists
       if(result.length()<MS_MINIMUM_RETURNED_DATA_BY_SQL_SEARCH)
-        return MS_ERROR_FAILED_TO_LOGIN_NOT_EXISTS; //98% chance to account not found because in some case maybe database is not abled to return query's response.
+        return MS_ERROR_FAILED_TO_LOGIN_INCORRECT;
 
-      int isBanned = FluffyMultiplayer::convertStringToInt(result.substr(9,10)); // isBanned= [9], boolain is just one chartecter 0 or 1
-      if(isBanned>0)
-        return MS_ERROR_FAILED_TO_LOGIN_BANNED;
 
-      int clientId = FluffyMultiplayer::convertStringToInt(result.substr(12,5)); //count of charecter id + a '=' is 3 so result is on [9+3]
+      // set client id,        jump 4 charecter because of field title for example is:  id=123
+      int clientId = FluffyMultiplayer::convertStringToInt(result.substr(3,result.length()-1));
       if(clientId<=0)
         return MS_ERROR_FAILED_TO_LOGIN_CLIENT; //failed to get client id
 
-      std::string password=result.substr(17,result.length());
-      if(client.password == password)
-      {
-          //create session for that client id
-          if(!createSessionForClient(clientId,outputIdentity))
-            return MS_ERROR_FAILED_TO_INSERT_CLIENT_IDENTITY;
 
-          if(outputIdentity.length()<MS_MINIMUM_RETURNED_DATA_BY_SQL_SEARCH)
-          {
-            outputIdentity = "";
-            return MS_ERROR_FAILED_TO_LOGIN_CLIENT;
-          }
-          else
-            return MS_RESPONSE_SUCCESS_LOGIN;
+
+      // get banned status by username
+      basic_query = "SELECT isBanned FROM fm_client WHERE username='";
+      basic_query += client.username + "';";
+      result = search_in_db(basic_query);
+      std::cout << "result login isbanned=" << result << std::endl;
+
+      // set client ban status         jump 9 charecter because of filed title for example is: isBanned=0
+      bool isBanned = static_cast<bool>(FluffyMultiplayer::convertStringToInt(result.substr(9,result.length()-1))); // isBanned= [9], boolain is just one chartecter 0 or 1
+      if(isBanned)
+        return MS_ERROR_FAILED_TO_LOGIN_BANNED;
+
+
+      //generate Identity for that id
+      if(!createSessionForClient(clientId,outputIdentity))
+        return MS_ERROR_FAILED_TO_INSERT_CLIENT_IDENTITY;
+
+      //check generated Identity
+      if(outputIdentity.length()<MS_MINIMUM_RETURNED_DATA_BY_SQL_SEARCH)
+      {
+        outputIdentity = "";
+        return MS_ERROR_FAILED_TO_LOGIN_CLIENT;
       }
       else
-        return MS_ERROR_FAILED_TO_LOGIN_INCORRECT; //incrrect password
+        return MS_RESPONSE_SUCCESS_LOGIN;
     }
     return MS_ERROR_FAILED_TO_LOGIN_CLIENT;
   }
@@ -432,42 +441,42 @@ namespace FluffyMultiplayer
 
 
 
-
   //database----------
   int FluffyDatabase::search_in_db_callback(void* data, int argc, char** argv, char** azColName)
   {
-    std::string* _result = static_cast<std::string*>(data);
-    for (int i = 0; i < argc; i++)
-    {
-        std::cout << "db search i=" << i  << "\t"<< azColName[i] << '=' << (argv[i] ? argv[i] : "NULL") << std::endl;
-        *_result += azColName[i];
-        *_result += '=';
-        *_result +=  (argv[i] ? argv[i] : "NULL");
-        *_result += "\n";
-    }
-    std::cout << std::endl;
-    return 0;
+      std::cout << "search_in_db_callback()" << std::endl;
+      std::string* _result = static_cast<std::string*>(data);
+      for (int i = 0; i < argc; i++)
+      {
+          std::cout << "db search i=" << i  << "\t"<< azColName[i] << '=' << (argv[i] ? argv[i] : "NULL") << std::endl;
+          *_result += azColName[i];
+          *_result += '=';
+          *_result +=  (argv[i] ? argv[i] : "NULL");
+          *_result += "\n";
+      }
+      std::cout << std::endl;
+      return 0;
   }
-  std::string FluffyDatabase::search_in_db(std::string& _q)
+
+  std::string FluffyDatabase::search_in_db(const std::string& _q)
   {
-    char* final_query = new char[_q.length()+1];
-    std::strcpy(final_query, _q.c_str());
+      char* errMsg;
+      char* final_query = new char[_q.length() + 1];
+      std::strcpy(final_query, _q.c_str());
 
-    std::string result;
-    int rc = sqlite3_exec(db, final_query, &FluffyDatabase::search_in_db_callback, &result , &errMsg);
+      std::string result;
+      int rc = sqlite3_exec(db, final_query, &FluffyDatabase::search_in_db_callback, &result, &errMsg);
 
+      delete[] final_query;
 
-    final_query = nullptr;
-    delete[] final_query;
-
-
-    if (rc != SQLITE_OK)
-    {
-        std::cout << "(search_in_db)SQL search error: " << errMsg << "\tquery=" << _q << std::endl;
-        sqlite3_free(errMsg);
-    }
-    return result;
+      if (rc != SQLITE_OK)
+      {
+          std::cout << "(search_in_db) SQL search error: " << errMsg << "\tquery=" << _q << std::endl;
+          sqlite3_free(errMsg);
+      }
+      return result;
   }
+
 
 
   //----------
