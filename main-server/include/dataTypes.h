@@ -40,6 +40,51 @@ namespace FluffyMultiplayer
     int hour;
     int minute;
     int second;
+
+    bool isExpired(TimeAndDate date, const TimeAndDate& expireDate)
+    {
+      date += expireDate;
+      if(this >= date)
+        return true;
+      return false;
+    }
+
+    void oprator += (const TimeAndDate& date)
+    {
+      year += date.year;
+      month += date.month;
+      day += date.day;
+      hour += date.hour;
+      minute += date.minute;
+      second += date.second;
+    }
+
+    bool operator >= (const TimeAndDate &date) const
+    {
+      TimeAndDate diff
+      {
+        year - date.year,
+        month - date.month,
+        day - date.day,
+        hour - date.hour,
+        minute - date.minute,
+        second - date.second
+      };
+
+      // Compare with static values
+      if (diff.year > 0 ||
+          (diff.year == 0 && diff.month > 0) ||
+          (diff.year == 0 && diff.month == 0 && diff.day > 0) ||
+          (diff.year == 0 && diff.month == 0 && diff.day == 0 && diff.hour > 0) ||
+          (diff.year == 0 && diff.month == 0 && diff.day == 0 && diff.hour == 0 && diff.minute > 0) ||
+          (diff.year == 0 && diff.month == 0 && diff.day == 0 && diff.hour == 0 && diff.minute == 0 && diff.second > 0))
+      {
+          return true;
+      }
+      return false;
+    }
+
+
   };
 
   struct LoginClientData
