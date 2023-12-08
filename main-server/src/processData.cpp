@@ -207,20 +207,20 @@ namespace FluffyMultiplayer
               switch (data.size())
               {
                 case 1:
-                  client = { data[0] , "" , "" , "" };
+                  client = { data[0].substr(MS_DATA_START_AT_INDEX,data[0].length()-1) , "" , "" , "" };
                     break;
 
                 case 2:
-                  client = { data[0], data[1] , "" , "" };
+                  client = { data[0].substr(MS_DATA_START_AT_INDEX,data[0].length()-1), data[1] , "" , "" };
                   break;
 
                 case 3:
-                  client = { data[0], data[1], data[2] , ""};
+                  client = { data[0].substr(MS_DATA_START_AT_INDEX,data[0].length()-1), data[1], data[2] , ""};
                   break;
 
                 case 4:
                 {
-                  client = { data[0], data[1], data[2], data[3] };
+                  client = { data[0].substr(MS_DATA_START_AT_INDEX,data[0].length()-1), data[1], data[2], data[3] };
                   if(!data[3].empty())
                   {
                     std::cout << "client is trying to relogin" << std::endl;
