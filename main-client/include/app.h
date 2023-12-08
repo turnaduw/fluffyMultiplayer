@@ -19,6 +19,10 @@ using boost::asio::ip::udp;
 
 #include "appState.h"
 
+
+//clear identity
+#include <fstream>
+
 namespace FluffyMultiplayer
 {
   class AppState;

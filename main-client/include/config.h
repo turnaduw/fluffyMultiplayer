@@ -18,7 +18,7 @@
 
 #define MC_RECEIVE_BUFFER 1024
 #define CLIENT_LOCAL_SERVER_LIST_FILE "serverlist.txt"
-#define CLIENT_LOCAL_APP_CONFIG_FILE "app.ini"
+#define CLIENT_LOCAL_APP_CONFIG_FILE "identity.ini"
 
 #define MC_IP_PORT_SEPARATOR ":"
 #define MC_IP_PORT_ENDLINE ";"

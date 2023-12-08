@@ -131,7 +131,29 @@ namespace FluffyMultiplayer
 
   void App::clearIdentity()
   {
-      identity="";
+      try
+      {
+        std::string filename = CLIENT_LOCAL_APP_CONFIG_FILE;
+
+        // Create and open a text file
+        std::ofstream theFile(filename);
+
+        // Write to the file
+        // std::string result = MC_APP_CONFIG_IDENTITY_KEY;
+        // result += MC_APP_CONFIG_SEPERATOR;
+        result = "";
+        // result += MC_APP_CONFIG_ENDLINE;
+        theFile << result;
+
+        // Close the file
+        theFile.close();
+        setIdentity("");
+        std::cout << "success to clear identity" << std::endl;
+      }
+      catch (std::exception& e)
+      {
+        std::cout << "failed to clear identity" << std::endl;
+      }
   }
   void App::setIdentity(std::string str)
   {
