@@ -44,12 +44,12 @@ namespace FluffyMultiplayer
     bool isExpired(TimeAndDate date, const TimeAndDate& expireDate)
     {
       date += expireDate;
-      if(this >= date)
+      if( (*this) >= date)
         return true;
       return false;
     }
 
-    void oprator += (const TimeAndDate& date)
+    void operator += (const TimeAndDate& date)
     {
       year += date.year;
       month += date.month;
