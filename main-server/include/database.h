@@ -43,7 +43,7 @@ namespace FluffyMultiplayer
       //------------------------- authication
 
       int loginClient(const FluffyMultiplayer::LoginClientData&, std::string&);
-      int reloginClient(const FluffyMultiplayer::LoginClientData&);
+      int reloginClient(const FluffyMultiplayer::LoginClientData&, std::string&);
 
       int registerClient(const FluffyMultiplayer::RegisterClientData&, std::string&);
 

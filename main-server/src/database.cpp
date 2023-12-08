@@ -177,7 +177,7 @@ namespace FluffyMultiplayer
     return false;
   }
 
-  int FluffyDatabase::reloginClient(const FluffyMultiplayer::LoginClientData& client)
+  int FluffyDatabase::reloginClient(const FluffyMultiplayer::LoginClientData& client, std::string& outputIdentity)
   {
       if(!isIdentityValid(client))
       {
@@ -189,10 +189,15 @@ namespace FluffyMultiplayer
       basic_query += client.oldIdentity + "');";
       std::string result = search_in_db(basic_query);
       if(result.length()<MS_MINIMUM_RETURNED_DATA_BY_SQL_SEARCH)
+      {
+        outputIdentity="";
         return MS_ERROR_FAILED_TO_RELOGIN; //98% chance to login not found because in some case maybe database is not abled to return query's response.
+      }
 
       std::cout << "relogin rsssesult = " << result << std::endl;
 
+      int clientId=1; //result..
+      std::string date=""; //result ..
 
       //get current time and compare with loginDate + expireDate
       FluffyMultiplayer::TimeAndDate currentDate = getCurrentTime();
@@ -215,9 +220,17 @@ namespace FluffyMultiplayer
 
       if(current.isExpired(loginDate, expireDate))
       {
+        outputIdentity="";
         std::cout << "identity expired." << std::endl;
         return MS_ERROR_FAILED_TO_RELOGIN_IDENTITY_EXPIRED;
       }
+
+
+      //relogin success create new identity and tell to client
+      //create session for that client id
+      if(!createSessionForClient(clientId,outputIdentity))
+        return MS_ERROR_FAILED_TO_INSERT_CLIENT_IDENTITY;
+
 
       return MS_RESPONSE_SUCCESS_LOGIN;
   }

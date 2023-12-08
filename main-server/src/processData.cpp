@@ -239,7 +239,7 @@ namespace FluffyMultiplayer
                 if(tryingToRelogin)
                 {
                   identityResult = client.oldIdentity;
-                  resultCode = db.reloginClient(client);
+                  resultCode = db.reloginClient(client,identityResult);
                 }
                 else
                   resultCode = db.loginClient(client,identityResult);
