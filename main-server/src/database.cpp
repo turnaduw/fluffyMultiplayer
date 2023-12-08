@@ -164,40 +164,39 @@ namespace FluffyMultiplayer
     return FluffyMultiplayer::TimeAndDate {1900 + ltm->tm_year, 1 + ltm->tm_mon,ltm->tm_mday,ltm->tm_hour,ltm->tm_min,ltm->tm_sec};
   }
 
-  bool FluffyDatabase::isIdentityValid(const std::string& identity)
-  {
-    if(isIdentityExists(identity))
-    {
-      if(  identity.length() >= MS_CLIENT_MINIMUM_IDENTITY_LENGTH
-        || identity.length() <= MS_CLIENT_MAXIMUM_IDENTITY_LENGTH)
-        {
-          return true;
-        }
-    }
-    return false;
-  }
-
   int FluffyDatabase::reloginClient(const FluffyMultiplayer::LoginClientData& client, std::string& outputIdentity)
   {
-      if(!isIdentityValid(client.oldIdentity))
-      {
+      if(!isIdentityExists(client.oldIdentity))
         return MS_ERROR_FAILED_TO_RELOGIN_IDENTITY_INVALID_OR_NOT_EXISTS;
-      }
+
       std::cout << "relogin client identity = " << client.oldIdentity << std::endl;
+
       //search for that oldIdentity from fm_client_login
-      std::string basic_query = "SELECT loginDate,clientId FROM fm_client_login WHERE identity='";
+      std::string basic_query = "SELECT clientId FROM fm_client_login WHERE identity='";
       basic_query += client.oldIdentity + "');";
       std::string result = search_in_db(basic_query);
+
       if(result.length()<MS_MINIMUM_RETURNED_DATA_BY_SQL_SEARCH)
-      {
-        outputIdentity="";
         return MS_ERROR_FAILED_TO_RELOGIN; //98% chance to login not found because in some case maybe database is not abled to return query's response.
-      }
 
-      std::cout << "relogin rsssesult = " << result << std::endl;
 
-      int clientId=1; //result..
-      std::string date=""; //result ..
+      // set client id,        jump 4 charecter because of field title for example is:  id=123
+      int clientId = FluffyMultiplayer::convertStringToInt(result.substr(3,result.length()-1));
+      if(clientId<=0)
+        return MS_ERROR_FAILED_TO_LOGIN_CLIENT; //failed to get client id
+
+
+      //search for that oldIdentity from fm_client_login
+      basic_query = "SELECT loginDate FROM fm_client_login WHERE identity='";
+      basic_query += client.oldIdentity + "');";
+      result = search_in_db(basic_query);
+
+
+      // set loginDate        jump 4 charecter because of field title for example is:  id=123
+      std::string date = result.substr(10,result.length()-1);
+      if(date.empty())
+        return MS_ERROR_FAILED_TO_LOGIN_CLIENT; //failed to get loginDate
+
 
       //get current time and compare with loginDate + expireDate
       FluffyMultiplayer::TimeAndDate currentDate = getCurrentTime();
@@ -220,14 +219,12 @@ namespace FluffyMultiplayer
 
       if(currentDate.isExpired(loginDate, expireDate))
       {
-        outputIdentity="";
         std::cout << "identity expired." << std::endl;
         return MS_ERROR_FAILED_TO_RELOGIN_IDENTITY_EXPIRED;
       }
 
 
-      //relogin success create new identity and tell to client
-      //create session for that client id
+      //relogin success create new identity for that client id
       if(!createSessionForClient(clientId,outputIdentity))
         return MS_ERROR_FAILED_TO_INSERT_CLIENT_IDENTITY;
 
