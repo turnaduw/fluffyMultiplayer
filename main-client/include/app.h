@@ -22,6 +22,8 @@ using boost::asio::ip::udp;
 
 //clear identity
 #include <fstream>
+#include <cstdio>
+
 
 namespace FluffyMultiplayer
 {

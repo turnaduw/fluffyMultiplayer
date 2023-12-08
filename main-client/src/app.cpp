@@ -133,16 +133,26 @@ namespace FluffyMultiplayer
   {
       try
       {
-        std::string filename = CLIENT_LOCAL_APP_CONFIG_FILE;
 
-        // Create and open a text file
-        std::ofstream theFile(filename);
+        //try to remove identity file
+        const char* filename = CLIENT_LOCAL_APP_CONFIG_FILE;
 
-        // Write to the file
-        theFile << "";
+        if (std::remove(filename) != 0)
+        {
+            std::cout << "while clearIdentity failed to delete file " CLIENT_LOCAL_APP_CONFIG_FILE << std::endl;
 
-        // Close the file
-        theFile.close();
+
+            //delete failed go fill identity with empty value
+            std::string filename = CLIENT_LOCAL_APP_CONFIG_FILE;
+            std::ofstream theFile(filename);
+            theFile << "";
+            theFile.close();
+        }
+        else
+        {
+            std::cout << CLIENT_LOCAL_APP_CONFIG_FILE " file successfully deleted." << std::endl;
+        }
+
         setIdentity("");
         std::cout << "success to clean identity" << std::endl;
       }
