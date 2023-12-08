@@ -120,15 +120,26 @@ namespace FluffyMultiplayer
     return true;
   }
 
-  bool ProcessData::isDataValidated(const FluffyMultiplayer::LoginClientData& client) const
+  bool ProcessData::isDataValidated(const FluffyMultiplayer::LoginClientData& client, bool isRelogin=false) const
   {
-    // if(  client.username.length() < MS_CLIENT_MINIMUM_USERNAME_LENGTH || client.username.length() > MS_CLIENT_MAXIMUM_USERNAME_LENGTH
-    //   || client.password.length() < MS_CLIENT_MINIMUM_PASSWORD_LENGTH || client.password.length() > MS_CLIENT_MAXIMUM_PASSWORD_LENGTH
-    //   || client.hardwareId.length() < MS_CLIENT_MINIMUM_HARDWAREID_LENGTH || client.hardwareId.length() > MS_CLIENT_MAXIMUM_HARDWAREID_LENGTH
-    //   || client.oldIdentity.length() < MS_CLIENT_MINIMUM_IDENTITY_LENGTH || client.oldIdentity.length() > MS_CLIENT_MAXIMUM_IDENTITY_LENGTH)
-    // {
-    //   return false;
-    // }
+    if(isRelogin)
+    {
+      // if(  client.hardwareId.length() < MS_CLIENT_MINIMUM_HARDWAREID_LENGTH || client.hardwareId.length() > MS_CLIENT_MAXIMUM_HARDWAREID_LENGTH
+      //   || client.oldIdentity.length() < MS_CLIENT_MINIMUM_IDENTITY_LENGTH || client.oldIdentity.length() > MS_CLIENT_MAXIMUM_IDENTITY_LENGTH)
+      // {
+        //   return false;
+        // }
+    }
+    else
+    {
+      // if(  client.username.length() < MS_CLIENT_MINIMUM_USERNAME_LENGTH || client.username.length() > MS_CLIENT_MAXIMUM_USERNAME_LENGTH
+      //   || client.password.length() < MS_CLIENT_MINIMUM_PASSWORD_LENGTH || client.password.length() > MS_CLIENT_MAXIMUM_PASSWORD_LENGTH
+      //   || client.hardwareId.length() < MS_CLIENT_MINIMUM_HARDWAREID_LENGTH || client.hardwareId.length() > MS_CLIENT_MAXIMUM_HARDWAREID_LENGTH
+      //   || client.oldIdentity.length() < MS_CLIENT_MINIMUM_IDENTITY_LENGTH || client.oldIdentity.length() > MS_CLIENT_MAXIMUM_IDENTITY_LENGTH)
+      // {
+        //   return false;
+        // }
+    }
     return true;
   }
 
@@ -197,9 +208,40 @@ namespace FluffyMultiplayer
             }
           }break;
 
+          case MS_REQUEST_RELOGIN:
+          {
+            if(checkConnection())
+            {
+              std::vector<std::string>data = dataSeparator(receivedData, MS_DATA_DELIMITER, MS_DATA_START_AT_INDEX);
+              FluffyMultiplayer::LoginClientData client;
+              switch (data.size())
+              {
+                case 2: //username and password is first of struct musst be filled so fill with empty
+                  client = { "", "", data[0].substr(MS_DATA_START_AT_INDEX,data[0].length()-1), data[1]};
+                  break;
+                default: //to handle broken requests
+                  client = {"", "" , "" , ""};
+              }
+
+              //data check
+              if(isDataValidated(client,true)) //trues is a flag to tell its relogin do not check username and password
+              {
+                std::string identityResult;
+                identityResult = client.oldIdentity;
+                int resultCode = db.reloginClient(client,identityResult);
+
+                if(resultCode == MS_RESPONSE_SUCCESS_LOGIN)
+                  sendData(resultCode,socket,receiverEndpoint,identityResult);
+                else
+                  sendData(resultCode,socket,receiverEndpoint);
+              }
+              else
+                sendData(MS_ERROR_FAILED_TO_LOGIN_BAD_DATA_SYNTAX,socket,receiverEndpoint);
+            }
+          }break;
+
           case MS_REQUEST_LOGIN:
           {
-            bool tryingToRelogin=false;
             if(checkConnection())
             {
               std::vector<std::string>data = dataSeparator(receivedData, MS_DATA_DELIMITER, MS_DATA_START_AT_INDEX);
@@ -219,30 +261,15 @@ namespace FluffyMultiplayer
                   break;
 
                 case 4:
-                {
                   client = { data[0].substr(MS_DATA_START_AT_INDEX,data[0].length()-1), data[1], data[2], data[3] };
-                  if(!data[3].empty())
-                  {
-                    std::cout << "client is trying to relogin" << std::endl;
-                    tryingToRelogin=true;
-                  }
-                }break;
+                  break;
               }
-              // FluffyMultiplayer::LoginClientData client = { data[0], data[1], data[2], data[3] };
 
               //data check
               if(isDataValidated(client))
               {
                 std::string identityResult;
-                int resultCode;
-
-                if(tryingToRelogin)
-                {
-                  identityResult = client.oldIdentity;
-                  resultCode = db.reloginClient(client,identityResult);
-                }
-                else
-                  resultCode = db.loginClient(client,identityResult);
+                int resultCode = db.loginClient(client,identityResult);
 
                 if(resultCode == MS_RESPONSE_SUCCESS_LOGIN)
                   sendData(resultCode,socket,receiverEndpoint,identityResult);

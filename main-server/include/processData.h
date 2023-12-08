@@ -51,7 +51,7 @@ namespace FluffyMultiplayer
 
     bool isDataValidated(const FluffyMultiplayer::RegisterClientData&) const;
     bool isDataValidated(const FluffyMultiplayer::CreateLobbyData&) const;
-    bool isDataValidated(const FluffyMultiplayer::LoginClientData&) const;
+    bool isDataValidated(const FluffyMultiplayer::LoginClientData&, bool) const;
 
     void process(udp::socket&, std::queue<FluffyMultiplayer::SocketDataQueue>&, FluffyMultiplayer::FluffyDatabase&);
   };
