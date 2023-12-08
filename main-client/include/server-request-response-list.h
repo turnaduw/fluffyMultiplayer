@@ -10,6 +10,7 @@
 #define MC_REQUEST_GET_LOBBY_LIST 105
 #define MC_REQUEST_GET_LOBBY_INFO 106
 #define MC_REQUEST_LATEST_VERSION 107
+#define MS_REQUEST_RELOGIN 108
 
 
 //= = = = = = = = = = = = = = = main server response success = = = = = = = = = = = = = = =
