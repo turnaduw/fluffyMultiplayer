@@ -88,7 +88,6 @@ namespace FluffyMultiplayer
 
         if(buttonSubmit.getButtonBound().contains(mousePosition))
         {
-          std::cout<<"mouse is clicked on button submit"<< std::endl;
           if(!usernameInput.getEnteredText().empty()
               && !passwordInput.getEnteredText().empty()
               && !emailInput.getEnteredText().empty())
@@ -98,27 +97,20 @@ namespace FluffyMultiplayer
         }
         else if(buttonGoToLoginForm.getButtonBound().contains(mousePosition))
         {
-          std::cout << "mouse is clicked on buttn go to login form" << std::endl;
           return formFinishedResult(false);
         }
         else if(emailInput.getInputBoxBound().contains(mousePosition))
         {
-          std::cout << "mouse is clicked on email input" << std::endl;
           inputFocus = &emailInput;
         }
         else if(usernameInput.getInputBoxBound().contains(mousePosition))
         {
-          std::cout << "mouse is clicked on username input" << std::endl;
           inputFocus = &usernameInput;
         }
         else if(passwordInput.getInputBoxBound().contains(mousePosition))
         {
-          std::cout << "mouse is clicked on password input" << std::endl;
           inputFocus = &passwordInput;
         }
-        else
-          std::cout << "mouse clicked on nowhere. posx:"  << mousePosition.x
-                  <<  "\tposy:" << mousePosition.y << std::endl;
     }
 
 

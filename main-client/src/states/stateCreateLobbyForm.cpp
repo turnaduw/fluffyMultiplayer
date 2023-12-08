@@ -124,41 +124,34 @@ namespace FluffyMultiplayer
         //buttons
         if(buttonSubmit.getButtonBound().contains(mousePosition))
         {
-          std::cout<<"mouse is clicked on button submit"<< std::endl;
           return formFinishedResult(true);
         }
         else if(buttonCancel.getButtonBound().contains(mousePosition))
         {
-          std::cout << "mouse is clicked on buttn cancel form" << std::endl;
           return formFinishedResult(false);
         }
 
         //text fields
         else if(passwordInput.getInputBoxBound().contains(mousePosition))
         {
-          std::cout << "mouse is clicked on password input" << std::endl;
           inputFocus = &passwordInput;
         }
 
         // SPIN BOXES
         else if(gameModeSpinBoxBounds[0].contains(mousePosition)) //spin box game mode
         {
-          std::cout << "mouse is lciked on spinbox gameMode up spinbox" << std::endl;
           gameModeSpinBox.spinUp();
         }
         else if(gameModeSpinBoxBounds[1].contains(mousePosition)) //spin box game mode
         {
-          std::cout << "mouse is lciked on spinbox gameMode down spinbox" << std::endl;
           gameModeSpinBox.spinDown();
         }
         else if(maxPlayersSpinBoxBounds[0].contains(mousePosition)) //spin box max players
         {
-          std::cout << "mouse is lciked on maxplayer up spinbox" << std::endl;
           maxPlayersSpinBox.spinUp();
         }
         else if(maxPlayersSpinBoxBounds[1].contains(mousePosition)) //spin box max players
         {
-          std::cout << "mouse is lciked on maxplayer down spinbox" << std::endl;
           maxPlayersSpinBox.spinDown();
         }
 
@@ -166,22 +159,16 @@ namespace FluffyMultiplayer
         //check boxes
         else if(specterCheckBox.getBound().contains(mousePosition))
         {
-          std::cout << "mouse is lciked on specter checkbox" << std::endl;
           specterCheckBox.clickedOnCheckBox();
         }
         else if(voiceChatCheckBox.getBound().contains(mousePosition))
         {
-          std::cout << "mouse is lciked on voicechat checkbox" << std::endl;
           voiceChatCheckBox.clickedOnCheckBox();
         }
         else if(textChatCheckBox.getBound().contains(mousePosition))
         {
-          std::cout << "mouse is lciked on text chat checkbox" << std::endl;
           textChatCheckBox.clickedOnCheckBox();
         }
-        else
-          std::cout << "mouse clicked on nowhere. posx:"  << mousePosition.x
-                  <<  "\tposy:" << mousePosition.y << std::endl;
     }
 
 

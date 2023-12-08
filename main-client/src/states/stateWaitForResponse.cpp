@@ -516,7 +516,6 @@ namespace FluffyMultiplayer
 
         if(buttonRetry.getButtonBound().contains(mousePosition))
         {
-          std::cout<<"mouse is clicked on button retry"<< std::endl;
           if(state1!=nullptr)
             return state1;
         }

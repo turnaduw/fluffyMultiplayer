@@ -42,13 +42,11 @@ namespace FluffyMultiplayer
 
         if(buttonConfirm.getButtonBound().contains(mousePosition))
         {
-          std::cout<<"mouse is clicked on button confirm logout"<< std::endl;
           app.clearIdentity();
           return new FluffyMultiplayer::StateLoginForm;
         }
         else if(buttonCancel.getButtonBound().contains(mousePosition))
         {
-          std::cout<<"mouse is clicked on button cancel"<< std::endl;
           return new FluffyMultiplayer::StateMainPage;
         }
     }

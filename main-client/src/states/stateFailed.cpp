@@ -96,17 +96,14 @@ namespace FluffyMultiplayer
 
         if(buttons[0].getButtonBound().contains(mousePosition))
         {
-          std::cout<<"mouse is clicked on button retry/ok"<< std::endl;
           return state1;
         }
         else if(buttons[1].getButtonBound().contains(mousePosition))
         {
-          std::cout<<"mouse is clicked on button cancel/quit"<< std::endl;
           return state2;
         }
         else if(buttons[2].getButtonBound().contains(mousePosition))
         {
-          std::cout<<"mouse is clicked on button skip"<< std::endl;
           return state3;
         }
     }
