@@ -49,9 +49,9 @@ namespace FluffyMultiplayer
 
     int separateCode(const std::string&); //means requesst code
 
-    bool isDataValidated(FluffyMultiplayer::RegisterClientData&);
-    bool isDataValidated(FluffyMultiplayer::CreateLobbyData&);
-    bool isDataValidated(FluffyMultiplayer::LoginClientData&);
+    bool isDataValidated(const FluffyMultiplayer::RegisterClientData&) const;
+    bool isDataValidated(const FluffyMultiplayer::CreateLobbyData&) const;
+    bool isDataValidated(const FluffyMultiplayer::LoginClientData&) const;
 
     void process(udp::socket&, std::queue<FluffyMultiplayer::SocketDataQueue>&, FluffyMultiplayer::FluffyDatabase&);
   };

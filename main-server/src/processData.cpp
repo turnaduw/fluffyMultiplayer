@@ -99,7 +99,7 @@ namespace FluffyMultiplayer
 
 
 
-  bool ProcessData::isDataValidated(FluffyMultiplayer::RegisterClientData& client)
+  bool ProcessData::isDataValidated(const FluffyMultiplayer::RegisterClientData& client) const
   {
     // if(  client.username.length() < MS_CLIENT_MINIMUM_USERNAME_LENGTH || client.username.length() > MS_CLIENT_MAXIMUM_USERNAME_LENGTH
     //   || client.password.length() < MS_CLIENT_MINIMUM_PASSWORD_LENGTH || client.password.length() > MS_CLIENT_MAXIMUM_PASSWORD_LENGTH
@@ -110,7 +110,7 @@ namespace FluffyMultiplayer
     // }
     return true;
   }
-  bool ProcessData::isDataValidated(FluffyMultiplayer::CreateLobbyData& data)
+  bool ProcessData::isDataValidated(const FluffyMultiplayer::CreateLobbyData& data) const
   {
     // if(  data.identity.length() < MS_CLIENT_MINIMUM_IDENTITY_LENGTH
     //   || data.identity.length() > MS_CLIENT_MAXIMUM_IDENTITY_LENGTH)
@@ -120,7 +120,7 @@ namespace FluffyMultiplayer
     return true;
   }
 
-  bool ProcessData::isDataValidated(FluffyMultiplayer::LoginClientData& client)
+  bool ProcessData::isDataValidated(const FluffyMultiplayer::LoginClientData& client) const
   {
     // if(  client.username.length() < MS_CLIENT_MINIMUM_USERNAME_LENGTH || client.username.length() > MS_CLIENT_MAXIMUM_USERNAME_LENGTH
     //   || client.password.length() < MS_CLIENT_MINIMUM_PASSWORD_LENGTH || client.password.length() > MS_CLIENT_MAXIMUM_PASSWORD_LENGTH
