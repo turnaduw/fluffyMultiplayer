@@ -222,12 +222,12 @@ namespace FluffyMultiplayer
                 default: //to handle broken requests
                   client = {"", "" , "" , ""};
               }
+              std::cout << "relogin client:\nusername=" << client.username << "\npassword=" << client.password << "\nhardwareid=" << client.hardwareId << "\nidentity=" << client.oldIdentity << std::endl;
 
               //data check
               if(isDataValidated(client,true)) //trues is a flag to tell its relogin do not check username and password
               {
                 std::string identityResult;
-                identityResult = client.oldIdentity;
                 int resultCode = db.reloginClient(client,identityResult);
 
                 if(resultCode == MS_RESPONSE_SUCCESS_LOGIN)
