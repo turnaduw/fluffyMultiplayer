@@ -305,7 +305,6 @@ namespace FluffyMultiplayer
       basic_query += client.username + "' AND password='";
       basic_query += client.password + "';";
       std::string result = search_in_db(basic_query);
-      std::cout << "result login id=" << result << std::endl;
 
       //check result is not empty that means client exists
       if(result.length()<MS_MINIMUM_RETURNED_DATA_BY_SQL_SEARCH)
@@ -323,7 +322,6 @@ namespace FluffyMultiplayer
       basic_query = "SELECT isBanned FROM fm_client WHERE username='";
       basic_query += client.username + "';";
       result = search_in_db(basic_query);
-      std::cout << "result login isbanned=" << result << std::endl;
 
       // set client ban status         jump 9 charecter because of filed title for example is: isBanned=0
       bool isBanned = static_cast<bool>(FluffyMultiplayer::convertStringToInt(result.substr(9,result.length()-1))); // isBanned= [9], boolain is just one chartecter 0 or 1
@@ -439,17 +437,16 @@ namespace FluffyMultiplayer
   //database----------
   int FluffyDatabase::search_in_db_callback(void* data, int argc, char** argv, char** azColName)
   {
-      std::cout << "search_in_db_callback()" << std::endl;
       std::string* _result = static_cast<std::string*>(data);
       for (int i = 0; i < argc; i++)
       {
-          std::cout << "db search i=" << i  << "\t"<< azColName[i] << '=' << (argv[i] ? argv[i] : "NULL") << std::endl;
-          *_result += azColName[i];
-          *_result += '=';
-          *_result +=  (argv[i] ? argv[i] : "NULL");
-          *_result += "\n";
+          // std::cout << "db search i=" << i  << "\t"<< azColName[i] << '=' << (argv[i] ? argv[i] : "NULL") << std::endl;
+          // *_result += azColName[i];
+          // *_result += '=';
+          // *_result +=  (argv[i] ? argv[i] : "NULL");
+          // *_result += "\n";
       }
-      std::cout << std::endl;
+      // std::cout << std::endl;
       return 0;
   }
 
