@@ -199,6 +199,7 @@ namespace FluffyMultiplayer
 
           case MS_REQUEST_LOGIN:
           {
+            bool tryingToRelogin=false;
             if(checkConnection())
             {
               std::vector<std::string>data = dataSeparator(receivedData, MS_DATA_DELIMITER, MS_DATA_START_AT_INDEX);
@@ -218,8 +219,14 @@ namespace FluffyMultiplayer
                   break;
 
                 case 4:
+                {
                   client = { data[0], data[1], data[2], data[3] };
-                  break;
+                  if(!data[3].empty())
+                  {
+                    std::cout << "client is trying to relogin" << std::endl;
+                    tryingToRelogin=true;
+                  }
+                }break;
               }
               // FluffyMultiplayer::LoginClientData client = { data[0], data[1], data[2], data[3] };
 
@@ -227,7 +234,15 @@ namespace FluffyMultiplayer
               if(isDataValidated(client))
               {
                 std::string identityResult;
-                int resultCode = db.loginClient(client,identityResult);
+                int resultCode;
+
+                if(tryingToRelogin)
+                {
+                  identityResult = client.oldIdentity;
+                  resultCode = db.reloginClient(client);
+                }
+                else
+                  resultCode = db.loginClient(client,identityResult);
 
                 if(resultCode == MS_RESPONSE_SUCCESS_LOGIN)
                   sendData(resultCode,socket,receiverEndpoint,identityResult);

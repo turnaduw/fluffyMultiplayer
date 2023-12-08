@@ -141,6 +141,60 @@ namespace FluffyMultiplayer
         return false;
   }
 
+  void FluffyDatabase::printTime(std::string str , const FluffyMultiplayer::TimeAndDate& time)
+  {
+    std::cout << str << " Year: " << time.year << ", Month: " << time.month << ", Day: " << time.day
+          << ", Hour: " << time.hour << ", Minute: " << time.minute << ", Second: " << time.second << std::endl;
+  }
+
+  FluffyMultiplayer::TimeAndDate FluffyDatabase::convertDatabaseTimeStamp(std::string time)
+  {
+    std::tm tm = {};
+    strptime(time.c_str(), "%Y-%m-%d %H:%M:%S", &tm);
+    return FluffyMultiplayer::TimeAndDate {1900 + tm.tm_year, 1 + tm.tm_mon,tm.tm_mday,tm.tm_hour,tm.tm_min,tm.tm_sec};
+  }
+
+  FluffyMultiplayer::TimeAndDate FluffyDatabase::getCurrentTime()
+  {
+    // Get current time
+    time_t now = time(0);
+    tm* ltm = localtime(&now);
+
+    // Extract current time components
+    return FluffyMultiplayer::TimeAndDate {1900 + ltm->tm_year, 1 + ltm->tm_mon,ltm->tm_mday,ltm->tm_hour,ltm->tm_min,ltm->tm_sec};
+  }
+
+  int FluffyDatabase::reloginClient(const FluffyMultiplayer::LoginClientData& client)
+  {
+      std::cout << "relogin client identity = " << client.oldIdentity << std::endl;
+      //search for that oldIdentity from fm_client_login
+      std::string basic_query = "SELECT loginDate,clientId FROM fm_client_login WHERE identity='";
+      basic_query += client.oldIdentity + "');";
+      std::string result = search_in_db(basic_query);
+      if(result.length()<MS_MINIMUM_RETURNED_DATA_BY_SQL_SEARCH)
+        return MS_ERROR_FAILED_TO_LOGIN_CLIENT; //98% chance to login not found because in some case maybe database is not abled to return query's response.
+
+      std::cout << "relogin rsssesult = " << result << std::endl;
+
+      //current time
+      FluffyMultiplayer::TimeAndDate current = getCurrentTime();
+      printTime("current time=", current);
+
+      return 0;
+      // login creation date
+      // FluffyMultiplayer::TimeAndDate creation = convertDatabaseTimeStamp();
+
+
+      //...
+      //compare current time with loginDate then return diffrance number of days,hours,minutes,seconds
+      //if those numbers are more than our DEFINES written in config.h return failed login expired
+      //else return login sucess return new identity to client.
+      // #define MS_CLIENT_LOGIN_IDENTITY_EXPIRE_DAYS 1
+      // #define MS_CLIENT_LOGIN_IDENTITY_EXPIRE_HOURS 12
+      // #define MS_CLIENT_LOGIN_IDENTITY_EXPIRE_MINUTES 0
+      // #define MS_CLIENT_LOGIN_IDENTITY_EXPIRE_SECONDS 0
+  }
+
   int FluffyDatabase::getClientIdByIdentity(const std::string& identity)
   {
     std::string basic_query = "SELECT clientId FROM fm_client_login WHERE identity='";
@@ -215,6 +269,7 @@ namespace FluffyMultiplayer
       std::string basic_query = "SELECT isBanned,id,password FROM fm_client WHERE username='";
       basic_query += client.username + "';";
       std::string result = search_in_db(basic_query);
+      std::cout << "result login=" << result << std::endl;
       if(result.length()<MS_MINIMUM_RETURNED_DATA_BY_SQL_SEARCH)
         return MS_ERROR_FAILED_TO_LOGIN_NOT_EXISTS; //98% chance to account not found because in some case maybe database is not abled to return query's response.
 
@@ -243,26 +298,6 @@ namespace FluffyMultiplayer
       }
       else
         return MS_ERROR_FAILED_TO_LOGIN_INCORRECT; //incrrect password
-    }
-    else //re-login client
-    {
-      //search for that oldIdentity from fm_client_login
-      std::string basic_query = "SELECT loginDate,clientId FROM fm_client_login WHERE identity='";
-      basic_query += client.oldIdentity + "');";
-      std::string result = search_in_db(basic_query);
-      if(result.length()<MS_MINIMUM_RETURNED_DATA_BY_SQL_SEARCH)
-        return MS_ERROR_FAILED_TO_LOGIN_CLIENT; //98% chance to login not found because in some case maybe database is not abled to return query's response.
-
-      //get current time
-
-      //...
-      //compare current time with loginDate then return diffrance number of days,hours,minutes,seconds
-      //if those numbers are more than our DEFINES written in config.h return failed login expired
-      //else return login sucess return new identity to client.
-      // #define MS_CLIENT_LOGIN_IDENTITY_EXPIRE_DAYS 1
-      // #define MS_CLIENT_LOGIN_IDENTITY_EXPIRE_HOURS 12
-      // #define MS_CLIENT_LOGIN_IDENTITY_EXPIRE_MINUTES 0
-      // #define MS_CLIENT_LOGIN_IDENTITY_EXPIRE_SECONDS 0
     }
     return MS_ERROR_FAILED_TO_LOGIN_CLIENT;
   }

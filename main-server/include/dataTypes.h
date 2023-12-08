@@ -32,6 +32,15 @@ namespace FluffyMultiplayer
     std::string password;
   };
 
+  struct TimeAndDate
+  {
+    int year;
+    int month;
+    int day;
+    int hour;
+    int minute;
+    int second;
+  };
 
   struct LoginClientData
   {

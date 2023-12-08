@@ -15,6 +15,13 @@
 #include "dataSecurity.h"
 #include "dataTypes.h"
 
+
+//time for relogin
+#include <ctime>
+
+
+#include <string>
+
 namespace FluffyMultiplayer
 {
   class FluffyDatabase
@@ -22,6 +29,11 @@ namespace FluffyMultiplayer
       sqlite3* db;
       char* errMsg = nullptr;
       FluffyMultiplayer::FluffyDataSecurity dataSecurity;
+      FluffyMultiplayer::TimeAndDate convertDatabaseTimeStamp(std::string);
+      FluffyMultiplayer::TimeAndDate getCurrentTime();
+      void printTime(std::string, const FluffyMultiplayer::TimeAndDate&);
+
+
     public:
       FluffyDatabase(bool);
       ~FluffyDatabase();
@@ -29,7 +41,8 @@ namespace FluffyMultiplayer
 
       //------------------------- authication
 
-      int loginClient(const FluffyMultiplayer::LoginClientData&, std::string&);//write relogin section..
+      int loginClient(const FluffyMultiplayer::LoginClientData&, std::string&);
+      int reloginClient(const FluffyMultiplayer::LoginClientData&);
 
       int registerClient(const FluffyMultiplayer::RegisterClientData&, std::string&);
 
