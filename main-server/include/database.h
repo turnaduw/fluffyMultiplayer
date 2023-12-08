@@ -32,7 +32,7 @@ namespace FluffyMultiplayer
       FluffyMultiplayer::TimeAndDate convertDatabaseTimeStamp(std::string);
       FluffyMultiplayer::TimeAndDate getCurrentTime();
       void printTime(std::string, const FluffyMultiplayer::TimeAndDate&);
-      bool isIdentityValid(const std::string& identity) const;
+      bool isIdentityValid(const std::string& identity);
 
 
     public:
@@ -48,7 +48,7 @@ namespace FluffyMultiplayer
       int registerClient(const FluffyMultiplayer::RegisterClientData&, std::string&);
 
       int getClientIdByIdentity(const std::string&);
-      bool isIdentityExists(const std::string&) const;
+      bool isIdentityExists(const std::string&);
 
       bool createSessionForClient(const int&,std::string&);
 

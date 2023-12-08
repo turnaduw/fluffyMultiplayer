@@ -133,7 +133,7 @@ namespace FluffyMultiplayer
     return lobbies;
   }
 
-  bool FluffyDatabase::isIdentityExists(const std::string& identity) const
+  bool FluffyDatabase::isIdentityExists(const std::string& identity)
   {
         int cid = getClientIdByIdentity(identity);
         if(cid>=1)
@@ -164,7 +164,7 @@ namespace FluffyMultiplayer
     return FluffyMultiplayer::TimeAndDate {1900 + ltm->tm_year, 1 + ltm->tm_mon,ltm->tm_mday,ltm->tm_hour,ltm->tm_min,ltm->tm_sec};
   }
 
-  bool FluffyDatabase::isIdentityValid(const std::string& identity) const
+  bool FluffyDatabase::isIdentityValid(const std::string& identity)
   {
     if(isIdentityExists(identity))
     {
@@ -179,7 +179,7 @@ namespace FluffyMultiplayer
 
   int FluffyDatabase::reloginClient(const FluffyMultiplayer::LoginClientData& client, std::string& outputIdentity)
   {
-      if(!isIdentityValid(client))
+      if(!isIdentityValid(client.oldIdentity))
       {
         return MS_ERROR_FAILED_TO_RELOGIN_IDENTITY_INVALID_OR_NOT_EXISTS;
       }
@@ -218,7 +218,7 @@ namespace FluffyMultiplayer
       printTime("expireDate=",expireDate);
 
 
-      if(current.isExpired(loginDate, expireDate))
+      if(currentDate.isExpired(loginDate, expireDate))
       {
         outputIdentity="";
         std::cout << "identity expired." << std::endl;
@@ -306,6 +306,7 @@ namespace FluffyMultiplayer
     if(client.oldIdentity.length()<=0)
     {
       //insert into database
+      std::cout << "loginClient will do query, client info:\nusername=" << client.username << "\npassword=" << client.password << "\nhardwareid=" << client.hardwareId << "\nold_identity=" << client.oldIdentity << std::endl;
       std::string basic_query = "SELECT isBanned,id,password FROM fm_client WHERE username='";
       basic_query += client.username + "';";
       std::string result = search_in_db(basic_query);
