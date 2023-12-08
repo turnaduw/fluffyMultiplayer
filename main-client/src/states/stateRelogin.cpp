@@ -6,9 +6,11 @@ namespace FluffyMultiplayer
   {
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
     initSimpleText(fontPath, "Trying to read local account files\nto re-login into your account.\nplease wait...");
-    req = std::to_string(MC_REQUEST_LOGIN)+ ""; //insert empty username for request to relogin
-    req += MC_REQUEST_DELIMITER ""; //insert empty password for request to relogin
-    req += MC_REQUEST_DELIMITER;
+    reloginData._inputs[0] = ""; //username
+    reloginData._inputs[1] = ""; //password
+    reloginData._saveLoginStatus=false;
+
+    std::cout << "trying to re-login into account." << std::endl;
   }
 
   StateRelogin::~StateRelogin()
@@ -41,8 +43,8 @@ namespace FluffyMultiplayer
     else
     {
       int lengthSeprator = sperator.length();
-      identity = line.substr(indexKey+lengthSeprator,indexEndline);
-
+      identity = line.substr(key.length()+sperator.length(), indexEndline-endline.length()-8);
+      std::cout << "found identity = " << identity << "." << std::endl;
       //check for founded identity length
       if(identity.length()>=MC_IDENTITY_MIN_LENGTH
           && identity.length()<=MC_IDENTITY_MAX_LENGTH)
@@ -69,34 +71,34 @@ namespace FluffyMultiplayer
       {
         while ( getline (appConfigFile,line) )
         {
-          if
-          (
-            searchForIdentity
-            (
-              identity,
-              line,
-              std::string(MC_APP_CONFIG_IDENTITY_KEY),
-              std::string(MC_APP_CONFIG_SEPERATOR),
-              std::string(MC_APP_CONFIG_ENDLINE)
-            )
-          )
+          if(searchForIdentity(identity,line,std::string(MC_APP_CONFIG_IDENTITY_KEY),
+                      std::string(MC_APP_CONFIG_SEPERATOR),std::string(MC_APP_CONFIG_ENDLINE)))
           {
+            std::cout << "identity found to re-login" << std::endl;
             appConfigFile.close();
-            req += identity + MC_REQUEST_DELIMITER;
-            req += MC_REQUEST_CLOSER;
+            reloginData.identity = identity;
+            FluffyMultiplayer::AppState* res = nullptr;
+            if(reloginData._saveLoginStatus)
+              res = new FluffyMultiplayer::StateWriteIdentityToLocal;
+            else
+              res = new FluffyMultiplayer::StateMainPage;
+
             return new FluffyMultiplayer::StateWaitForResponse //will break loop
             (
               "waiting for response from server\nto re-login into account.\nplease wait..",
-              req,
-              this,
               new FluffyMultiplayer::StateLoginForm,
-              MS_ERROR_FAILED_TO_LOGIN_CLIENT //in this case use this code, but needs some response code for relogin
+              reloginData,
+              new FluffyMultiplayer::StateFailed("account is banned.\n",this,nullptr),
+              res,
+              MS_ERROR_FAILED_TO_LOGIN_BANNED,
+              MS_RESPONSE_SUCCESS_LOGIN
             );
           }
         }
         appConfigFile.close();
       }
     }
+    std::cout << "could not find identity from local at all to re-login." << std::endl;
     return new FluffyMultiplayer::StateLoginForm;
   }
 

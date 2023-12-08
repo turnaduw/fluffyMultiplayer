@@ -14,7 +14,8 @@ namespace FluffyMultiplayer
   class StateRelogin : public AppState
   {
   private:
-    std::string req;
+    FluffyMultiplayer::LoginFormData reloginData;
+
     int findIndexOfValue(const std::string&, std::string);
     bool searchForIdentity(std::string&, const std::string&,std::string, std::string,std::string);
   public:
