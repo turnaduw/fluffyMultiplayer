@@ -26,6 +26,7 @@ namespace FluffyMultiplayer
       //retry button
       state1 = retry;
 
+
       //second button
       state2 = bannedstates;
       responseCodeAcceptor = bannedCodes;
@@ -41,7 +42,15 @@ namespace FluffyMultiplayer
       long hostId = gethostid();
 
 
-      std::string temp = std::to_string(MC_REQUEST_LOGIN) +  _loginData._inputs[0]+ MC_REQUEST_DELIMITER;
+      // choose is it login or relogin
+      std::string requestCode;
+      if(_loginData._inputs[0].empty() && _loginData._inputs[1].empty())
+        requestCode = std::to_string(MC_REQUEST_RELOGIN);
+      else
+        requestCode = std::to_string(MC_REQUEST_LOGIN);
+
+
+      std::string temp =  requestCode +  _loginData._inputs[0]+ MC_REQUEST_DELIMITER;
       temp += _loginData._inputs[1] +MC_REQUEST_DELIMITER;
       temp += std::to_string(hostId) + MC_REQUEST_DELIMITER; //hardwareId
       temp += loginData_ptr->identity + MC_REQUEST_DELIMITER; //identity for first time is empty, this is used when trying to relogin
@@ -297,51 +306,6 @@ namespace FluffyMultiplayer
     return -1;
   }
 
-  /*
-  std::vector<std::string> StateWaitForResponse::dataSeparator(const std::string& _data, std::string delimiter, std::string closer, int ignoreFirstCharectersIndex=0)
-  {
-    int index;
-    std::vector<std::string> result;
-    std::string str=_data;
-
-
-    if(ignoreFirstCharectersIndex>0)
-        str = str.substr(ignoreFirstCharectersIndex, str.length()-1);
-
-
-    if(str.empty())
-    {
-      std::cout << "dataSeparator full-broke. reaseon(data is empty)" << std::endl;
-      return result;
-    }
-
-
-
-    if(str.find(closer) == std::string::npos)
-    {
-      std::cout << "dataSeparator full-broke. reaseon(closer not found after data)" << std::endl;
-      return result;
-    }
-    else
-      str = str.substr(0, (str.length()-1)+closer.length()); //remove closer from data
-
-
-
-    if (str.find(delimiter) == std::string::npos)
-    {
-      std::cout << "dataSeparator full-broke. reaseon(delimiter not found in data)" << std::endl;
-      return result;
-    }
-
-
-    for(int i=0; i<_data.length(); i++)
-    {
-      index = str.find(delimiter);
-      str = str.substr(index+delimiter.length() ,str.length()-1);
-      result.push_back(str);
-    }
-    return result;
-  }*/
 
   std::string StateWaitForResponse::getIdentityFromResponsedData(const std::string& _data,std::string delimiter,std::string closer)
   {
@@ -388,19 +352,12 @@ namespace FluffyMultiplayer
 
         for(int i = 0; i < responseCodeAcceptor.size(); i++)
         {
-          if(resultRC == responseCodeAcceptor[i])
-          {
-            if(registerData_ptr!=nullptr)
+            if(resultRC == responseCodeAcceptor[i])
             {
-              // responsedData = dataSeparator(receivedData, MC_RESPONSE_DELIMITER, MC_RESPONSE_CLOSER, MC_DATA_START_AT_INDEX);
-              // if(responsedData.size()>0)
-              // {
-                // registerData_ptr->identity = responsedData[0];
+              if(registerData_ptr!=nullptr)
+              {
                 registerData_ptr->identity = getIdentityFromResponsedData(receivedData,MC_RESPONSE_DELIMITER,MC_RESPONSE_CLOSER);
                 app.setIdentity(registerData_ptr->identity); //save identity for app
-                // }
-                // else
-                // std::cout << "register response is success but identity not received/found." << std::endl;
               }
               return state2[i]; //accepted (first state passed) successfully
             }
@@ -408,16 +365,9 @@ namespace FluffyMultiplayer
             {
               if(loginData_ptr!=nullptr)
               {
-                // responsedData = dataSeparator(receivedData, MC_RESPONSE_DELIMITER, MC_RESPONSE_CLOSER, MC_DATA_START_AT_INDEX);
-                // if(responsedData.size()>0)
-                // {
-                  // loginData_ptr->identity = responsedData[0];
                   loginData_ptr->identity = getIdentityFromResponsedData(receivedData,MC_RESPONSE_DELIMITER,MC_RESPONSE_CLOSER);
                   app.setIdentity(loginData_ptr->identity); //save identity for app
-                  // }
-                  // else
-                  // std::cout << "login response is success but identity not received/found." << std::endl;
-                }
+              }
 
                 if(createLobbyData_ptr!=nullptr)
                 {

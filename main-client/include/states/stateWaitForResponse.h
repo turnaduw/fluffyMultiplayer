@@ -32,8 +32,6 @@ namespace FluffyMultiplayer
     int checkResponseCode(const std::string&);
 
     std::string getIdentityFromResponsedData(const std::string& _data,std::string delimter,std::string closer);
-    // std::vector<std::string> dataSeparator(const std::string&, std::string, std::string, int);
-    // std::vector<std::string> responsedData;
 
     //login form
     FluffyMultiplayer::LoginFormData* loginData_ptr;
@@ -49,6 +47,7 @@ namespace FluffyMultiplayer
 
 
     FluffyMultiplayer::Button buttonRetry;
+    
     //mouse event handel variable to delecre once, not per loop delcre
     sf::Vector2f mousePosition;
 
