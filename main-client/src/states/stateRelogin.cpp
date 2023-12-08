@@ -88,9 +88,19 @@ namespace FluffyMultiplayer
               "waiting for response from server\nto re-login into account.\nplease wait..",
               new FluffyMultiplayer::StateLoginForm,
               reloginData,
-              new FluffyMultiplayer::StateFailed("account is banned.\n",this,nullptr),
+              std::vector<FluffyMultiplayer::AppState*>
+                  {
+                      new FluffyMultiplayer::StateFailed("login session not found\n", new FluffyMultiplayer::StateLoginForm ,nullptr),
+                      new FluffyMultiplayer::StateFailed("login session time expired\n", new FluffyMultiplayer::StateLoginForm ,nullptr),
+                      new FluffyMultiplayer::StateFailed("could not relogin\n", new FluffyMultiplayer::StateLoginForm ,nullptr),
+                  },
               res,
-              MS_ERROR_FAILED_TO_LOGIN_BANNED,
+              std::std::vector<int>
+                  {
+                      MS_ERROR_FAILED_TO_RELOGIN_IDENTITY_INVALID_OR_NOT_EXISTS,
+                      MS_ERROR_FAILED_TO_RELOGIN_IDENTITY_EXPIRED,
+                      MS_ERROR_FAILED_TO_RELOGIN,
+                  },
               MS_RESPONSE_SUCCESS_LOGIN
             );
           }

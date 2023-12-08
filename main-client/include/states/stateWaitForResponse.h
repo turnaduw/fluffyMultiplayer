@@ -20,9 +20,9 @@ namespace FluffyMultiplayer
   private:
     int timeoutCounter;
     FluffyMultiplayer::AppState* state1;
-    FluffyMultiplayer::AppState* state2;
+    std::vector<FluffyMultiplayer::AppState*> state2;
     FluffyMultiplayer::AppState* state3;
-    int responseCodeAcceptor;
+    std::vector<int> responseCodeAcceptor;
     int responseCodeAcceptor2;
     std::string text;
     std::string receivedData;
@@ -69,9 +69,9 @@ namespace FluffyMultiplayer
     StateWaitForResponse(std::string _text,
       FluffyMultiplayer::AppState* retry,
       FluffyMultiplayer::LoginFormData loginFormdata,
-      FluffyMultiplayer::AppState* banned,
+      std::vector<FluffyMultiplayer::AppState*> bannedstates,
       FluffyMultiplayer::AppState* success,
-      int bannedCode,int successCode);
+      std::vector<int> bannedCodes,int successCode);
 
     //for reigsterForm
     StateWaitForResponse(std::string _text,

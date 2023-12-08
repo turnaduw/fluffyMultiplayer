@@ -6,9 +6,9 @@ namespace FluffyMultiplayer
   StateWaitForResponse::StateWaitForResponse(std::string _text,
     FluffyMultiplayer::AppState* retry,
     FluffyMultiplayer::LoginFormData _loginData,
-    FluffyMultiplayer::AppState* bannedstate,
+    std::vector<FluffyMultiplayer::AppState*> bannedstates,
     FluffyMultiplayer::AppState* successstate,
-    int bannedCode,int successCode)
+    std::vector<int> bannedCodes,int successCode)
     {
       registerData_ptr=nullptr;
       lobbyData_ptr=nullptr;
@@ -27,8 +27,8 @@ namespace FluffyMultiplayer
       state1 = retry;
 
       //second button
-      state2 = bannedstate;
-      responseCodeAcceptor = bannedCode;
+      state2 = bannedstates;
+      responseCodeAcceptor = bannedCodes;
 
       //third button
       state3 = successstate;
@@ -81,8 +81,8 @@ namespace FluffyMultiplayer
       state1 = retry;
 
       //second button
-      state2 = successState;
-      responseCodeAcceptor = successCode;
+      state2.push_back(successState);
+      responseCodeAcceptor.push_back( successCode );
 
       //third button
       state3 = nullptr;
@@ -145,8 +145,8 @@ namespace FluffyMultiplayer
         state1 = retry;
 
         //second button
-        state2 = notfoundState;
-        responseCodeAcceptor = notfoundCode;
+        state2.push_back(notfoundState);
+        responseCodeAcceptor.push_back(notfoundCode);
 
         //third button
         state3 = successState;
@@ -199,8 +199,8 @@ namespace FluffyMultiplayer
         state1 = retry;
 
         //second button
-        state2 = accountlimited;
-        responseCodeAcceptor = accountlimitedCode;
+        state2.push_back(accountlimited);
+        responseCodeAcceptor.push_back( accountlimitedCode );
 
         //third button
         state3 = successState;
@@ -245,9 +245,9 @@ namespace FluffyMultiplayer
     requestSent=false;
     timeoutCounter=MC_REQUEST_TIMEOUT;
     state1 = retryState;
-    state2 = acceptedState;
+    state2.push_back(acceptedState);
     state3 = nullptr;
-    responseCodeAcceptor = responseCodeAccepts;
+    responseCodeAcceptor.push_back( responseCodeAccepts );
     requestData = request;
 
 
@@ -385,117 +385,121 @@ namespace FluffyMultiplayer
         receivedData = receiveDataQueue.front();
         receiveDataQueue.pop();
         int resultRC = checkResponseCode(receivedData);
-        if(resultRC == responseCodeAcceptor)
-        {
-          if(registerData_ptr!=nullptr)
-          {
-            // responsedData = dataSeparator(receivedData, MC_RESPONSE_DELIMITER, MC_RESPONSE_CLOSER, MC_DATA_START_AT_INDEX);
-            // if(responsedData.size()>0)
-            // {
-              // registerData_ptr->identity = responsedData[0];
-              registerData_ptr->identity = getIdentityFromResponsedData(receivedData,MC_RESPONSE_DELIMITER,MC_RESPONSE_CLOSER);
-              app.setIdentity(registerData_ptr->identity); //save identity for app
-            // }
-            // else
-              // std::cout << "register response is success but identity not received/found." << std::endl;
-          }
-          return state2; //accepted (first state passed) successfully
-        }
-        else if(resultRC == responseCodeAcceptor2 && state3!=nullptr)
-        {
-          if(loginData_ptr!=nullptr)
-          {
-            // responsedData = dataSeparator(receivedData, MC_RESPONSE_DELIMITER, MC_RESPONSE_CLOSER, MC_DATA_START_AT_INDEX);
-            // if(responsedData.size()>0)
-            // {
-              // loginData_ptr->identity = responsedData[0];
-              loginData_ptr->identity = getIdentityFromResponsedData(receivedData,MC_RESPONSE_DELIMITER,MC_RESPONSE_CLOSER);
-              app.setIdentity(loginData_ptr->identity); //save identity for app
-            // }
-            // else
-              // std::cout << "login response is success but identity not received/found." << std::endl;
-          }
 
-          if(createLobbyData_ptr!=nullptr)
-          {
-            std::string tempAd = createLobbyData_ptr->address.ip.to_string();
-            tempAd += std::to_string(createLobbyData_ptr->address.port);
-            return new FluffyMultiplayer::StateJoinLobby(tempAd);
-          }
-          return state3; //second state passed successfully
-        }
-
-        /*
-          get lobby info by entered lobby id:
-          we have to pass lobbyData into StateShowLobbyDetails, can not pass same
-          empty from StateMainPage so make state3 that is success to nullptr to
-          create a new situation to do this down condition
-        */
-        else if(resultRC == responseCodeAcceptor2 && state3==nullptr && lobbyData_ptr!=nullptr)
+        for(int i = 0; i < responseCodeAcceptor.size(); i++)
         {
-          return new FluffyMultiplayer::StateShowLobbyDetails(*lobbyData_ptr);
-        }
-
-        else
-        {
-          //login form
-          if(state1==nullptr && loginData_ptr!=nullptr && timeoutCounter<=0)
+          if(resultRC == responseCodeAcceptor[i])
           {
-            switch (resultRC)
+            if(registerData_ptr!=nullptr)
             {
-              case MS_ERROR_FAILED_TO_LOGIN_INCORRECT:
-              case MS_ERROR_FAILED_TO_LOGIN_NOT_EXISTS:
-              case MS_ERROR_FAILED_TO_LOGIN_BAD_DATA_SYNTAX:
-              default:
+              // responsedData = dataSeparator(receivedData, MC_RESPONSE_DELIMITER, MC_RESPONSE_CLOSER, MC_DATA_START_AT_INDEX);
+              // if(responsedData.size()>0)
+              // {
+                // registerData_ptr->identity = responsedData[0];
+                registerData_ptr->identity = getIdentityFromResponsedData(receivedData,MC_RESPONSE_DELIMITER,MC_RESPONSE_CLOSER);
+                app.setIdentity(registerData_ptr->identity); //save identity for app
+                // }
+                // else
+                // std::cout << "register response is success but identity not received/found." << std::endl;
+              }
+              return state2[i]; //accepted (first state passed) successfully
+            }
+            else if(resultRC == responseCodeAcceptor2 && state3!=nullptr)
+            {
+              if(loginData_ptr!=nullptr)
+              {
+                // responsedData = dataSeparator(receivedData, MC_RESPONSE_DELIMITER, MC_RESPONSE_CLOSER, MC_DATA_START_AT_INDEX);
+                // if(responsedData.size()>0)
+                // {
+                  // loginData_ptr->identity = responsedData[0];
+                  loginData_ptr->identity = getIdentityFromResponsedData(receivedData,MC_RESPONSE_DELIMITER,MC_RESPONSE_CLOSER);
+                  app.setIdentity(loginData_ptr->identity); //save identity for app
+                  // }
+                  // else
+                  // std::cout << "login response is success but identity not received/found." << std::endl;
+                }
+
+                if(createLobbyData_ptr!=nullptr)
+                {
+                  std::string tempAd = createLobbyData_ptr->address.ip.to_string();
+                  tempAd += std::to_string(createLobbyData_ptr->address.port);
+                  return new FluffyMultiplayer::StateJoinLobby(tempAd);
+                }
+                return state3; //second state passed successfully
+              }
+
               /*
-                dont know these failed resposne code belongs to where?
-                username or password?
-                so this part wrote on index _error[0],  for later changes
+              get lobby info by entered lobby id:
+              we have to pass lobbyData into StateShowLobbyDetails, can not pass same
+              empty from StateMainPage so make state3 that is success to nullptr to
+              create a new situation to do this down condition
               */
-              loginData_ptr->_errors[0] = resultRC;
-            }
+              else if(resultRC == responseCodeAcceptor2 && state3==nullptr && lobbyData_ptr!=nullptr)
+              {
+                return new FluffyMultiplayer::StateShowLobbyDetails(*lobbyData_ptr);
+              }
 
-            return new FluffyMultiplayer::StateLoginForm(*loginData_ptr);
-          }
+              else
+              {
+                //login form
+                if(state1==nullptr && loginData_ptr!=nullptr && timeoutCounter<=0)
+                {
+                  switch (resultRC)
+                  {
+                    case MS_ERROR_FAILED_TO_LOGIN_INCORRECT:
+                    case MS_ERROR_FAILED_TO_LOGIN_NOT_EXISTS:
+                    case MS_ERROR_FAILED_TO_LOGIN_BAD_DATA_SYNTAX:
+                    default:
+                    /*
+                    dont know these failed resposne code belongs to where?
+                    username or password?
+                    so this part wrote on index _error[0],  for later changes
+                    */
+                    loginData_ptr->_errors[0] = resultRC;
+                  }
 
-          //register form
-          else if(state3==nullptr && registerData_ptr!=nullptr && timeoutCounter<=0)
-          {
-            switch (resultRC)
-            {
-              case MS_ERROR_FAILED_TO_REGISTER_USERNAME_EXISTS: registerData_ptr->_errors[0]=resultRC;break;
-              case MS_ERROR_FAILED_TO_REGISTER_EMIAL_EXISTS: registerData_ptr->_errors[1]=resultRC;break;
-              case MS_ERROR_FAILED_TO_REGISTER_EASY_PASSWORD: registerData_ptr->_errors[2]=resultRC;break;
-              case MS_ERROR_FAILED_TO_REGISTER_BAD_DATA_SYNTAX:
-              default:
-              /*
-                dont know other failed resposne code belongs to where?
-                username or email or password?
-                so this part wrote on index _error[0],  for later changes
-              */
-              registerData_ptr->_errors[0]=resultRC;break;
-            }
-            return new FluffyMultiplayer::StateRegisterForm(*registerData_ptr);
-          }
+                  return new FluffyMultiplayer::StateLoginForm(*loginData_ptr);
+                }
 
-          //create lobby form
-          else if(state3!=nullptr && createLobbyData_ptr!=nullptr && timeoutCounter<=0)
-          {
-            switch (resultRC)
-            {
-              case MS_ERROR_FAILED_TO_LOBBY_CREATION_INVALID_IDENTITY:
-              case MS_ERROR_FAILED_TO_LOBBY_CREATION_CANT_OWN_TWO_LOBBY:
-              case MS_ERROR_FAILED_TO_LOBBY_CREATION_BAD_DATA_SYNTAX:
-              case MS_ERROR_FAILED_TO_CREATE_LOBBY:
-              default:
-              createLobbyData_ptr->globalErrors = resultRC;
-            }
-            return new FluffyMultiplayer::StateCreateLobbyForm(*createLobbyData_ptr);
-          }
+                //register form
+                else if(state3==nullptr && registerData_ptr!=nullptr && timeoutCounter<=0)
+                {
+                  switch (resultRC)
+                  {
+                    case MS_ERROR_FAILED_TO_REGISTER_USERNAME_EXISTS: registerData_ptr->_errors[0]=resultRC;break;
+                    case MS_ERROR_FAILED_TO_REGISTER_EMIAL_EXISTS: registerData_ptr->_errors[1]=resultRC;break;
+                    case MS_ERROR_FAILED_TO_REGISTER_EASY_PASSWORD: registerData_ptr->_errors[2]=resultRC;break;
+                    case MS_ERROR_FAILED_TO_REGISTER_BAD_DATA_SYNTAX:
+                    default:
+                    /*
+                    dont know other failed resposne code belongs to where?
+                    username or email or password?
+                    so this part wrote on index _error[0],  for later changes
+                    */
+                    registerData_ptr->_errors[0]=resultRC;break;
+                  }
+                  return new FluffyMultiplayer::StateRegisterForm(*registerData_ptr);
+                }
+
+                //create lobby form
+                else if(state3!=nullptr && createLobbyData_ptr!=nullptr && timeoutCounter<=0)
+                {
+                  switch (resultRC)
+                  {
+                    case MS_ERROR_FAILED_TO_LOBBY_CREATION_INVALID_IDENTITY:
+                    case MS_ERROR_FAILED_TO_LOBBY_CREATION_CANT_OWN_TWO_LOBBY:
+                    case MS_ERROR_FAILED_TO_LOBBY_CREATION_BAD_DATA_SYNTAX:
+                    case MS_ERROR_FAILED_TO_CREATE_LOBBY:
+                    default:
+                    createLobbyData_ptr->globalErrors = resultRC;
+                  }
+                  return new FluffyMultiplayer::StateCreateLobbyForm(*createLobbyData_ptr);
+                }
 
 
-          //-------------------------
-        }
+                //-------------------------
+              }
+        } //for loop
       }
     }
     return this; //keep this state
