@@ -51,7 +51,7 @@ namespace FluffyMultiplayer
 
     // Create table for lobby
     const char* createTableLobby = "CREATE TABLE IF NOT EXISTS fm_lobby("
-                             "id INTEGER," //AUTOINCREMENT
+                             "id INTEGER PRIMARY KEY AUTOINCREMENT," //AUTOINCREMENT
                              "server_ip TEXT NOT NULL,"
                              "server_port TEXT NOT NULL,"
                              "password TEXT," //not null or e default password
@@ -64,8 +64,7 @@ namespace FluffyMultiplayer
                              "lobbyStatus BOOLEAN DEFAULT 0,"
                              "showLobbyOnList BOOLEAN DEFAULT 1,"
                              "creationDate DATETIME DEFAULT (datetime('now','localtime')),"
-                             "FOREIGN KEY(owner) REFERENCES fm_client(id),"
-                             "PRIMARY KEY (id,owner) );";
+                             "FOREIGN KEY(owner) REFERENCES fm_client(id));";
     rc = sqlite3_exec(db, createTableLobby, nullptr, 0, &errMsg);
     if (rc != SQLITE_OK)
     {
@@ -114,20 +113,30 @@ namespace FluffyMultiplayer
 
   std::string FluffyDatabase::getLobbyInfoByOwnerId(const int& ownerId)
   {
+    std::string serverIp, serverPort;
     std::string result;
 
     std::string basic_query = "SELECT server_ip FROM fm_lobby WHERE owner='";
     basic_query += std::to_string(ownerId) + "';";
     std::string info = search_in_db(basic_query);
-    result = info.substr(9,info.length()-1);
-
+    serverIp = info.substr(10,info.length()-1);
+    std::cout << "getLobbyInfoByOwnerId() serverIp = " << serverIp << std::endl;
 
     basic_query = "SELECT server_port FROM fm_lobby WHERE owner='";
     basic_query += std::to_string(ownerId) + "';";
     info = search_in_db(basic_query);
-    result += ":" + info.substr(11,info.length()-1);
+    serverPort = info.substr(12,info.length()-1);
+    std::cout << "getLobbyInfoByOwnerId() serverPort = " << serverPort << std::endl;
 
 
+    //there is a \n before/after ip/port so have to remove that
+    serverIp.erase(std::remove(serverIp.begin(), serverIp.end(), '\n'), serverIp.cend());
+    serverPort.erase(std::remove(serverPort.begin(), serverPort.end(), '\n'), serverPort.cend());
+
+    result = serverIp + ":" + serverPort + MS_DATA_DELIMITER;
+    result += MS_REQUEST_CLOSER;
+
+    std::cout << "getLobbyInfoByOwnerId() res=" << result << std::endl;
     return result;
   }
 
@@ -248,7 +257,7 @@ namespace FluffyMultiplayer
     std::string clientId = search_in_db(basic_query);
 
     //convert received data into int
-    int cid = FluffyMultiplayer::convertStringToInt(clientId);
+    int cid = FluffyMultiplayer::convertStringToInt(clientId.substr(9,clientId.length()-1));
     if(cid>=1)
       return cid;
     return -1; //not found
@@ -262,14 +271,14 @@ namespace FluffyMultiplayer
         //search for that email address.
         std::string basic_query = "SELECT id FROM fm_client WHERE username='";
         basic_query += client.username + "';";
-        if(isExists_in_db(basic_query))
-          return MS_ERROR_FAILED_TO_REGISTER_EMIAL_EXISTS;
+        if(isExists_in_db(basic_query,2))
+          return MS_ERROR_FAILED_TO_REGISTER_USERNAME_EXISTS;
 
         //search for that username
         basic_query = "SELECT id FROM fm_client WHERE email='";
         basic_query += client.email + "';";
-        if(isExists_in_db(basic_query))
-          return MS_ERROR_FAILED_TO_REGISTER_USERNAME_EXISTS;
+        if(isExists_in_db(basic_query,2))
+          return MS_ERROR_FAILED_TO_REGISTER_EMIAL_EXISTS;
 
         //check for password not easy
         if(dataSecurity.isPasswordEasy(client.password))
@@ -378,20 +387,31 @@ namespace FluffyMultiplayer
       try
       {
         int ownerId = getClientIdByIdentity(lobbyInfo.identity);
+        std::cout << "createlobby ownerId (clientId by identity)=" << ownerId << std::endl;
         if(ownerId != -1)
         {
           if(isOwnLobby(ownerId))
            return MS_ERROR_FAILED_TO_LOBBY_CREATION_CANT_OWN_TWO_LOBBY;
           if(!isLobbyCreationLimited(ownerId))
           {
-             std::string basic_query = "INSERT INTO fm_lobby (gameMode,maxPlayers,password,owner,textChatForbidden,voiceChatForbidden,specterForbidden) VALUES('";
+
+             // ***************
+             //those codes to ask a free server ip and port from API or anywhere else.
+             //at this time there is no API or etc to select server so lets set default ip port
+             std::string selected_server_ip = MS_CREATE_LOBBY_DEFAULT_SERVER_IP;
+             std::string selected_server_port = MS_CREATE_LOBBY_DEFAULT_SERVER_PORT;
+             // ***************
+
+             std::string basic_query = "INSERT INTO fm_lobby (gameMode,maxPlayers,password,owner,textChatForbidden,voiceChatForbidden,specterForbidden,server_ip,server_port) VALUES('";
              basic_query += std::to_string(lobbyInfo.gameMode) + "', '" +
               std::to_string(lobbyInfo.maxPlayers) + "', '" +
               lobbyInfo.password  + "', '" +
               std::to_string(ownerId) + "', '" +
               std::to_string(lobbyInfo.textChatForbidden) + "', '" +
               std::to_string(lobbyInfo.voiceChatForbidden) + "', '" +
-              std::to_string(lobbyInfo.specterForbidden) + "');";
+              std::to_string(lobbyInfo.specterForbidden) + "', '" +
+              selected_server_ip + "' ,'" +
+              selected_server_port + "');";
              if(query_to_db(basic_query))
              {
                outputServerIpPort = getLobbyInfoByOwnerId(ownerId);
@@ -424,15 +444,17 @@ namespace FluffyMultiplayer
 
   bool FluffyDatabase::isOwnLobby(const int& ownerId)
   {
-    std::string basic_query = "SELECT server_port FROM fm_lobby WHERE id='";
+    std::string basic_query = "SELECT lobbyStatus FROM fm_lobby WHERE owner='";
     basic_query += std::to_string(ownerId) + "';";
-    return isExists_in_db(basic_query);
+    bool own = isExists_in_db(basic_query,11);
+    std::cout << "isOwnLobby() own=" << own << std::endl;
+    return own;
   }
 
   bool FluffyDatabase::isLobbyCreationLimited(const int& clientId)
   {
       std::string basic_query = "SELECT isLobbyCreationLimited FROM fm_client WHERE id='";
-      basic_query += std::to_string(clientId) + ";";
+      basic_query += std::to_string(clientId) + "';";
       std::string result = search_in_db(basic_query);
       result = result.substr(23,result.length()); //count of charecter isLobbyCreationLimited + a '=' is 22 so result is on [23]
       if(result == "true" || result == "TRUE" || result == "True" || result == "1") //idk what database saves for BOOLEAN type
@@ -515,19 +537,29 @@ namespace FluffyMultiplayer
     for (int i = 0; i < argc; i++)
     {
         std::cout << "db isExists i=" << i  << "\t"<< azColName[i] << '=' << (argv[i] ? argv[i] : "NULL") << std::endl;
+        *_result += azColName[i];
+        *_result += '=';
         *_result +=  (argv[i] ? argv[i] : "NULL");
         *_result += "\n";
     }
     std::cout << std::endl;
     return 0;
   }
-  bool FluffyDatabase::isExists_in_db(std::string& _q)
+  bool FluffyDatabase::isExists_in_db(std::string& _q, int lengthField)
   {
     char* final_query = new char[_q.length()+1];
     std::strcpy(final_query, _q.c_str());
 
     std::string result;
     int rc = sqlite3_exec(db, final_query, &FluffyDatabase::isExists_in_db_callback, &result , &errMsg);
+
+    bool isExists=false;
+    lengthField++; //because of charecter '='
+
+    std::cout << "isExists_in_db() result.len=" << result.length() << " lengthField=" << lengthField << std::endl;
+    std::cout << "isExists_in_db() result= " << result << std::endl;
+    if(result.length() > lengthField)
+      isExists=true;
 
     final_query = nullptr;
     delete[] final_query;
@@ -538,9 +570,7 @@ namespace FluffyMultiplayer
         sqlite3_free(errMsg);
     }
 
-    if(result.length()>MS_MINIMUM_RETURNED_DATA_BY_SQL_SEARCH)
-      return true;
-    return false;
+    return isExists;
   }
 
   //--------------------
