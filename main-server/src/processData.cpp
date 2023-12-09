@@ -81,14 +81,12 @@ namespace FluffyMultiplayer
   std::vector<std::string> ProcessData::dataSeparator(const std::string& data, std::string delimiter, int startIndex=0)
   {
     std::vector<std::string> result;
-    std::string str = data;
+    std::string str = data.substr(startIndex,data.length()-1);
 
-    std::vector<int>indexes = dataIndexes(data,delimiter);
+    std::vector<int>indexes = dataIndexes(str,delimiter);
     for(int i=0; i<indexes.size(); i++)
     {
       int index=indexes[i];
-      if(index<startIndex) //skip, because startIndex is not not included.
-        continue;
 
       result.push_back(str.substr(0,index)); //-delimiter.length()));
       str = str.substr(index+delimiter.length() ,str.length()-1);
@@ -328,31 +326,93 @@ namespace FluffyMultiplayer
             if(checkConnection())
             {
               std::vector<std::string>data = dataSeparator(receivedData, MS_DATA_DELIMITER, MS_DATA_START_AT_INDEX);
-              FluffyMultiplayer::CreateLobbyData createLobbyInfo =
+              FluffyMultiplayer::CreateLobbyData createLobbyInfo;
+              switch (data.size())
               {
-                data[0],
-                FluffyMultiplayer::convertStringToInt(data[1]),
-                FluffyMultiplayer::convertStringToInt(data[2]),
-                static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[3])),
-                static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[4])),
-                static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[5])),
-                data[6]
-              };
+                case 1:
+                {
+                  createLobbyInfo =
+                            {data[0], 0, 0, false, false, false, ""};
+                }break;
 
+                case 2:
+                {
+                  createLobbyInfo =
+                            {data[0], FluffyMultiplayer::convertStringToInt(data[1]), 0, false, false, false, ""};
+                }break;
+
+                case 3:
+                {
+                  createLobbyInfo =
+                            {data[0], FluffyMultiplayer::convertStringToInt(data[1]),
+                                      FluffyMultiplayer::convertStringToInt(data[2]), false, false, false, ""};
+                }break;
+
+                case 4:
+                {
+                  createLobbyInfo =
+                            {data[0], FluffyMultiplayer::convertStringToInt(data[1]),
+                                      FluffyMultiplayer::convertStringToInt(data[2]),
+                                      static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[3])),
+                                      false, false, ""};
+                }break;
+
+                case 5:
+                {
+                  createLobbyInfo =
+                            {data[0], FluffyMultiplayer::convertStringToInt(data[1]),
+                                      FluffyMultiplayer::convertStringToInt(data[2]),
+                                      static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[3])),
+                                      static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[4])),
+                                      false, ""};
+                }break;
+
+                case 6:
+                {
+                  createLobbyInfo =
+                            {data[0], FluffyMultiplayer::convertStringToInt(data[1]),
+                                      FluffyMultiplayer::convertStringToInt(data[2]),
+                                      static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[3])),
+                                      static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[4])),
+                                      static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[5])), ""};
+                }break;
+
+                case 7:
+                {
+                  createLobbyInfo =
+                  {
+                    data[0],
+                    FluffyMultiplayer::convertStringToInt(data[1]),
+                    FluffyMultiplayer::convertStringToInt(data[2]),
+                    static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[3])),
+                    static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[4])),
+                    static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[5])),
+                    data[6]
+                  };
+                }break;
+
+                default:
+                  createLobbyInfo = {"", 0, 0, false, false, false, ""};
+
+              }
+
+              std::cout << "createLobbyData data: \nidentity=" << createLobbyInfo.identity
+                  << "\ngamemode=" << createLobbyInfo.gameMode
+                  << "\nMaxplayers=" << createLobbyInfo.maxPlayers
+                  << "\nvoiceChatForbidden=" << createLobbyInfo.voiceChatForbidden
+                  << "\ntextChatForbidden=" << createLobbyInfo.textChatForbidden
+                  << "\nspecterForbidden=" << createLobbyInfo.specterForbidden
+                  << "\npassword=" << createLobbyInfo.password
+                  << std::endl;
 
               if(isDataValidated(createLobbyInfo))
               {
-                  if(db.isIdentityExists(createLobbyInfo.identity))
-                  {
                     std::string resultServerInfo;
                     int resultCode = db.createLobby(createLobbyInfo,resultServerInfo);
                     if(resultCode == MS_RESPONSE_SUCCESS_LOBBY_CREATED)
                       sendData(resultCode,socket,receiverEndpoint,resultServerInfo);
                     else
                       sendData(resultCode,socket,receiverEndpoint);
-                  }
-                  else
-                    sendData(MS_ERROR_FAILED_TO_LOBBY_CREATION_INVALID_IDENTITY,socket,receiverEndpoint);
               }
               else
                 sendData(MS_ERROR_FAILED_TO_LOBBY_CREATION_BAD_DATA_SYNTAX,socket,receiverEndpoint);
