@@ -42,6 +42,7 @@ namespace FluffyMultiplayer
   };
   struct CreateLobbyFormData
   {
+    std::string clientIdentity;
     int gameMode;
     int maxPlayers;
     bool isTextChatAllowed;

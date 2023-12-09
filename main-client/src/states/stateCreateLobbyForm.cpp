@@ -23,17 +23,19 @@ namespace FluffyMultiplayer
     buttonCancel.init("cancel", 100.0,700.0, sf::Color::Black,sf::Color::White, 60,30, 22);
   }
 
-  FluffyMultiplayer::AppState* StateCreateLobbyForm::formFinishedResult(bool isSubmit)
+  FluffyMultiplayer::AppState* StateCreateLobbyForm::formFinishedResult(std::string cIdentity, bool isSubmit)
   {
     if(isSubmit)
     {
       //get data from form and set into lobby data.
+      lobbyData.clientIdentity = cIdentity;
       lobbyData.gameMode = gameModeSpinBox.getCurrentIndex();
       lobbyData.maxPlayers = maxPlayersSpinBox.getCurrentIndex();
       lobbyData.isTextChatAllowed = textChatCheckBox.getStatus();
       lobbyData.isVoiceChatAllowed = voiceChatCheckBox.getStatus();
       lobbyData.isSpecterAllowed = specterCheckBox.getStatus();
       lobbyData.password = passwordInput.getEnteredText();
+
 
       return new FluffyMultiplayer::StateWaitForResponse
       (
@@ -124,11 +126,11 @@ namespace FluffyMultiplayer
         //buttons
         if(buttonSubmit.getButtonBound().contains(mousePosition))
         {
-          return formFinishedResult(true);
+          return formFinishedResult(app.getIdentity(),true);
         }
         else if(buttonCancel.getButtonBound().contains(mousePosition))
         {
-          return formFinishedResult(false);
+          return formFinishedResult(app.getIdentity(),false);
         }
 
         //text fields
@@ -180,7 +182,7 @@ namespace FluffyMultiplayer
         {
           if(event.key.code == sf::Keyboard::Enter || event.key.code == sf::Keyboard::Return)
           {
-            return formFinishedResult(true);
+            return formFinishedResult(app.getIdentity(),true);
           }
 
           if(event.key.code == sf::Keyboard::Backspace)

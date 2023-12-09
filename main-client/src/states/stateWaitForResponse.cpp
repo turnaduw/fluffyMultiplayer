@@ -196,6 +196,7 @@ namespace FluffyMultiplayer
 
         //hold passed data into varaible for when need to pass into another state.
         createLobbyData_ptr = new FluffyMultiplayer::CreateLobbyFormData;
+        createLobbyData_ptr->clientIdentity= _lobby.clientIdentity;
         createLobbyData_ptr->gameMode = _lobby.gameMode;
         createLobbyData_ptr->maxPlayers = _lobby.maxPlayers;
         createLobbyData_ptr->isTextChatAllowed = _lobby.isTextChatAllowed;
@@ -219,8 +220,8 @@ namespace FluffyMultiplayer
         responseCodeAcceptor2 = successCode;
 
         //create request
-        std::string temp = std::to_string(MC_REQUEST_CREATE_LOBBY) + MC_REQUEST_DELIMITER;
-        // temp += identityt
+        std::string temp = std::to_string(MC_REQUEST_CREATE_LOBBY);
+        temp += createLobbyData_ptr->clientIdentity + MC_REQUEST_DELIMITER;
         temp += std::to_string(createLobbyData_ptr->gameMode) + MC_REQUEST_DELIMITER;
         temp += std::to_string(createLobbyData_ptr->maxPlayers) + MC_REQUEST_DELIMITER;
         temp += std::to_string(createLobbyData_ptr->isTextChatAllowed) + MC_REQUEST_DELIMITER;

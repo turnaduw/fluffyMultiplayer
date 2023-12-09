@@ -38,7 +38,7 @@ namespace FluffyMultiplayer
     FluffyMultiplayer::Button buttonCancel;
 
     //to avoid duplicate return code while calling them from event mouse, keyboard
-    FluffyMultiplayer::AppState* formFinishedResult(bool isSubmit);
+    FluffyMultiplayer::AppState* formFinishedResult(std::string clientIdentity, bool isSubmit);
 
 
     //mouse event handel variable to delecre once, not per loop delcre
