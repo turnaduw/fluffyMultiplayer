@@ -50,7 +50,7 @@ namespace FluffyMultiplayer
     bool isSpecterAllowed;
     std::string password;
     std::string globalErrors; //like you're limited, maxplayers is invalid and so
-    FluffyMultiplayer::AnAddress address;
+    std::string address; //dont need AnAddress type, will convert it..
   };
 }
 

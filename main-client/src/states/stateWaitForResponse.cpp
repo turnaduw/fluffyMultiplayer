@@ -316,6 +316,13 @@ namespace FluffyMultiplayer
     return _data.substr(MC_DATA_START_AT_INDEX, _data.length() - 6);
   }
 
+  std::string StateWaitForResponse::getServerAddressFromResponseData(const std::string& _data,std::string delimiter,std::string closer)
+  {
+    std::string re = _data.substr(MC_DATA_START_AT_INDEX, _data.length() - 9);
+    std::cout << "getServerAddressFromResponseData() = " << re << std::endl;
+    return re;
+  }
+
   void StateWaitForResponse::render(sf::RenderWindow& window)
   {
     if(timeoutCounter<=0)
@@ -375,9 +382,8 @@ namespace FluffyMultiplayer
 
                 if(createLobbyData_ptr!=nullptr)
                 {
-                  std::string tempAd = createLobbyData_ptr->address.ip.to_string();
-                  tempAd += std::to_string(createLobbyData_ptr->address.port);
-                  return new FluffyMultiplayer::StateJoinLobby(tempAd);
+                  createLobbyData_ptr->address = getServerAddressFromResponseData(receivedData,MC_RESPONSE_DELIMITER,MC_RESPONSE_CLOSER);
+                  return new FluffyMultiplayer::StateJoinLobby(createLobbyData_ptr->address);
                 }
                 return state3; //second state passed successfully
               }

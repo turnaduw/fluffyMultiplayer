@@ -50,8 +50,8 @@ namespace FluffyMultiplayer
         this,
         lobbyData,
         new FluffyMultiplayer::StateFailed("cannot createlobby your account is limited\n", new FluffyMultiplayer::StateMainPage ,nullptr),
-        StateJoinLobby,
-        new FluffyMultiplayer::StateJoinLobby(lobbyData.address),
+        MS_ERROR_FAILED_TO_LOBBY_CREATION_FORBIDDEN_FOR_YOU,
+        new FluffyMultiplayer::StateJoinLobby(),
         MS_RESPONSE_SUCCESS_LOBBY_CREATED
       );
     }

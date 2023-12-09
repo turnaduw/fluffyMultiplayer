@@ -32,7 +32,7 @@ namespace FluffyMultiplayer
     int checkResponseCode(const std::string&);
 
     std::string getIdentityFromResponsedData(const std::string& _data,std::string delimter,std::string closer);
-
+    std::string getServerAddressFromResponseData(const std::string& _data,std::string delimiter,std::string closer);
     //login form
     FluffyMultiplayer::LoginFormData* loginData_ptr;
 

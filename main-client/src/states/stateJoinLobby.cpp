@@ -48,6 +48,11 @@ namespace FluffyMultiplayer
     initSimpleText(fontPath, "state joinLobby\n game has been launched.");
   }
 
+  StateJoinLobby::StateJoinLobby()
+  {
+
+  }
+  
   StateJoinLobby::~StateJoinLobby()
   {
 
