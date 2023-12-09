@@ -5,6 +5,7 @@ namespace FluffyMultiplayer
   void StateCreateLobbyForm::init()
   {
     inputFocus = &passwordInput;
+    maxPlayersList = MAX_PLAYER_LIST;
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
     initSimpleText(fontPath, "Create Lobby FORM");
     setSimpleTextPosition(150.0, 5.0);
@@ -12,7 +13,7 @@ namespace FluffyMultiplayer
     passwordInput.init("","","Password:","enter password..",100.0, 100.0);
 
     gameModeSpinBox.init("game mode:", GAME_MODE_LIST, 100.0, 200.0, sf::Color::Black, sf::Color::White, 22);
-    maxPlayersSpinBox.init("max players:", MAX_PLAYER_LIST, 100.0, 300.0, sf::Color::Black, sf::Color::White, 22);
+    maxPlayersSpinBox.init("max players:", maxPlayersList, 100.0, 300.0, sf::Color::Black, sf::Color::White, 22);
 
 
     specterCheckBox.init("specter:", 100.0, 400.0, sf::Color::Black, sf::Color::White, 22);
@@ -30,7 +31,7 @@ namespace FluffyMultiplayer
       //get data from form and set into lobby data.
       lobbyData.clientIdentity = cIdentity;
       lobbyData.gameMode = gameModeSpinBox.getCurrentIndex();
-      lobbyData.maxPlayers = maxPlayersSpinBox.getCurrentIndex();
+      lobbyData.maxPlayers = maxPlayersList[maxPlayersSpinBox.getCurrentIndex()];
       lobbyData.isTextChatAllowed = textChatCheckBox.getStatus();
       lobbyData.isVoiceChatAllowed = voiceChatCheckBox.getStatus();
       lobbyData.isSpecterAllowed = specterCheckBox.getStatus();
@@ -68,7 +69,7 @@ namespace FluffyMultiplayer
     passwordInput.setText(lobbyData.password);
     passwordInput.setError(lobbyData.globalErrors);
     gameModeSpinBox.setItems(GAME_MODE_LIST,lobbyData.gameMode);
-    maxPlayersSpinBox.setItems(MAX_PLAYER_LIST,lobbyData.maxPlayers);
+    maxPlayersSpinBox.setItems(maxPlayersList,lobbyData.maxPlayers);
     specterCheckBox.setStatus(lobbyData.isSpecterAllowed);
     voiceChatCheckBox.setStatus(lobbyData.isVoiceChatAllowed);
     textChatCheckBox.setStatus(lobbyData.isTextChatAllowed);

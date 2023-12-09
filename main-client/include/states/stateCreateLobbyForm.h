@@ -39,6 +39,7 @@ namespace FluffyMultiplayer
 
     //to avoid duplicate return code while calling them from event mouse, keyboard
     FluffyMultiplayer::AppState* formFinishedResult(std::string clientIdentity, bool isSubmit);
+    std::vector<std::string> maxPlayersList;
 
 
     //mouse event handel variable to delecre once, not per loop delcre
