@@ -7,6 +7,9 @@
 #include "../uiComponents/checkBox.h"
 #include "../uiComponents/spinBox.h"
 
+//convert string to int
+#include <cstdlib>
+
 namespace FluffyMultiplayer
 {
   class App; // Forward declaration of App class
@@ -40,7 +43,7 @@ namespace FluffyMultiplayer
     //to avoid duplicate return code while calling them from event mouse, keyboard
     FluffyMultiplayer::AppState* formFinishedResult(std::string clientIdentity, bool isSubmit);
     std::vector<std::string> maxPlayersList;
-
+    int convertStringToInt(const std::string&);
 
     //mouse event handel variable to delecre once, not per loop delcre
     sf::Vector2f mousePosition;

@@ -24,6 +24,12 @@ namespace FluffyMultiplayer
     buttonCancel.init("cancel", 100.0,700.0, sf::Color::Black,sf::Color::White, 60,30, 22);
   }
 
+  int StateCreateLobbyForm::convertStringToInt(const std::string& str)
+  {
+    const char* c = str.c_str();
+    return std::atoi(c);
+  }
+
   FluffyMultiplayer::AppState* StateCreateLobbyForm::formFinishedResult(std::string cIdentity, bool isSubmit)
   {
     if(isSubmit)
@@ -31,7 +37,7 @@ namespace FluffyMultiplayer
       //get data from form and set into lobby data.
       lobbyData.clientIdentity = cIdentity;
       lobbyData.gameMode = gameModeSpinBox.getCurrentIndex();
-      lobbyData.maxPlayers = maxPlayersList[maxPlayersSpinBox.getCurrentIndex()];
+      lobbyData.maxPlayers = convertStringToInt(maxPlayersList[maxPlayersSpinBox.getCurrentIndex()]);
       lobbyData.isTextChatAllowed = textChatCheckBox.getStatus();
       lobbyData.isVoiceChatAllowed = voiceChatCheckBox.getStatus();
       lobbyData.isSpecterAllowed = specterCheckBox.getStatus();
@@ -45,7 +51,7 @@ namespace FluffyMultiplayer
         lobbyData,
         new FluffyMultiplayer::StateFailed("cannot createlobby your account is limited\n", new FluffyMultiplayer::StateMainPage ,nullptr),
         MS_ERROR_FAILED_TO_LOBBY_CREATION_FORBIDDEN_FOR_YOU,
-        new FluffyMultiplayer::StateJoinLobby(lobbyData.address),
+        new FluffyMultiplayer::StateShowLobbyDetails(lobbyData),
         MS_RESPONSE_SUCCESS_LOBBY_CREATED
       );
     }
