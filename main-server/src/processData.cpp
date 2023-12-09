@@ -215,7 +215,7 @@ namespace FluffyMultiplayer
               switch (data.size())
               {
                 case 2: //username and password is first of struct musst be filled so fill with empty
-                  client = { "", "", data[0].substr(MS_DATA_START_AT_INDEX,data[0].length()-1), data[1]};
+                  client = { "", "", data[0], data[1]};
                   break;
                 default: //to handle broken requests
                   client = {"", "" , "" , ""};
@@ -247,19 +247,19 @@ namespace FluffyMultiplayer
               switch (data.size())
               {
                 case 1:
-                  client = { data[0].substr(MS_DATA_START_AT_INDEX,data[0].length()-1) , "" , "" , "" };
+                  client = { data[0] , "" , "" , "" };
                     break;
 
                 case 2:
-                  client = { data[0].substr(MS_DATA_START_AT_INDEX,data[0].length()-1), data[1] , "" , "" };
+                  client = { data[0], data[1] , "" , "" };
                   break;
 
                 case 3:
-                  client = { data[0].substr(MS_DATA_START_AT_INDEX,data[0].length()-1), data[1], data[2] , ""};
+                  client = { data[0], data[1], data[2] , ""};
                   break;
 
                 case 4:
-                  client = { data[0].substr(MS_DATA_START_AT_INDEX,data[0].length()-1), data[1], data[2], data[3] };
+                  client = { data[0], data[1], data[2], data[3] };
                   break;
               }
 
@@ -288,19 +288,19 @@ namespace FluffyMultiplayer
               switch(data.size())
               {
                 case 1:
-                  client = { data[0].substr(MS_DATA_START_AT_INDEX,data[0].length()-1) , "" , "" , "" };
+                  client = { data[0], "" , "" , "" };
                     break;
 
                 case 2:
-                  client = { data[0].substr(MS_DATA_START_AT_INDEX,data[0].length()-1), data[1] , "" , "" };
+                  client = { data[0], data[1] , "" , "" };
                   break;
 
                 case 3:
-                  client = { data[0].substr(MS_DATA_START_AT_INDEX,data[0].length()-1), data[1], data[2] , ""};
+                  client = { data[0], data[1], data[2] , ""};
                   break;
 
                 case 4:
-                  client = { data[0].substr(MS_DATA_START_AT_INDEX,data[0].length()-1), data[1], data[2], data[3] };
+                  client = { data[0], data[1], data[2], data[3] };
                   break;
               }
               // FluffyMultiplayer::RegisterClientData client = { data[0], data[1], data[2], data[3] };
