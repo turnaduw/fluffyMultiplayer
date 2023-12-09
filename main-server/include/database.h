@@ -48,7 +48,6 @@ namespace FluffyMultiplayer
       int registerClient(const FluffyMultiplayer::RegisterClientData&, std::string&);
 
       int getClientIdByIdentity(const std::string&);
-      bool isIdentityExists(const std::string&);
 
       bool createSessionForClient(const int&,std::string&);
 

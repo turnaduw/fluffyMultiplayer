@@ -114,10 +114,21 @@ namespace FluffyMultiplayer
 
   std::string FluffyDatabase::getLobbyInfoByOwnerId(const int& ownerId)
   {
-    std::string basic_query = "SELECT server_ip,server_port FROM fm_lobby WHERE owner='";
+    std::string result;
+
+    std::string basic_query = "SELECT server_ip FROM fm_lobby WHERE owner='";
     basic_query += std::to_string(ownerId) + "';";
     std::string info = search_in_db(basic_query);
-    return info;
+    result = info.substr(9,info.length()-1);
+
+
+    basic_query = "SELECT server_port FROM fm_lobby WHERE owner='";
+    basic_query += std::to_string(ownerId) + "';";
+    info = search_in_db(basic_query);
+    result += ":" + info.substr(11,info.length()-1);
+
+
+    return result;
   }
 
 
@@ -131,14 +142,6 @@ namespace FluffyMultiplayer
       howManyResultReturn--;
     }
     return lobbies;
-  }
-
-  bool FluffyDatabase::isIdentityExists(const std::string& identity)
-  {
-        int cid = getClientIdByIdentity(identity);
-        if(cid>=1)
-          return true;
-        return false;
   }
 
   void FluffyDatabase::printTime(std::string str , const FluffyMultiplayer::TimeAndDate& time)
@@ -407,7 +410,7 @@ namespace FluffyMultiplayer
            return MS_ERROR_FAILED_TO_LOBBY_CREATION_FORBIDDEN_FOR_YOU;
         }
         else
-         return MS_ERROR_FAILED_TO_CREATE_LOBBY; //failed to get client id
+         return MS_ERROR_FAILED_TO_LOBBY_CREATION_INVALID_IDENTITY; // or maybe internal error: failed to get client id
       }
       catch (std::exception& e)
       {
@@ -421,8 +424,8 @@ namespace FluffyMultiplayer
 
   bool FluffyDatabase::isOwnLobby(const int& ownerId)
   {
-    std::string basic_query = "SELECT server_port FROM fm_lobby WHERE id=";
-    basic_query += std::to_string(ownerId) + ";";
+    std::string basic_query = "SELECT server_port FROM fm_lobby WHERE id='";
+    basic_query += std::to_string(ownerId) + "';";
     return isExists_in_db(basic_query);
   }
 
