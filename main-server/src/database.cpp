@@ -133,8 +133,7 @@ namespace FluffyMultiplayer
     serverIp.erase(std::remove(serverIp.begin(), serverIp.end(), '\n'), serverIp.cend());
     serverPort.erase(std::remove(serverPort.begin(), serverPort.end(), '\n'), serverPort.cend());
 
-    result = serverIp + ":" + serverPort + MS_DATA_DELIMITER;
-    result += MS_REQUEST_CLOSER;
+    result = serverIp + ":" + serverPort;
 
     std::cout << "getLobbyInfoByOwnerId() res=" << result << std::endl;
     return result;
