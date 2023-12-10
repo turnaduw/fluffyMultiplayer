@@ -353,7 +353,7 @@ namespace FluffyMultiplayer
                   createLobbyInfo =
                             {data[0], FluffyMultiplayer::convertStringToInt(data[1]),
                                       FluffyMultiplayer::convertStringToInt(data[2]),
-                                      static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[3])),
+                                      !static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[3])),
                                       false, false, ""};
                 }break;
 
@@ -362,8 +362,8 @@ namespace FluffyMultiplayer
                   createLobbyInfo =
                             {data[0], FluffyMultiplayer::convertStringToInt(data[1]),
                                       FluffyMultiplayer::convertStringToInt(data[2]),
-                                      static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[3])),
-                                      static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[4])),
+                                      !static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[3])),
+                                      !static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[4])),
                                       false, ""};
                 }break;
 
@@ -372,9 +372,9 @@ namespace FluffyMultiplayer
                   createLobbyInfo =
                             {data[0], FluffyMultiplayer::convertStringToInt(data[1]),
                                       FluffyMultiplayer::convertStringToInt(data[2]),
-                                      static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[3])),
-                                      static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[4])),
-                                      static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[5])), ""};
+                                      !static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[3])),
+                                      !static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[4])),
+                                      !static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[5])), ""};
                 }break;
 
                 case 7:
@@ -384,9 +384,9 @@ namespace FluffyMultiplayer
                     data[0],
                     FluffyMultiplayer::convertStringToInt(data[1]),
                     FluffyMultiplayer::convertStringToInt(data[2]),
-                    static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[3])),
-                    static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[4])),
-                    static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[5])),
+                    !static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[3])),
+                    !static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[4])),
+                    !static_cast<bool>(FluffyMultiplayer::convertStringToInt(data[5])),
                     data[6]
                   };
                 }break;
