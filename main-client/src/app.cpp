@@ -72,7 +72,6 @@ namespace FluffyMultiplayer
   void App::openGame(FluffyMultiplayer::AnAddress address)
   {
     std::cout << "open game\n target server address is= " << address.ip << ":" << address.port << "\tidentity=" << getIdentity() << std::endl;
-    appWindow.close();
   }
 
   void App::init()
