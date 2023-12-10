@@ -15,6 +15,7 @@ namespace FluffyMultiplayer
     FluffyMultiplayer::AnAddress convertStringToAddress(std::string);
     int findIndexOfDelimiter(const std::string& str, std::string c);
     int convertToInt(const std::string& str);
+    bool isGameLaunched;
 
   public:
     StateJoinLobby(FluffyMultiplayer::AnAddress);

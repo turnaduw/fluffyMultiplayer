@@ -21,13 +21,11 @@ namespace FluffyMultiplayer
   {
 
     int posEndIp = findIndexOfDelimiter(str,MC_IP_PORT_SEPARATOR);
-    str = str.substr(posEndIp,str.length());
 
-    int posCol = findIndexOfDelimiter(str,MC_IP_PORT_SEPARATOR);
     FluffyMultiplayer::AnAddress tempAddress
     {
       boost::asio::ip::address::from_string( str.substr(0,posEndIp) ),
-      static_cast<unsigned short>( convertToInt(str.substr(posEndIp,str.length()) ) )
+      static_cast<unsigned short>( convertToInt( str.substr(posEndIp+1, str.length()-1) ) )
     };
 
     return tempAddress;
@@ -38,6 +36,7 @@ namespace FluffyMultiplayer
     gameServerAddress = target_address;
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
     initSimpleText(fontPath, "state joinLobby\n game has been launched.");
+    isGameLaunched=false;
   }
 
   StateJoinLobby::StateJoinLobby(std::string target_address)
@@ -46,11 +45,13 @@ namespace FluffyMultiplayer
     gameServerAddress = convertStringToAddress(target_address);
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
     initSimpleText(fontPath, "state joinLobby\n game has been launched.");
+    isGameLaunched=false;
   }
 
   StateJoinLobby::StateJoinLobby()
   {
 
+    isGameLaunched=false;
   }
   
   StateJoinLobby::~StateJoinLobby()
@@ -69,7 +70,11 @@ namespace FluffyMultiplayer
                     std::queue<std::string>& sendDataQueue)
 
   {
-    app.openGame(gameServerAddress);
+    if(!isGameLaunched)
+    {
+      app.openGame(gameServerAddress);
+      isGameLaunched=true;
+    }
     return this;
   }
 
