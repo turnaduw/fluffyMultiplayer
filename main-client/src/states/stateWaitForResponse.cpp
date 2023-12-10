@@ -318,7 +318,7 @@ namespace FluffyMultiplayer
 
   std::string StateWaitForResponse::getServerAddressFromResponseData(const std::string& _data,std::string delimiter,std::string closer)
   {
-    std::string re = _data.substr(MC_DATA_START_AT_INDEX, _data.length() - 9);
+    std::string re = _data.substr(MC_DATA_START_AT_INDEX, _data.length() - 6);
     std::cout << "getServerAddressFromResponseData() = " << re << std::endl;
     return re;
   }
