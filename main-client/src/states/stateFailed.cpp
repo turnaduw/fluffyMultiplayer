@@ -120,7 +120,7 @@ namespace FluffyMultiplayer
             {
               if(state1!=nullptr)
               {
-                if(event.key.code == sf::Keyboard::Q)
+                if(event.key.code == sf::Keyboard::Enter || event.key.code == sf::Keyboard::Return)
                   return state1;
               }
             }break;
@@ -128,9 +128,9 @@ namespace FluffyMultiplayer
             {
               if(state1!=nullptr && state2!=nullptr)
               {
-                if(event.key.code == sf::Keyboard::Q)
+                if(event.key.code == sf::Keyboard::Enter || event.key.code == sf::Keyboard::Return)
                   return state1;
-                else if(event.key.code == sf::Keyboard::W)
+                else if(event.key.code == sf::Keyboard::Space)
                   return state2;
               }
             }break;
@@ -138,11 +138,11 @@ namespace FluffyMultiplayer
             {
               if(state1!=nullptr && state2!=nullptr && state3!=nullptr)
               {
-                if(event.key.code == sf::Keyboard::Q)
+                if(event.key.code == sf::Keyboard::Enter || event.key.code == sf::Keyboard::Return)
                   return state1;
-                else if(event.key.code == sf::Keyboard::W)
+                else if(event.key.code == sf::Keyboard::Space)
                   return state2;
-                else if(event.key.code == sf::Keyboard::E)
+                else if(event.key.code == sf::Keyboard::Tab)
                   return state3;
               }
             }break;
