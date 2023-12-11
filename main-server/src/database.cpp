@@ -1,4 +1,4 @@
-+=std::string(MS_DATA_DELIMITER);#include "../include/database.h"
+#include "../include/database.h"
 
 
 namespace FluffyMultiplayer
@@ -142,7 +142,7 @@ namespace FluffyMultiplayer
 
   std::string FluffyDatabase::getLobbyList(int howManyResultReturn)
   {
-    std::string lobbies;
+    std::string lobbies , all;
     std::string lpassword, lGameMode, lServerAddress, lMaxPlayers, lVoiceChat, lTextChat, lSpecter, lLobbyStatus, lShowLobbyOnList, lCurrentPlayers;
     for(int i=1; i<=howManyResultReturn; i++)
     {
@@ -192,12 +192,12 @@ namespace FluffyMultiplayer
 
 
       //get lobbyStatus
-      basic_query = "SELECT lLobbyStatus FROM fm_lobby WHERE id='";
+      basic_query = "SELECT lobbyStatus FROM fm_lobby WHERE id='";
       basic_query += std::to_string(i) + "';";
       lLobbyStatus = search_in_db(basic_query,true);
 
       //get showLobbyOnList
-      basic_query = "SELECT lShowLobbyOnList FROM fm_lobby WHERE id='";
+      basic_query = "SELECT showLobbyOnList FROM fm_lobby WHERE id='";
       basic_query += std::to_string(i) + "';";
       lShowLobbyOnList = search_in_db(basic_query,true);
 
@@ -212,7 +212,7 @@ namespace FluffyMultiplayer
         append searched data into one string as order style LobbyData
        (convert this string will use LobbyData strcut order variables defined)
       */
-      all = lpassword + std::string(MS_DATA_DELIMITER);
+      all += lpassword + std::string(MS_DATA_DELIMITER);
       all += lVoiceChat + std::string(MS_DATA_DELIMITER);
       all += lTextChat + std::string(MS_DATA_DELIMITER);
       all += lSpecter + std::string(MS_DATA_DELIMITER);
