@@ -69,6 +69,19 @@ namespace FluffyMultiplayer
   }
 
 
+  void App::addDataToSendQueue(const std::string& req)
+  {
+      sendDataQueue.push(req);
+  }
+
+
+  std::string App::getReceivedDataQueue()
+  {
+    std::string data = receivedDataQueue.front();
+    receivedDataQueue.pop();
+    return data;
+  }
+
   void App::openGame(FluffyMultiplayer::AnAddress address)
   {
     std::cout << "open game\n target server address is= " << address.ip << ":" << address.port << "\tidentity=" << getIdentity() << std::endl;

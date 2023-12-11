@@ -79,6 +79,9 @@ namespace FluffyMultiplayer
         send_thread.join();
       }
 
+      void addDataToSendQueue(const std::string&);
+      std::string getReceivedDataQueue();
+      
       void init();
       void close();
       void run();
