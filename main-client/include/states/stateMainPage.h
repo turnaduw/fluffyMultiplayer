@@ -83,6 +83,7 @@ namespace FluffyMultiplayer
 
   public:
     StateMainPage();
+    StateMainPage(std::string);
     ~StateMainPage();
     void render(sf::RenderWindow&);
     FluffyMultiplayer::AppState* update(FluffyMultiplayer::App&,
