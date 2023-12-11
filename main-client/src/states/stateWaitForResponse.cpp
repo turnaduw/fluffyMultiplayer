@@ -370,6 +370,11 @@ namespace FluffyMultiplayer
                 registerData_ptr->identity = getIdentityFromResponsedData(receivedData,MC_RESPONSE_DELIMITER,MC_RESPONSE_CLOSER);
                 app.setIdentity(registerData_ptr->identity); //save identity for app
               }
+              else if(responseCodeAcceptor[i] == MS_RESPONSE_SUCCESS_GET_LOBBY_LIST) //means lobby list received
+              {
+                std::cout << "StateWaitForResponse result accepted and data=" << receivedData << std::endl;
+                return new FluffyMultiplayer::StateMainPage(receivedData);
+              }
               return state2[i]; //accepted (first state passed) successfully
             }
             else if(resultRC == responseCodeAcceptor2 && state3!=nullptr)
