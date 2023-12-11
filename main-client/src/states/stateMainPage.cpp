@@ -3,6 +3,7 @@
 namespace FluffyMultiplayer
 {
 
+  /*
   int StateMainPage::genrate_random_number(int min, int max)
   {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
@@ -16,7 +17,7 @@ namespace FluffyMultiplayer
     float x = 0.0;
     float y = 0.0;
     int lid=1;
-    for(int lobbies=0; lobbies<MAX_LOBBY_CELL_LOAD; lobbies++)
+    for(int lobbies=0; lobbies<MS_GET_LOBBY_LIST_COUNT_OF_RESULTS; lobbies++)
     {
       lid++;
       // for(float y=0; y<10; y+=100.0)
@@ -39,7 +40,7 @@ namespace FluffyMultiplayer
         }
       }
     }
-  }
+  }*/
 
   StateMainPage::StateMainPage()
   {
@@ -78,7 +79,7 @@ namespace FluffyMultiplayer
 
 
     //lobbies
-    initAllLobbyCells();
+    // initAllLobbyCells();
 
 
   }
@@ -103,7 +104,7 @@ namespace FluffyMultiplayer
       buttonQuit.render(window);
       window.draw(line, 2, sf::Lines);
 
-      for(int i=0; i<MAX_LOBBY_CELL_LOAD; i++)
+      for(int i=0; i<MS_GET_LOBBY_LIST_COUNT_OF_RESULTS; i++)
       {
         lobbyCells[i].render(window);
       }
@@ -166,7 +167,7 @@ namespace FluffyMultiplayer
     return tempAddress;
   }
 
-  FluffyMultiplayer::LobbyData StateMainPage::convertStringToLobby(const std::array<std::string,11>& str)
+  FluffyMultiplayer::LobbyData StateMainPage::convertStringToLobby(const std::array<std::string,MS_GET_LOBBY_LIST_LOBBY_FILEDS>& str)
   {
     FluffyMultiplayer::LobbyData temp
     {
@@ -187,6 +188,7 @@ namespace FluffyMultiplayer
     return temp;
   }
 
+  /*
   bool StateMainPage::updateLobbyList()
   {
     int posDelimiter=0;
@@ -209,6 +211,7 @@ namespace FluffyMultiplayer
     else
       return false;
   }
+  */
 
   FluffyMultiplayer::AppState* StateMainPage::update(FluffyMultiplayer::App& app,
                     std::queue<std::string>& receiveDataQueue,
@@ -300,6 +303,71 @@ namespace FluffyMultiplayer
     );
   }
 
+
+  std::vector<int> StateMainPage::dataIndexes(const std::string& data, const std::string& delimiter) const
+  {
+    std::vector<int> result;
+    std::string str;
+    str = data;
+
+    int index;
+    for(int i=0; i<data.length(); i++)
+    {
+      if(str.empty())
+        break;
+
+      index = str.find(delimiter);
+      if (index == std::string::npos) //delimiter not found
+        break;
+
+      str = str.substr(index+delimiter.length() ,str.length()-1);
+      result.push_back(index);
+    }
+
+    return result;
+  }
+  std::array<std::string,MS_GET_LOBBY_LIST_LOBBY_FILEDS> StateMainPage::dataSeparator(std::string& data, std::string delimiter, int startIndex=0)
+  {
+    std::array<std::string,MS_GET_LOBBY_LIST_LOBBY_FILEDS> result;
+    // std::string str = data.substr(startIndex,data.length()-1);
+    data = data.substr(startIndex,data.length()-1);
+
+    std::vector<int>indexes = dataIndexes(data,delimiter);
+    int index;
+    for(int i=0; i<MS_GET_LOBBY_LIST_LOBBY_FILEDS; i++)
+    {
+      index = indexes[i];
+      result[i] = data.substr(0,index);
+      data = data.substr(index+delimiter.length() ,data.length()-1);
+    }
+    return result;
+  }
+
+
+  StateMainPage::StateMainPage(std::string strlobbyList)
+  {
+    //we have X lobby from server create a loop to round that count and push into lobbyList
+    for(int i=0; i<MS_GET_LOBBY_LIST_COUNT_OF_RESULTS; i++)
+    {
+
+      /*
+        here have a single string which is holding that X LobbyData datas as string
+        with delimiters so each lobby has K element like isLocked &..
+        and need a loop to separate each lobby data from others
+        we have a function which is looking for that delimtier we pass to them and
+        return value of that so we call that for each element in bottom loop to
+        find lobby data
+      */
+      lobbyList.push_back
+      (
+        convertStringToLobby
+        (
+          dataSeparator(strlobbyList,MC_REQUEST_DELIMITER)
+        )
+      );
+    }
+  }
+
   FluffyMultiplayer::AppState* StateMainPage::eventHandle(FluffyMultiplayer::App& app,
                             sf::Event& event)
   {
@@ -331,6 +399,17 @@ namespace FluffyMultiplayer
       else if(buttonRefreshLobbyList.getButtonBound().contains(mousePosition))
       {
         std::cout << "button refresh lobby list clicked." << std::endl;
+
+        std::string temp = std::to_string(MC_REQUEST_GET_LOBBY_LIST);
+
+        return new FluffyMultiplayer::StateWaitForResponse
+        (
+          "wait get lobby list..",
+          temp,
+          this,
+          new FluffyMultiplayer::StateMainPage,
+          MS_RESPONSE_SUCCESS_GET_LOBBY_LIST
+        );
       }
       else if(buttonQuit.getButtonBound().contains(mousePosition))
       {
@@ -339,12 +418,13 @@ namespace FluffyMultiplayer
       else //is an element of lobby list
       {
         FluffyMultiplayer::LobbyData clickedLobby;
-        for(int i=0; i<MAX_LOBBY_CELL_LOAD; i++)
+        for(int i=0; i<MS_GET_LOBBY_LIST_COUNT_OF_RESULTS; i++)
         {
           if(lobbyCells[i].getButtonBound().contains(mousePosition))
           {
             clickedLobby = lobbyCells[i].getLobbyData();
-            std::cout << "clicked on lobby from lobby list lobby id=" << clickedLobby.id << std::endl;
+            std::cout << "clicked on lobby from lobby list lobby id=" << clickedLobby.id << "\taddress=" << clickedLobby.address.ip << ":" <<clickedLobby.address.port << std::endl;
+            return new FluffyMultiplayer::StateShowLobbyDetails(clickedLobby);
           }
         }
       }
