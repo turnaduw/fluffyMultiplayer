@@ -1,4 +1,4 @@
-#include "../include/database.h"
++=std::string(MS_DATA_DELIMITER);#include "../include/database.h"
 
 
 namespace FluffyMultiplayer
@@ -107,7 +107,7 @@ namespace FluffyMultiplayer
   {
       std::string basic_query = "SELECT server_ip,server_port FROM fm_lobby WHERE id='";
       basic_query += std::to_string(lobbyId) + "';";
-      std::string info = search_in_db(basic_query);
+      std::string info = search_in_db(basic_query,false);
       return info;
   }
 
@@ -118,13 +118,13 @@ namespace FluffyMultiplayer
 
     std::string basic_query = "SELECT server_ip FROM fm_lobby WHERE owner='";
     basic_query += std::to_string(ownerId) + "';";
-    std::string info = search_in_db(basic_query);
+    std::string info = search_in_db(basic_query,false);
     serverIp = info.substr(10,info.length()-1);
     std::cout << "getLobbyInfoByOwnerId() serverIp = " << serverIp << std::endl;
 
     basic_query = "SELECT server_port FROM fm_lobby WHERE owner='";
     basic_query += std::to_string(ownerId) + "';";
-    info = search_in_db(basic_query);
+    info = search_in_db(basic_query,false);
     serverPort = info.substr(12,info.length()-1);
     std::cout << "getLobbyInfoByOwnerId() serverPort = " << serverPort << std::endl;
 
@@ -143,12 +143,66 @@ namespace FluffyMultiplayer
   std::string FluffyDatabase::getLobbyList(int howManyResultReturn)
   {
     std::string lobbies;
-    while(howManyResultReturn>0)
+    std::string lpassword, lGameMode, lServerAddress, lMaxPlayers, lVoiceChat, lTextChat, lSpecter;
+    for(int i=1; i<=howManyResultReturn; i++)
     {
-      std::string basic_query = "SELECT id,password,gameMode,server_ip,server_port,maxPlayers,voiceChatForbidden,textChatForbidden,specterForbidden FROM fm_lobby;";
-      lobbies += MS_DATA_DELIMITER + search_in_db(basic_query);
-      howManyResultReturn--;
+      //get password
+      std::string basic_query = "SELECT password FROM fm_lobby WHERE id='";
+      basic_query += std::to_string(howManyResultReturn) + "';";
+      lpassword = search_in_db(basic_query,true);
+      if(lpassword.empty()) //we dont send exact password to client.
+        lpassword="0";
+      else
+        lpassword="1";
+
+      //get gameMode
+      basic_query = "SELECT gameMode FROM fm_lobby WHERE id='";
+      basic_query += std::to_string(i) + "';";
+      lGameMode = search_in_db(basic_query,true);
+
+      //get serverIp and port
+      basic_query = "SELECT server_ip FROM fm_lobby WHERE id='";
+      basic_query += std::to_string(i) + "';";
+      lServerAddress = search_in_db(basic_query,true);
+      lServerAddress += ":";
+      basic_query = "SELECT server_port FROM fm_lobby WHERE id='";
+      basic_query += std::to_string(i) + "';";
+      lServerAddress += search_in_db(basic_query,true);
+
+
+      //get maxPlayers
+      basic_query = "SELECT maxPlayers FROM fm_lobby WHERE id='";
+      basic_query += std::to_string(i) + "';";
+      lMaxPlayers = search_in_db(basic_query,true);
+
+      //get voiceChatForbidden
+      basic_query = "SELECT voiceChatForbidden FROM fm_lobby WHERE id='";
+      basic_query += std::to_string(i) + "';";
+      lVoiceChat = search_in_db(basic_query,true);
+
+      //get textChatForbidden
+      basic_query = "SELECT textChatForbidden FROM fm_lobby WHERE id='";
+      basic_query += std::to_string(i) + "';";
+      lTextChat = search_in_db(basic_query,true);
+
+      //get specterForbidden
+      basic_query = "SELECT specterForbidden FROM fm_lobby WHERE id='";
+      basic_query += std::to_string(i) + "';";
+      lSpecter = search_in_db(basic_query,true);
+
+
+      all += std::to_string(i) + std::string(MS_DATA_DELIMITER);
+      all += lpassword + std::string(MS_DATA_DELIMITER);
+      all += lGameMode + std::string(MS_DATA_DELIMITER);
+      all += lServerAddress + std::string(MS_DATA_DELIMITER);
+      all += lMaxPlayers + std::string(MS_DATA_DELIMITER);
+      all += lVoiceChat + std::string(MS_DATA_DELIMITER);
+      all += lTextChat + std::string(MS_DATA_DELIMITER);
+      all += lSpecter + std::string(MS_DATA_DELIMITER);
+      std::cout << "getLobbyList() lobby i="  << i << all << std::endl;
+      lobbies += all;
     }
+    std::cout << "getLobbyList() final result=" << lobbies << std::endl;
     return lobbies;
   }
 
@@ -184,7 +238,7 @@ namespace FluffyMultiplayer
       //search for that oldIdentity from fm_client_login
       std::string basic_query = "SELECT clientId FROM fm_client_login WHERE identity='";
       basic_query += client.oldIdentity + "';";
-      std::string result = search_in_db(basic_query);
+      std::string result = search_in_db(basic_query,false);
 
       if(result.length()<MS_MINIMUM_RETURNED_DATA_BY_SQL_SEARCH)
         return MS_ERROR_FAILED_TO_RELOGIN; //98% chance to login not found because in some case maybe database is not abled to return query's response.
@@ -200,7 +254,7 @@ namespace FluffyMultiplayer
       //search for that oldIdentity from fm_client_login
       basic_query = "SELECT loginDate FROM fm_client_login WHERE identity='";
       basic_query += client.oldIdentity + "';";
-      result = search_in_db(basic_query);
+      result = search_in_db(basic_query,false);
 
 
       // set loginDate        jump 4 charecter because of field title for example is:  id=123
@@ -253,7 +307,7 @@ namespace FluffyMultiplayer
   {
     std::string basic_query = "SELECT clientId FROM fm_client_login WHERE identity='";
     basic_query += identity + "';";
-    std::string clientId = search_in_db(basic_query);
+    std::string clientId = search_in_db(basic_query,false);
 
     //convert received data into int
     int cid = FluffyMultiplayer::convertStringToInt(clientId.substr(9,clientId.length()-1));
@@ -294,7 +348,7 @@ namespace FluffyMultiplayer
           //search for created client id..
           basic_query = "SELECT id FROM fm_client WHERE username='";
           basic_query += client.username + "';";
-          std::string result =  search_in_db(basic_query);
+          std::string result =  search_in_db(basic_query,false);
           std::cout << "register res=" << result << "\tlen=" << result.length()  << "\tstrid=" << result.substr(3,result.length()-1) << std::endl;
           int clientId = FluffyMultiplayer::convertStringToInt(result.substr(3,result.length()-1)); //count of charecter id + a '=' is 3 so result is on [3]
           if(clientId<=0)
@@ -334,7 +388,7 @@ namespace FluffyMultiplayer
         std::string basic_query = "SELECT id FROM fm_client WHERE username='";
         basic_query += client.username + "' AND password='";
         basic_query += client.password + "';";
-        std::string result = search_in_db(basic_query);
+        std::string result = search_in_db(basic_query,false);
 
         //check result is not empty that means client exists
         if(result.length()<MS_MINIMUM_RETURNED_DATA_BY_SQL_SEARCH)
@@ -351,7 +405,7 @@ namespace FluffyMultiplayer
         // get banned status by username
         basic_query = "SELECT isBanned FROM fm_client WHERE username='";
         basic_query += client.username + "';";
-        result = search_in_db(basic_query);
+        result = search_in_db(basic_query,false);
 
         // set client ban status         jump 9 charecter because of filed title for example is: isBanned=0
         bool isBanned = static_cast<bool>(FluffyMultiplayer::convertStringToInt(result.substr(9,result.length()-1))); // isBanned= [9], boolain is just one chartecter 0 or 1
@@ -454,7 +508,7 @@ namespace FluffyMultiplayer
   {
       std::string basic_query = "SELECT isLobbyCreationLimited FROM fm_client WHERE id='";
       basic_query += std::to_string(clientId) + "';";
-      std::string result = search_in_db(basic_query);
+      std::string result = search_in_db(basic_query,false);
       result = result.substr(23,result.length()); //count of charecter isLobbyCreationLimited + a '=' is 22 so result is on [23]
       if(result == "true" || result == "TRUE" || result == "True" || result == "1") //idk what database saves for BOOLEAN type
         return true;
@@ -493,6 +547,18 @@ namespace FluffyMultiplayer
 
 
   //database----------
+  int FluffyDatabase::search_in_db_callback_nofield(void* data, int argc, char** argv, char** azColName)
+  {
+      std::string* _result = static_cast<std::string*>(data);
+      for (int i = 0; i < argc; i++)
+      {
+          std::cout << "db search noField i=" << i  << "\t"<< azColName[i] << '=' << (argv[i] ? argv[i] : "NULL") << std::endl;
+          *_result +=  (argv[i] ? argv[i] : "NULL");
+      }
+      std::cout << std::endl;
+      return 0;
+  }
+
   int FluffyDatabase::search_in_db_callback(void* data, int argc, char** argv, char** azColName)
   {
       std::string* _result = static_cast<std::string*>(data);
@@ -508,14 +574,19 @@ namespace FluffyMultiplayer
       return 0;
   }
 
-  std::string FluffyDatabase::search_in_db(const std::string& _q)
+  std::string FluffyDatabase::search_in_db(const std::string& _q, bool withoutFieldName=false)
   {
       char* errMsg;
       char* final_query = new char[_q.length() + 1];
       std::strcpy(final_query, _q.c_str());
 
       std::string result;
-      int rc = sqlite3_exec(db, final_query, &FluffyDatabase::search_in_db_callback, &result, &errMsg);
+      int rc;
+
+      if(withoutFieldName)
+        rc = sqlite3_exec(db, final_query, &FluffyDatabase::search_in_db_callback_nofield, &result, &errMsg);
+      else
+        rc = sqlite3_exec(db, final_query, &FluffyDatabase::search_in_db_callback, &result, &errMsg);
 
       delete[] final_query;
 

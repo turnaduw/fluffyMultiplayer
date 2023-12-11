@@ -76,8 +76,9 @@ namespace FluffyMultiplayer
       //------------------------- database
       void initTables();
 
+      static int search_in_db_callback_nofield(void* data, int argc, char** argv, char** azColName);
       static int search_in_db_callback(void* data, int argc, char** argv, char** azColName);
-      std::string search_in_db(const std::string&);
+      std::string search_in_db(const std::string&,bool withoutFieldName);
 
       static int isExists_in_db_callback(void* data, int argc, char** argv, char** azColName);
       bool isExists_in_db(std::string& _q, int lengthField);
