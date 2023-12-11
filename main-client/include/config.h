@@ -55,7 +55,7 @@
 #define GAME_MODE_TEXTURE_LIST {"gm-mensch.png","gm-chess.png","gm-tictatoe.png"}
 #define MAX_PLAYER_LIST {"2","4","6","8","10"}
 
-#define MAX_LOBBY_CELL_LOAD 50
+#define MS_GET_LOBBY_LIST_COUNT_OF_RESULTS 10
 
 #define UI_COMPONENT_TEXTURE_DEFAULT "./somewhere/componentTextureNotFound.png"
 #define UI_COMPONENT_FONT_DEFAULT "./somewhere/componentFontNotFound.ttf"
