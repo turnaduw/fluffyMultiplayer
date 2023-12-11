@@ -143,7 +143,7 @@ namespace FluffyMultiplayer
   std::string FluffyDatabase::getLobbyList(int howManyResultReturn)
   {
     std::string lobbies;
-    std::string lpassword, lGameMode, lServerAddress, lMaxPlayers, lVoiceChat, lTextChat, lSpecter;
+    std::string lpassword, lGameMode, lServerAddress, lMaxPlayers, lVoiceChat, lTextChat, lSpecter, lLobbyStatus, lShowLobbyOnList, lCurrentPlayers;
     for(int i=1; i<=howManyResultReturn; i++)
     {
       //get password
@@ -191,15 +191,39 @@ namespace FluffyMultiplayer
       lSpecter = search_in_db(basic_query,true);
 
 
-      all += std::to_string(i) + std::string(MS_DATA_DELIMITER);
-      all += lpassword + std::string(MS_DATA_DELIMITER);
-      all += lGameMode + std::string(MS_DATA_DELIMITER);
-      all += lServerAddress + std::string(MS_DATA_DELIMITER);
-      all += lMaxPlayers + std::string(MS_DATA_DELIMITER);
+      //get lobbyStatus
+      basic_query = "SELECT lLobbyStatus FROM fm_lobby WHERE id='";
+      basic_query += std::to_string(i) + "';";
+      lLobbyStatus = search_in_db(basic_query,true);
+
+      //get showLobbyOnList
+      basic_query = "SELECT lShowLobbyOnList FROM fm_lobby WHERE id='";
+      basic_query += std::to_string(i) + "';";
+      lShowLobbyOnList = search_in_db(basic_query,true);
+
+
+      //get currentPlayers (count of players in lobby)
+      basic_query = "SELECT COUNT(*) FROM fm_client_in_lobby WHERE lobbyId='";
+      basic_query += std::to_string(i) + "';";
+      lCurrentPlayers = search_in_db(basic_query,true);
+
+
+      /*
+        append searched data into one string as order style LobbyData
+       (convert this string will use LobbyData strcut order variables defined)
+      */
+      all = lpassword + std::string(MS_DATA_DELIMITER);
       all += lVoiceChat + std::string(MS_DATA_DELIMITER);
       all += lTextChat + std::string(MS_DATA_DELIMITER);
       all += lSpecter + std::string(MS_DATA_DELIMITER);
-      std::cout << "getLobbyList() lobby i="  << i << all << std::endl;
+      all += lLobbyStatus + std::string(MS_DATA_DELIMITER);
+      all += lShowLobbyOnList + std::string(MS_DATA_DELIMITER);
+      all += std::to_string(i) + std::string(MS_DATA_DELIMITER);
+      all += lMaxPlayers + std::string(MS_DATA_DELIMITER);
+      all += lCurrentPlayers + std::string(MS_DATA_DELIMITER);
+      all += lGameMode + std::string(MS_DATA_DELIMITER);
+      all += lServerAddress + std::string(MS_DATA_DELIMITER);
+      std::cout << "getLobbyList() lobby i="  << i <<  " data=" << all << std::endl;
       lobbies += all;
     }
     std::cout << "getLobbyList() final result=" << lobbies << std::endl;
