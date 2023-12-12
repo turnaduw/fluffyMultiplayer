@@ -575,14 +575,24 @@ namespace FluffyMultiplayer
               selected_server_port + "');";
              if(query_to_db(basic_query))
              {
-               outputServerIpPort = getLobbyInfoByOwnerId(ownerId);
-               if(outputServerIpPort.length()<MS_LOBBY_IP_PORT_MINIMUM_LENGTH)
+               //get create lobby id via owner id, add that owner id into lobby
+               basic_query = "INSERT INTO fm_client_in_lobby ( clientId, lobbyId ) VALUES('";
+               basic_query += std::to_string(ownerId) + "', (SELECT  id FROM fm_lobby WHERE owner='";
+               basic_query += std::to_string(ownerid) + "'));";
+               if(query_to_db(basic_query))
                {
-                 outputServerIpPort="";
-                 return MS_ERROR_FAILED_TO_CREATE_LOBBY; //failed to get lobby ip and port
+                 //get lobby address
+                 outputServerIpPort = getLobbyInfoByOwnerId(ownerId);
+                 if(outputServerIpPort.length()<MS_LOBBY_IP_PORT_MINIMUM_LENGTH)
+                 {
+                   outputServerIpPort="";
+                   return MS_ERROR_FAILED_TO_CREATE_LOBBY; //failed to get lobby ip and port
+                 }
+                 else
+                    return MS_RESPONSE_SUCCESS_LOBBY_CREATED;
                }
                else
-                 return MS_RESPONSE_SUCCESS_LOBBY_CREATED;
+                return MS_ERROR_FAILED_TO_CREATE_LOBBY;//failed to add client into lobby
              }
              else
                return MS_ERROR_FAILED_TO_CREATE_LOBBY; //failed to insert lobby
