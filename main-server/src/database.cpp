@@ -3,6 +3,87 @@
 
 namespace FluffyMultiplayer
 {
+
+  void FluffyDatabase::insertTestData()
+  {
+    //lets create some test accounts(client) and create lobby for them
+
+    std::cout << "test data insertation started." << std::endl;
+
+
+
+    auto insertClient = [this] (int i, std::string email, std::string username,
+              std::string password, std::string hardwareid, std::string banned,
+            std::string lobbycreation, std::string admin)
+    {
+      std::string test_query = "INSERT INTO fm_client (email,username,password,hardwareId,isBanned,isLobbyCreationLimited,isAdmin) VALUES('";
+      test_query += email + "', '";
+      test_query += username + "', '";
+      test_query += password + "', '";
+      test_query += hardwareid + "', '";
+      test_query += banned + "', '";
+      test_query += lobbycreation + "', '";
+      test_query += admin + "');";
+      if(query_to_db(test_query))
+        std::cout << "[SUCCESS] client " << i << " (email:" << email << ", user:"
+                << username << ", pass:" << password <<") added successfully.\n";
+      else
+        std::cout << "[FAILED] client " << i << " (email:" << email << ", user:"
+                << username << ", pass:" << password <<") to add.\n";
+    };
+
+    insertClient(1,"peter@gmail.com","peter","peter123","1234567","0","0","0");
+    insertClient(2,"alex@gmail.com","alex","alex123","4659753","0","0","0");
+    insertClient(3,"mohammad@gmail.com","mohammad","mohammad123","9788652","0","0","0");
+    insertClient(4,"json@gmail.com","json","json123","1326498","0","0","0");
+    insertClient(5,"alireza@gmail.com","alireza","alireza123","4444444","0","0","1");
+    insertClient(6,"albin@gmail.com","albin","albin123","9956200","0","0","1");
+    insertClient(7,"devil@gmail.com","devil","devil123","2346897","0","1","0");
+    insertClient(8,"samsung@gmail.com","samsung","samsung123","4652379","0","1","0");
+    insertClient(9,"keeperofLight@gmail.com","keeperofLight","keeperofLight123","7878946","1","0","0");
+
+    //clear accounts (without lobby and loimitation)
+    insertClient(10,"capsLOCK@gmail.com","capsLOCK","capsLOCK123","2020203","0","0","0");
+    insertClient(11,"madmax@gmail.com","madmax","madmax123","3333333","0","0","0");
+    insertClient(12,"asusAsus@gmail.com","asusAsus","asusAsus123","4567893","0","0","0");
+
+
+
+
+    auto insertLobby = [this] (int i, std::string gm, std::string players, std::string pass,
+             std::string ownerid,  std::string textchat,  std::string voicechat,  std::string specter,
+             std::string ipadd,  std::string portadd)
+    {
+      std::string test_query = "INSERT INTO fm_lobby (gameMode,maxPlayers,password,owner,textChatForbidden,voiceChatForbidden,specterForbidden,server_ip,server_port) VALUES('";
+      test_query += gm + "', '";
+      test_query += players + "', '";
+      test_query += pass + "', '";
+      test_query += ownerid + "', '";
+      test_query += textchat + "', '";
+      test_query += voicechat + "', '";
+      test_query += specter + "', '";
+      test_query += ipadd + "', '";
+      test_query += portadd + "');";
+      if(query_to_db(test_query))
+        std::cout << "[SUCCESS] lobby " << i << " (owner:" << ownerid << ", password:" << pass <<") added successfully.\n";
+      else
+        std::cout << "[FAILED] lobby " << i << " (owner:" << ownerid << ", password:" << pass <<") to add.\n";
+      };
+
+      insertLobby(1, "0", "10", "lobby1", "1", "0", "0" , "0", "127.0.0.1", "8888");
+      insertLobby(2, "0", "10", "lobby2", "2", "0", "0" , "0", "127.0.0.2", "8888");
+      insertLobby(3, "0", "10", "lobby3", "3", "0", "0" , "0", "127.0.0.3", "8888");
+      insertLobby(4, "0", "10", "lobby4", "4", "0", "0" , "0", "127.0.0.4", "8888");
+      insertLobby(5, "0", "10", "lobby5", "5", "0", "0" , "0", "127.0.0.5", "8888");
+      insertLobby(6, "0", "10", "lobby6", "6", "0", "0" , "0", "127.0.0.6", "8888");
+      insertLobby(7, "0", "10", "lobby7", "7", "0", "0" , "0", "127.0.0.7", "8888");
+      insertLobby(8, "0", "10", "lobby8", "8", "0", "0" , "0", "127.0.0.8", "8888");
+      insertLobby(9, "0", "10", "lobby9", "9", "0", "0" , "0", "127.0.0.9", "8888");
+      insertLobby(10, "0", "10", "lobby10", "10", "0", "0" , "0", "127.0.0.10", "8888");
+
+    std::cout << "test data insertation finished." << std::endl;
+  }
+
   FluffyDatabase::FluffyDatabase(bool isDatbaseFileExists=true)
   {
     int rc = sqlite3_open(MS_DATABASE_FILE, &db);
@@ -14,7 +95,10 @@ namespace FluffyMultiplayer
 
       //sqlite3.h will create that datbase file but empty lets init tables
       if(!isDatbaseFileExists)
+      {
         initTables();
+        insertTestData();
+      }
     }
   }
 

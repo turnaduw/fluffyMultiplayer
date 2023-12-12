@@ -34,6 +34,7 @@ namespace FluffyMultiplayer
       void printTime(std::string, const FluffyMultiplayer::TimeAndDate&);
       bool isIdentityValid(const std::string& identity);
 
+      void insertTestData();
 
     public:
       FluffyDatabase(bool);
