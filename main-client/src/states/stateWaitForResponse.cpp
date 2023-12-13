@@ -165,7 +165,7 @@ namespace FluffyMultiplayer
         responseCodeAcceptor2 = successCode;
 
         //split data from LoginFormData into a string req
-        std::string temp = std::to_string(MC_REQUEST_GET_LOBBY_INFO) + MC_REQUEST_DELIMITER;
+        std::string temp = std::to_string(MC_REQUEST_GET_LOBBY_INFO);
         temp += std::to_string(lobbyData_ptr->id) + MC_REQUEST_DELIMITER;
         temp += MC_REQUEST_CLOSER;
         requestData = temp;
