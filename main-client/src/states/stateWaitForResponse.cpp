@@ -372,7 +372,6 @@ namespace FluffyMultiplayer
               }
               else if(responseCodeAcceptor[i] == MS_RESPONSE_SUCCESS_GET_LOBBY_LIST) //means lobby list received
               {
-                std::cout << "StateWaitForResponse result accepted and data=" << receivedData << std::endl;
                 return new FluffyMultiplayer::StateMainPage(receivedData);
               }
               return state2[i]; //accepted (first state passed) successfully
