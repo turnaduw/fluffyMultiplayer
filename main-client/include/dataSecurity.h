@@ -2,6 +2,7 @@
 #define H_DATA_SECURITY_CLASS
 
 #include <string>
+#include "config.h"
 
 namespace FluffyMultiplayer
 {

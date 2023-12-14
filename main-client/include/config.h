@@ -11,6 +11,8 @@
 #define FORM_HIDE_CHARECTER '*'
 #define STATES_ASSET_PATH "./assets/states/"
 
+#define MS_DATA_ENCRYPT_DECRYPT_SHIFT 5
+
 #define MC_PATH_TO_FONTS "./assets/fonts/"
 #define MC_DEFAULT_FONT "arial.ttf"
 
