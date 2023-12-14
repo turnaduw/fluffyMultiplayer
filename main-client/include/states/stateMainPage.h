@@ -66,7 +66,7 @@ namespace FluffyMultiplayer
     //lobby
     std::array<FluffyMultiplayer::LobbyCell,MS_GET_LOBBY_LIST_COUNT_OF_RESULTS> lobbyCells;
 
-    std::array<std::string,MS_GET_LOBBY_LIST_LOBBY_FILEDS> dataSeparator(std::string&, std::string, int);
+    std::array<std::string,MS_GET_LOBBY_LIST_LOBBY_FILEDS> dataSeparator(std::string&, std::string);
     std::vector<int> dataIndexes(const std::string& data, const std::string& delimiter) const;
 
   public:

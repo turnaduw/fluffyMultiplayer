@@ -157,19 +157,24 @@ namespace FluffyMultiplayer
 
     return result;
   }
-  std::array<std::string,MS_GET_LOBBY_LIST_LOBBY_FILEDS> StateMainPage::dataSeparator(std::string& data, std::string delimiter, int startIndex=0)
+  std::array<std::string,MS_GET_LOBBY_LIST_LOBBY_FILEDS> StateMainPage::dataSeparator(std::string& data, std::string delimiter)
   {
+    std::cout << "dataSeparator(mainpage): data=" << data << std::endl;
     std::array<std::string,MS_GET_LOBBY_LIST_LOBBY_FILEDS> result;
-    // std::string str = data.substr(startIndex,data.length()-1);
-    data = data.substr(startIndex,data.length()-1);
 
     std::vector<int>indexes = dataIndexes(data,delimiter);
+    std::cout << "indexes=";
+    for(int ind: indexes)
+      std::cout << ind << "\t";
+    std::cout << std::endl;
+
     int index;
     for(int i=0; i<MS_GET_LOBBY_LIST_LOBBY_FILEDS-1; i++)
     {
       index = indexes[i];
       result[i] = data.substr(0,index);
-      data = data.substr(index+delimiter.length() ,data.length()-1);
+      std::cout << "i=" << i<< "\tresult[i]=" << result[i] << std::endl;
+      data = data.substr(index+delimiter.length() ,data.length());
     }
 
     //print lobby
@@ -178,6 +183,7 @@ namespace FluffyMultiplayer
     {
       std::cout << result[i] << "\t";
     }
+    std::cout << std::endl;
     std::cout << std::endl;
 
     return result;
@@ -240,7 +246,7 @@ namespace FluffyMultiplayer
         )
       );
     }
-    int x,y;
+    float x,y;
     x = y = 0;
     for(int i=0; i<=3 ; i++)
     {
@@ -249,6 +255,7 @@ namespace FluffyMultiplayer
         lobbyCells[i].init(lobbyGameModeTexturePathList, lobbyList[i], x, y);
         x+=MS_MAINPAGE_LOBBY_CELL_X_PADDING;
       }
+      x=0;
       y+=MS_MAINPAGE_LOBBY_CELL_Y_PADDING;
     }
 

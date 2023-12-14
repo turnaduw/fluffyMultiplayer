@@ -226,7 +226,7 @@ namespace FluffyMultiplayer
 
   std::string FluffyDatabase::getLobbyList(int howManyResultReturn)
   {
-    std::string lobbies , all;
+    std::string all;
     std::string lpassword, lGameMode, lServerAddress, lMaxPlayers, lVoiceChat, lTextChat, lSpecter, lLobbyStatus, lShowLobbyOnList, lCurrentPlayers;
     for(int i=1; i<=howManyResultReturn; i++)
     {
@@ -308,10 +308,8 @@ namespace FluffyMultiplayer
       all += lGameMode + std::string(MS_DATA_DELIMITER);
       all += lServerAddress + std::string(MS_DATA_DELIMITER);
       std::cout << "getLobbyList() lobby i="  << i <<  " data=" << all << std::endl;
-      lobbies += all;
     }
-    std::cout << "getLobbyList() final result=" << lobbies << std::endl;
-    return lobbies;
+    return all;
   }
 
   void FluffyDatabase::printTime(std::string str , const FluffyMultiplayer::TimeAndDate& time)

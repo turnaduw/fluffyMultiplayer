@@ -372,6 +372,10 @@ namespace FluffyMultiplayer
               }
               else if(responseCodeAcceptor[i] == MS_RESPONSE_SUCCESS_GET_LOBBY_LIST) //means lobby list received
               {
+                //remove closer and addiotional deliimter from data
+                receivedData = receivedData.substr(0, receivedData.length()-3);
+
+                //pass received data (lobbies) into MainPage to show as lobbyList
                 return new FluffyMultiplayer::StateMainPage(receivedData);
               }
               return state2[i]; //accepted (first state passed) successfully
