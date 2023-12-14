@@ -242,11 +242,14 @@ namespace FluffyMultiplayer
     }
     int x,y;
     x = y = 0;
-    for(int i=0; i<=9 ; i++)
+    for(int i=0; i<=3 ; i++)
     {
-      lobbyCells[i].init(lobbyGameModeTexturePathList, lobbyList[i], x, y);
-      x+=100.0;
-      y+=50.0;
+      for(int j=0; j<=2; j++)
+      {
+        lobbyCells[i].init(lobbyGameModeTexturePathList, lobbyList[i], x, y);
+        x+=MS_MAINPAGE_LOBBY_CELL_X_PADDING;
+      }
+      y+=MS_MAINPAGE_LOBBY_CELL_Y_PADDING;
     }
 
   }

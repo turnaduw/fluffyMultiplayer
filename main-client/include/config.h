@@ -54,6 +54,8 @@
 
 #define MS_GET_LOBBY_LIST_COUNT_OF_RESULTS 10
 #define MS_GET_LOBBY_LIST_LOBBY_FILEDS 12
+#define MS_MAINPAGE_LOBBY_CELL_X_PADDING 100.0
+#define MS_MAINPAGE_LOBBY_CELL_Y_PADDING 50.0
 
 #define UI_COMPONENT_TEXTURE_DEFAULT "./somewhere/componentTextureNotFound.png"
 #define UI_COMPONENT_FONT_DEFAULT "./somewhere/componentFontNotFound.ttf"
