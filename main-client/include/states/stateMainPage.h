@@ -25,6 +25,8 @@ namespace FluffyMultiplayer
   private:
 
     //lobby
+    bool goGetLobbyList; //a flag to turn off/on to get once/manage-howmany-times getlobbylist
+
     std::vector<FluffyMultiplayer::LobbyData> lobbyList;
     FluffyMultiplayer::LobbyData selectedLobby;
 
