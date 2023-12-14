@@ -28,27 +28,14 @@ namespace FluffyMultiplayer
     std::vector<FluffyMultiplayer::LobbyData> lobbyList;
     FluffyMultiplayer::LobbyData selectedLobby;
 
+    //to avoid create variable each round of loop
     std::vector<std::string> lobbyGameModeTexturePathList;
 
-
-
-    bool isPedding;//to make a popup as loading plase wait, avoid multiple requests from client
-
-
-    bool updateLobbyList();
     int findIndexOfDelimiter(const std::string&, std::string);
-    int countLobbies(const std::string&);
     FluffyMultiplayer::LobbyData convertStringToLobby(const std::array<std::string,MS_GET_LOBBY_LIST_LOBBY_FILEDS>&);
     int convertToInt(const std::string&);
     bool convertToBool(const std::string&);
     FluffyMultiplayer::AnAddress convertToAnAddress(const std::string&);
-
-    int checkResponseCode(const std::string& _data);
-    int refreshLobbyListCounter;
-    int refreshLobbyResultCode;
-    int refreshLobbyTimeoutCounter;
-    std::string receivedData;
-    bool successToRefreshLobbyList;
 
     //to avoid duplicate return code while calling them from event mouse, keyboard
     FluffyMultiplayer::AppState* formFinishedResult(bool isSubmit);
@@ -57,8 +44,6 @@ namespace FluffyMultiplayer
 
 
     // ---------------- UI
-
-    sf::Text stateIsBusyText;
 
     sf::Vertex line[2];
 
@@ -78,8 +63,6 @@ namespace FluffyMultiplayer
 
     //lobby
     std::array<FluffyMultiplayer::LobbyCell,MS_GET_LOBBY_LIST_COUNT_OF_RESULTS> lobbyCells;
-    void initAllLobbyCells();
-    int genrate_random_number(int ,int);
 
     std::array<std::string,MS_GET_LOBBY_LIST_LOBBY_FILEDS> dataSeparator(std::string&, std::string, int);
     std::vector<int> dataIndexes(const std::string& data, const std::string& delimiter) const;
