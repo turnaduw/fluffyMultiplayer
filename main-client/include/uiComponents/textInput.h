@@ -197,16 +197,23 @@ namespace FluffyMultiplayer
 
       void removeFromText()
       {
-        enteredString = enteredString.substr(0, enteredString.length()-2);
+        //remove last char from string
+        enteredString = enteredString.substr(0, enteredString.length()-1);
         setStrings();//update strings will display..
         if(isPlaceHolderEnabled==false && enteredString.empty())
           enablePlaceholder();
       }
 
-      // virtual void appendToText(const char& _text)
       void appendToText(const char& _text)
       {
           enteredString += _text;
+
+          //remove control charecters from received string, source: https://en.wikipedia.org/wiki/Control_character
+          enteredString.erase(std::remove(enteredString.begin(), enteredString.end(), '\b'), enteredString.cend()); //backspace
+          enteredString.erase(std::remove(enteredString.begin(), enteredString.end(), '\n'), enteredString.cend()); //enter (feed line)
+          enteredString.erase(std::remove(enteredString.begin(), enteredString.end(), '\t'), enteredString.cend()); //tab
+          enteredString.erase(std::remove(enteredString.begin(), enteredString.end(), '\e'), enteredString.cend()); //escape
+          enteredString.erase(std::remove(enteredString.begin(), enteredString.end(), ' '), enteredString.cend()); //space
       }
 
       void enablePlaceholder()
