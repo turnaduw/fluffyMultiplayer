@@ -21,7 +21,6 @@ namespace FluffyMultiplayer
 
   void StateMainPage::render(sf::RenderWindow& window)
   {
-      window.draw(theText);
       lobbyIdInput.render(window);
       buttonSubmitLobbyId.render(window);
       buttonCreateLobby.render(window);
@@ -159,21 +158,14 @@ namespace FluffyMultiplayer
   }
   std::array<std::string,MS_GET_LOBBY_LIST_LOBBY_FILEDS> StateMainPage::dataSeparator(std::string& data, std::string delimiter)
   {
-    std::cout << "dataSeparator(mainpage): data=" << data << std::endl;
     std::array<std::string,MS_GET_LOBBY_LIST_LOBBY_FILEDS> result;
 
     std::vector<int>indexes = dataIndexes(data,delimiter);
-    std::cout << "indexes=";
-    for(int ind: indexes)
-      std::cout << ind << "\t";
-    std::cout << std::endl;
-
     int index;
     for(int i=0; i<MS_GET_LOBBY_LIST_LOBBY_FILEDS-1; i++)
     {
       index = indexes[i];
       result[i] = data.substr(0,index);
-      std::cout << "i=" << i<< "\tresult[i]=" << result[i] << std::endl;
       data = data.substr(index+delimiter.length() ,data.length());
     }
 
@@ -183,7 +175,6 @@ namespace FluffyMultiplayer
     {
       std::cout << result[i] << "\t";
     }
-    std::cout << std::endl;
     std::cout << std::endl;
 
     return result;
@@ -195,29 +186,25 @@ namespace FluffyMultiplayer
     //set game mode textures list
     lobbyGameModeTexturePathList = GAME_MODE_TEXTURE_LIST;
 
-    //titles
-    std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
-    initSimpleText(fontPath, "state mainPage");
-    setSimpleTextPosition(150.0, 5.0);
+    float ytools = 25.0;
 
     //text inputs
     inputFocus = &lobbyIdInput;
-    lobbyIdInput.init("","","lobby id","enter lobby id to join", 50.0, 100.0);
+    lobbyIdInput.init("","","lobby id","enter lobby id to join", 27.0, ytools);
 
     //buttons
-    buttonSubmitLobbyId.init("join", 200.0,300.0, sf::Color::Black, sf::Color::White, 60,30, 22);
+    buttonSubmitLobbyId.init("join", 297.0,ytools, sf::Color::Black, sf::Color::White, 60,30, 22);
 
-    buttonLogout.init("LogOut", PICTURE_BUTTON_LOGOUT_TEXTURE , 550.0,400.0, sf::Color::Black,sf::Color::White, 22);
-    buttonRefreshLobbyList.init("Refresh lobby list", PICTURE_BUTTON_REFRESH_LOBBY_LIST_TEXTURE , 450.0,500.0, sf::Color::Black,sf::Color::White, 22);
+    buttonCreateLobby.init("create lobby", 566.0,ytools, sf::Color::Black,sf::Color::White, 60,30, 22);
 
-    buttonCreateLobby.init("create lobby", 700.0,600.0, sf::Color::Black,sf::Color::White, 60,30, 22);
-
-    buttonQuit.init("quit", PICTURE_BUTTON_QUIT_TEXTURE, 800.0,700.0, sf::Color::Black,sf::Color::White, 22);
+    buttonLogout.init("LogOut", PICTURE_BUTTON_LOGOUT_TEXTURE , 772.0,ytools, sf::Color::Black,sf::Color::White, 22);
+    buttonRefreshLobbyList.init("Refresh lobby list", PICTURE_BUTTON_REFRESH_LOBBY_LIST_TEXTURE , 867.0,ytools, sf::Color::Black,sf::Color::White, 22);
+    buttonQuit.init("quit", PICTURE_BUTTON_QUIT_TEXTURE, 946.0,ytools, sf::Color::Black,sf::Color::White, 22);
 
 
     //line
-    line[0] = sf::Vertex(sf::Vector2f(0, 250));
-    line[1] = sf::Vertex(sf::Vector2f(800, 250));
+    line[0] = sf::Vertex(sf::Vector2f(0 , ytools+80));
+    line[1] = sf::Vertex(sf::Vector2f(998, ytools+80));
 
 
 
@@ -246,17 +233,26 @@ namespace FluffyMultiplayer
         )
       );
     }
-    float x,y;
-    x = y = 0;
-    for(int i=0; i<=3 ; i++)
+
+    int index=0;
+    int spaceBetweenCell = 20;
+    int eachCellSize = 186 + spaceBetweenCell;
+    int window_x[2] = {0, 813}; //min, max
+    int window_y[2] = {110, 813}; //min, max
+
+    for(int y=window_y[0]; y<window_y[1] ; y+=eachCellSize)
     {
-      for(int j=0; j<=2; j++)
-      {
-        lobbyCells[i].init(lobbyGameModeTexturePathList, lobbyList[i], x, y);
-        x+=MS_MAINPAGE_LOBBY_CELL_X_PADDING;
-      }
-      x=0;
-      y+=MS_MAINPAGE_LOBBY_CELL_Y_PADDING;
+      if(index<MS_GET_LOBBY_LIST_COUNT_OF_RESULTS-1)
+        for(int x=window_x[0]; x<window_x[1]; x+=eachCellSize)
+        {
+          lobbyCells[index].init(lobbyGameModeTexturePathList, lobbyList[index], static_cast<float>(x), static_cast<float>(y));
+          if(index<MS_GET_LOBBY_LIST_COUNT_OF_RESULTS-1)
+            index++;
+          else
+            break;
+        }
+      else
+        break;
     }
 
   }
