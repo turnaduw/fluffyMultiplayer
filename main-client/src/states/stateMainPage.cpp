@@ -61,7 +61,7 @@ namespace FluffyMultiplayer
     FluffyMultiplayer::AnAddress tempAddress
     {
       boost::asio::ip::address::from_string(str.substr(0,posCol)),
-      static_cast<unsigned short>(convertToInt(str.substr(posCol,str.length())))
+      static_cast<unsigned short>(convertToInt(str.substr(posCol+1,str.length())))
     };
 
     return tempAddress;
