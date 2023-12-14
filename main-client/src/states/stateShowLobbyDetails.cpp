@@ -26,7 +26,7 @@ namespace FluffyMultiplayer
     lobbyAsText += "\nis lobby in-game:" + boolToString(selectedLobby.lobbyStatusInGame);
     lobbyAsText += "\nlobby will show in lobbyList: " + boolToString(selectedLobby.showLobbyInList);
 
-    std::string final=   "state StateShowLobbyDetails\nare you sure to join this lobby?\npress enter to join other keys to cancel.\n\nlobby=\n\n" + lobbyAsText;
+    std::string final=   "state StateShowLobbyDetails\nare you sure to join this lobby?\npress enter to join.\n\nlobby=\n\n" + lobbyAsText;
     initSimpleText(fontPath,final);
 
     buttonConfirm.init("Join",200.0,200.0, sf::Color::Black, sf::Color::White, 60,30, 22);
@@ -85,10 +85,6 @@ namespace FluffyMultiplayer
           if(event.key.code == sf::Keyboard::Enter || event.key.code == sf::Keyboard::Return)
           {
             return new FluffyMultiplayer::StateJoinLobby(lobby.address);
-          }
-          else
-          {
-            return new FluffyMultiplayer::StateMainPage;
           }
         }
         break;
