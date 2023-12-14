@@ -195,11 +195,11 @@ namespace FluffyMultiplayer
     //buttons
     buttonSubmitLobbyId.init("join", 297.0,ytools, sf::Color::Black, sf::Color::White, 60,30, 22);
 
-    buttonCreateLobby.init("create lobby", 566.0,ytools, sf::Color::Black,sf::Color::White, 60,30, 22);
+    buttonCreateLobby.init("create-lobby", 566.0,ytools, sf::Color::Black,sf::Color::White, 60,30, 22);
 
-    buttonLogout.init("LogOut", PICTURE_BUTTON_LOGOUT_TEXTURE , 772.0,ytools, sf::Color::Black,sf::Color::White, 22);
-    buttonRefreshLobbyList.init("Refresh lobby list", PICTURE_BUTTON_REFRESH_LOBBY_LIST_TEXTURE , 867.0,ytools, sf::Color::Black,sf::Color::White, 22);
-    buttonQuit.init("quit", PICTURE_BUTTON_QUIT_TEXTURE, 946.0,ytools, sf::Color::Black,sf::Color::White, 22);
+    buttonLogout.init("LogOut", PICTURE_BUTTON_LOGOUT_TEXTURE , 772.0,ytools, sf::Color::Black,sf::Color::White, 18);
+    buttonRefreshLobbyList.init("Refresh\nlobby\nlist", PICTURE_BUTTON_REFRESH_LOBBY_LIST_TEXTURE , 867.0,ytools, sf::Color::Black,sf::Color::White, 18);
+    buttonQuit.init("quit", PICTURE_BUTTON_QUIT_TEXTURE, 946.0,ytools, sf::Color::Black,sf::Color::White, 18);
 
 
     //line
