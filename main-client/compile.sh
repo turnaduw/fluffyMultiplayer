@@ -8,12 +8,14 @@ do
           #compile whole program
           echo -e "\n\e[31m[START]\e[39m compile $compileMode started at: `date`"
           g++ $compileMain
+          spd-say 'ready to run'
           echo -e "\n\e[32m[END]\e[39m compile $compileMode finished at: `date`"
           ;;
     2)
           #compile whole program for gdb
           echo -e "\n\e[31m[START]\e[39m compile $compileMode started at: `date`"
           g++ -g $compileMain
+          spd-say 'ready to run'
           echo -e "\n\e[32m[END]\e[39m compile $compileMode finished at: `date`"
           ;;
     3)
