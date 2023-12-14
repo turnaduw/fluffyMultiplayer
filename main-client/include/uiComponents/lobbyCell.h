@@ -48,7 +48,7 @@ namespace FluffyMultiplayer
         return lobbyInfo;
       }
 
-      void init(const std::vector<std::string>* const gameModeTextures,
+      void init(std::vector<std::string> gameModeTextures,
             FluffyMultiplayer::LobbyData lobby_data,float x, float y)
       {
         //load that base rectangle
@@ -162,7 +162,7 @@ namespace FluffyMultiplayer
 
             iconGameMode.initIcon
             (
-              (*gameModeTextures)[lobbyInfo.gameMode],
+              gameModeTextures[lobbyInfo.gameMode],
               x LOBBY_CELL_GAMEMODE_STATUS_PADDING_X,
               y LOBBY_CELL_GAMEMODE_STATUS_PADDING_Y
             );
@@ -222,7 +222,7 @@ namespace FluffyMultiplayer
         }
       }
 
-      LobbyCell(const std::vector<std::string>* const gameModeTexturesList,
+      LobbyCell(std::vector<std::string> gameModeTexturesList,
                 FluffyMultiplayer::LobbyData data,
                 float x,float y)
       {
