@@ -11,6 +11,7 @@ do
           g++ $compileMain
           rm *.o
           rm *.gch
+          spd-say 'ready to run'
           echo -e "\n\e[32m[END]\e[39m compile $compileMode finished at: `date`"
           ;;
     2)
@@ -20,6 +21,7 @@ do
           g++ -g $compileMain
           rm *.o
           rm *.gch
+          spd-say 'ready to run'
           echo -e "\n\e[32m[END]\e[39m compile $compileMode finished at: `date`"
           ;;
     3)
