@@ -24,6 +24,10 @@ using boost::asio::ip::udp;
 #include <fstream>
 #include <cstdio>
 
+//open application by cmd
+#include <cstdlib>
+
+
 
 namespace FluffyMultiplayer
 {

@@ -85,6 +85,19 @@ namespace FluffyMultiplayer
   void App::openGame(FluffyMultiplayer::AnAddress address)
   {
     std::cout << "open game\n target server address is= " << address.ip << ":" << address.port << "\tidentity=" << getIdentity() << std::endl;
+
+    //open new terminal and pass args innit
+    std::string gclient = "gnome-terminal -- " +
+            std::string(GAME_CLIENT_APPLICATION_PATH) +
+            std::string(GAME_CLIENT_APPLICATION_NAME) +
+            " " +
+            address.ip.to_string() +
+            " " +
+            std::to_string(address.port) +
+            " " +
+            getIdentity();
+
+    std::system(gclient);
   }
 
   void App::init()

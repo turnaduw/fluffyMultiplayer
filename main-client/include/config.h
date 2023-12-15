@@ -16,6 +16,9 @@
 #define MC_PATH_TO_FONTS "./assets/fonts/"
 #define MC_DEFAULT_FONT "arial.ttf"
 
+#define GAME_CLIENT_APPLICATION_PATH "./"
+#define GAME_CLIENT_APPLICATION_NAME "game.run"
+
 #define MC_DEFAULT_PORT 13333
 
 #define MC_RECEIVE_BUFFER 1024
