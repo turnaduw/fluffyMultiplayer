@@ -67,7 +67,17 @@ namespace FluffyMultiplayer
       test_query += showOnlist + "', '";
       test_query += lobbyStatus + "');";
       if(query_to_db(test_query))
-        std::cout << "[SUCCESS] lobby " << i << " (owner:" << ownerid << ", password:" << pass <<") added successfully.\n";
+      {
+        test_query = "INSERT INTO fm_client_in_lobby ( clientId, lobbyId ) VALUES('";
+        test_query += ownerid + "', (SELECT  id FROM fm_lobby WHERE owner='";
+        test_query += ownerid + "'));";
+        if(query_to_db(test_query))
+        {
+          std::cout << "[SUCCESS] lobby " << i << " (owner:" << ownerid << ", password:" << pass <<") added successfully and owner insesrted into lobby.\n";
+        }
+        else
+        std::cout << "[HALF-SUCCESS] lobby " << i << " (owner:" << ownerid << ", password:" << pass <<") added successfully but could not insert owner into lobby.\n";
+      }
       else
         std::cout << "[FAILED] lobby " << i << " (owner:" << ownerid << ", password:" << pass <<") to add.\n";
       };
