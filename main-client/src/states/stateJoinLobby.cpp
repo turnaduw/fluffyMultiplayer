@@ -33,6 +33,8 @@ namespace FluffyMultiplayer
 
   StateJoinLobby::StateJoinLobby(FluffyMultiplayer::AnAddress target_address)
   {
+    closeButton.init("quit",200.0,200.0, sf::Color::Black, sf::Color::White, 60,30, 22);
+    backButton.init("back to home",400.0,200.0, sf::Color::Black, sf::Color::White, 60,30, 22);
     gameServerAddress = target_address;
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
     initSimpleText(fontPath, "state joinLobby\n game has been launched.");
