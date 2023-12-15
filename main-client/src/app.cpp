@@ -97,7 +97,8 @@ namespace FluffyMultiplayer
             " " +
             getIdentity();
 
-    std::system(gclient);
+    //convert stirnt to const char* then pass into system
+    std::system(gclient.c_str());
   }
 
   void App::init()
