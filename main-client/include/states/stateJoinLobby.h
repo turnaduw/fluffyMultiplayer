@@ -2,6 +2,7 @@
 #define H_STATE_JOIN_LOBBY
 
 #include "../appState.h"
+#include "../uiComponents/button.h"
 
 namespace FluffyMultiplayer
 {
@@ -11,6 +12,12 @@ namespace FluffyMultiplayer
   class StateJoinLobby : public AppState
   {
   private:
+    FluffyMultiplayer::Button backButton;
+    FluffyMultiplayer::Button closeButton;
+    //mouse event handel variable to delecre once, not per loop delcre
+    sf::Vector2f mousePosition;
+
+    
     FluffyMultiplayer::AnAddress gameServerAddress;
     FluffyMultiplayer::AnAddress convertStringToAddress(std::string);
     int findIndexOfDelimiter(const std::string& str, std::string c);

@@ -41,6 +41,8 @@ namespace FluffyMultiplayer
 
   StateJoinLobby::StateJoinLobby(std::string target_address)
   {
+    closeButton.init("quit",200.0,200.0, sf::Color::Black, sf::Color::White, 60,30, 22);
+    backButton.init("back to home",400.0,200.0, sf::Color::Black, sf::Color::White, 60,30, 22);
     //convert address from string to FluffyMultiplayer::AnAddress
     gameServerAddress = convertStringToAddress(target_address);
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
@@ -50,6 +52,8 @@ namespace FluffyMultiplayer
 
   StateJoinLobby::StateJoinLobby()
   {
+    closeButton.init("quit",200.0,200.0, sf::Color::Black, sf::Color::White, 60,30, 22);
+    backButton.init("back to home",400.0,200.0, sf::Color::Black, sf::Color::White, 60,30, 22);
 
     isGameLaunched=false;
   }
@@ -62,6 +66,8 @@ namespace FluffyMultiplayer
   void StateJoinLobby::render(sf::RenderWindow& window)
   {
     window.draw(theText);
+    backButton.render(window);
+    closeButton.render(window);
   }
 
 
@@ -82,6 +88,20 @@ namespace FluffyMultiplayer
   FluffyMultiplayer::AppState* StateJoinLobby::eventHandle(FluffyMultiplayer::App& app,
                             sf::Event& event)
   {
+    //mouse realtime
+    if(event.type == sf::Event::MouseButtonPressed)
+    {
+        mousePosition = app.appWindow.mapPixelToCoords(sf::Mouse::getPosition(app.appWindow));
+
+        if(backButton.getButtonBound().contains(mousePosition))
+        {
+          return new FluffyMultiplayer::StateMainPage;
+        }
+        else if(closeButton.getButtonBound().contains(mousePosition))
+        {
+          app.close();
+        }
+    }
     return this;
   }
 }
