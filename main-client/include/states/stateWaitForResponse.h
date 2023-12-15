@@ -10,6 +10,10 @@
 #include <vector>
 #include <string>
 
+//for notification system
+#include <queue>
+#include "../dataType.h"
+
 namespace FluffyMultiplayer
 {
   class App; // Forward declaration of App class
@@ -29,7 +33,8 @@ namespace FluffyMultiplayer
     std::string requestData;
     sf::Text timeouttxt;
     bool requestSent;
-    int checkResponseCode(const std::string&);
+    int checkResponseCode(const std::string&, std::queue<FluffyMultiplayer::NotificationData>&);
+    std::string getResponseCodeMessage(const int&);
 
     std::string getIdentityFromResponsedData(const std::string& _data,std::string delimter,std::string closer);
     std::string getServerAddressFromResponseData(const std::string& _data,std::string delimiter,std::string closer);

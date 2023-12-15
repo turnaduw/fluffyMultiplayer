@@ -28,6 +28,8 @@ using boost::asio::ip::udp;
 #include <cstdlib>
 
 
+//notification system
+#include "./uiComponents/notificationBox.h"
 
 namespace FluffyMultiplayer
 {
@@ -56,6 +58,12 @@ namespace FluffyMultiplayer
     public:
       boost::thread receive_thread;
       boost::thread send_thread;
+
+      //notifications
+      std::queue<FluffyMultiplayer::NotificationData> notificationQueue;
+      FluffyMultiplayer::NotificationBox notificationBox;
+      //mouse event handel variable to delecre once, not per loop delcre
+      sf::Vector2f mousePosition;
 
       sf::RenderWindow appWindow;
       App(): appWindow(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), WINDOW_TITLE)

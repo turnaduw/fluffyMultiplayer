@@ -138,6 +138,30 @@ namespace FluffyMultiplayer
            if (event.type == sf::Event::Closed)
                appWindow.close();
 
+           //notification box buttons
+           if(event.type == sf::Event::MouseButtonPressed)
+           {
+             if(notificationQueue.size()>=1)
+             {
+               mousePosition = appWindow.mapPixelToCoords(sf::Mouse::getPosition(appWindow));
+               if(notificationBox.closeButton.getButtonBound().contains(mousePosition))
+               {
+                 notificationBox.closeBox();
+                 notificationQueue.pop();
+               }
+               else if(notificationBox.copyButton.getButtonBound().contains(mousePosition))
+               {
+                 std::cout << "clipboard -> error is: " << notificationBox.copyError() << std::endl;
+               }
+               else if(notificationBox.getBackofBackgroundBound().contains(mousePosition))
+               {
+                 notificationBox.closeBox();
+                 notificationQueue.pop();
+               }
+             }
+           }
+
+           //state events
            currentState = currentState->eventHandle((*this),event);
        }
 
@@ -148,6 +172,13 @@ namespace FluffyMultiplayer
 
        // Draw some graphical entities
        currentState->render(appWindow);
+
+       //draw notifications
+       if(notificationQueue.size()>=1)
+       {
+         notificationBox.init(notificationQueue.front(), appWindow.getSize());
+         notificationBox.render(appWindow);
+       }
 
        // End the current frame and display its contents on screen
        appWindow.display();

@@ -11,11 +11,11 @@ namespace FluffyMultiplayer
   class Icon : public UiComponent
   {
     protected:
-      sf::Sprite icon;
-      sf::Texture iconTexture;
       sf::Vector2f iconPosition;
 
     public:
+      sf::Sprite icon;
+      sf::Texture iconTexture;
       void changeIconTexture(std::string path)
       {
         initIcon(path);

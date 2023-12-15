@@ -52,6 +52,31 @@ namespace FluffyMultiplayer
     std::string globalErrors; //like you're limited, maxplayers is invalid and so
     std::string address; //dont need AnAddress type, will convert it..
   };
+
+  enum NotificationType
+  {
+    normal=0,
+    error,
+    success,
+    warning
+  };
+
+  enum NotificationPosition
+  {
+    center=0,
+    bottomLeft,
+    bottomRight,
+    bottomCenter
+  };
+
+  struct NotificationData
+  {
+    int code;
+    std::string title;
+    std::string message;
+    NotificationType type;
+    NotificationPosition position;
+  };
 }
 
 #endif

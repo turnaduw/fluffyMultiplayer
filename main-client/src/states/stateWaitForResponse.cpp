@@ -299,14 +299,62 @@ namespace FluffyMultiplayer
 
   }
 
-  int StateWaitForResponse::checkResponseCode(const std::string& _data)
+  std::string StateWaitForResponse::getResponseCodeMessage(const int& code)
+  {
+    switch (code)
+    {
+      case MS_ERROR_CONNECTION_EXISTS: return "connection exists";
+      case MS_ERROR_CONNECTION_REJECTED: return "connection rejected";
+      case MS_ERROR_FAILED_TO_CREATE_LOBBY: return "failed to create lobby";
+      case MS_ERROR_FAILED_TO_REGISTER_EMIAL_EXISTS: return "email exists";
+      case MS_ERROR_FAILED_TO_REGISTER_USERNAME_EXISTS: return "username exists";
+      //..
+      default: return "unknown error code [1].";
+    }
+    return "unkonwn error code [2].";
+  }
+
+  int StateWaitForResponse::checkResponseCode(const std::string& _data, std::queue<FluffyMultiplayer::NotificationData>& notificationQueue)
   {
     std::string tempStr = _data.substr(MC_RESPONSE_POSITION_MIN_INDEX,MC_RESPONSE_POSITION_MAX_INDEX);
     const char* temp = tempStr.c_str();
     int code = std::atoi(temp);
     std::cout << "checkResponseCode=" << code << ";~;" << std::endl;
     if(code>=MC_MINUMUM_RESPONSE_CODE)
+    {
+
+      if(MC_SHOW_ERROR_NOTIFICATIONS &&
+            code >= MC_ERROR_RESPONSE_CODE_MIN &&
+            code <= MC_ERROR_RESPONSE_CODE_MAX)
+      {
+        notificationQueue.push
+        (
+          FluffyMultiplayer::NotificationData
+          {
+            code,"error",getResponseCodeMessage(code),
+            FluffyMultiplayer::NotificationType::error,
+            FluffyMultiplayer::NotificationPosition::center
+          }
+        );
+      }
+
+      if(MC_SHOW_SUCCESS_NOTIFICATIONS &&
+            code >= MC_SUCCESS_RESPONSE_CODE_MIN &&
+            code <= MC_SUCCESS_RESPONSE_CODE_MAX)
+      {
+        notificationQueue.push
+        (
+          FluffyMultiplayer::NotificationData
+          {
+            code,"success",getResponseCodeMessage(code),
+            FluffyMultiplayer::NotificationType::success,
+            FluffyMultiplayer::NotificationPosition::bottomRight
+          }
+        );
+      }
+
       return code;
+    }
     return -1;
   }
 
@@ -359,7 +407,7 @@ namespace FluffyMultiplayer
       {
         receivedData = receiveDataQueue.front();
         receiveDataQueue.pop();
-        int resultRC = checkResponseCode(receivedData);
+        int resultRC = checkResponseCode(receivedData,app.notificationQueue);
 
         for(int i = 0; i < responseCodeAcceptor.size(); i++)
         {
