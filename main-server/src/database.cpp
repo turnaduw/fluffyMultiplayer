@@ -201,10 +201,87 @@ namespace FluffyMultiplayer
 
   std::string FluffyDatabase::getLobbyInfo(const int& lobbyId)
   {
-      std::string basic_query = "SELECT server_ip,server_port FROM fm_lobby WHERE id='";
+      std::string all;
+      std::string lpassword, lGameMode, lServerAddress, lMaxPlayers, lVoiceChat, lTextChat, lSpecter, lLobbyStatus, lShowLobbyOnList, lCurrentPlayers;
+      //get password
+      std::string basic_query = "SELECT password FROM fm_lobby WHERE id='";
       basic_query += std::to_string(lobbyId) + "';";
-      std::string info = search_in_db(basic_query,false);
-      return info;
+      lpassword = search_in_db(basic_query,true);
+      if(lpassword.empty()) //we dont send exact password to client.
+        lpassword="0";
+      else
+        lpassword="1";
+
+      //get gameMode
+      basic_query = "SELECT gameMode FROM fm_lobby WHERE id='";
+      basic_query += std::to_string(lobbyId) + "';";
+      lGameMode = search_in_db(basic_query,true);
+
+      //get serverIp and port
+      basic_query = "SELECT server_ip FROM fm_lobby WHERE id='";
+      basic_query += std::to_string(lobbyId) + "';";
+      lServerAddress = search_in_db(basic_query,true);
+      lServerAddress += ":";
+      basic_query = "SELECT server_port FROM fm_lobby WHERE id='";
+      basic_query += std::to_string(lobbyId) + "';";
+      lServerAddress += search_in_db(basic_query,true);
+
+
+      //get maxPlayers
+      basic_query = "SELECT maxPlayers FROM fm_lobby WHERE id='";
+      basic_query += std::to_string(lobbyId) + "';";
+      lMaxPlayers = search_in_db(basic_query,true);
+
+      //get voiceChatForbidden
+      basic_query = "SELECT voiceChatForbidden FROM fm_lobby WHERE id='";
+      basic_query += std::to_string(lobbyId) + "';";
+      lVoiceChat = search_in_db(basic_query,true);
+
+      //get textChatForbidden
+      basic_query = "SELECT textChatForbidden FROM fm_lobby WHERE id='";
+      basic_query += std::to_string(lobbyId) + "';";
+      lTextChat = search_in_db(basic_query,true);
+
+      //get specterForbidden
+      basic_query = "SELECT specterForbidden FROM fm_lobby WHERE id='";
+      basic_query += std::to_string(lobbyId) + "';";
+      lSpecter = search_in_db(basic_query,true);
+
+
+      //get lobbyStatus
+      basic_query = "SELECT lobbyStatus FROM fm_lobby WHERE id='";
+      basic_query += std::to_string(lobbyId) + "';";
+      lLobbyStatus = search_in_db(basic_query,true);
+
+      //get showLobbyOnList
+      basic_query = "SELECT showLobbyOnList FROM fm_lobby WHERE id='";
+      basic_query += std::to_string(lobbyId) + "';";
+      lShowLobbyOnList = search_in_db(basic_query,true);
+
+
+      //get currentPlayers (count of players in lobby)
+      basic_query = "SELECT COUNT(*) FROM fm_client_in_lobby WHERE lobbyId='";
+      basic_query += std::to_string(lobbyId) + "';";
+      lCurrentPlayers = search_in_db(basic_query,true);
+
+
+      /*
+        append searched data into one string as order style LobbyData
+       (convert this string will use LobbyData strcut order variables defined)
+      */
+      all += lpassword + std::string(MS_DATA_DELIMITER);
+      all += lVoiceChat + std::string(MS_DATA_DELIMITER);
+      all += lTextChat + std::string(MS_DATA_DELIMITER);
+      all += lSpecter + std::string(MS_DATA_DELIMITER);
+      all += lLobbyStatus + std::string(MS_DATA_DELIMITER);
+      all += lShowLobbyOnList + std::string(MS_DATA_DELIMITER);
+      all += std::to_string(lobbyId) + std::string(MS_DATA_DELIMITER);
+      all += lMaxPlayers + std::string(MS_DATA_DELIMITER);
+      all += lCurrentPlayers + std::string(MS_DATA_DELIMITER);
+      all += lGameMode + std::string(MS_DATA_DELIMITER);
+      all += lServerAddress + std::string(MS_DATA_DELIMITER);
+      std::cout << "getlobbyinfo() lobby id="  << lobbyId <<  " data=" << all << std::endl;
+      return all;
   }
 
   std::string FluffyDatabase::getLobbyInfoByOwnerId(const int& ownerId)

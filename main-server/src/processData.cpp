@@ -443,7 +443,7 @@ namespace FluffyMultiplayer
               else
               {
                 std::string lobbyData = db.getLobbyInfo(lobbyId);
-                if(lobbyData.length()>=MS_LOBBY_IP_PORT_MINIMUM_LENGTH)
+                if(lobbyData.length()>=MS_GET_LOBBY_BY_ID_MINIMUM_LENGTH)
                   sendData(MS_RESPONSE_SUCCESS_GET_LOBBY_INFO,socket,receiverEndpoint,lobbyData);
                 else
                   sendData(MS_ERROR_FAILED_TO_GET_LOBBY_INFO_LOBBY_NOT_FOUND,socket,receiverEndpoint);

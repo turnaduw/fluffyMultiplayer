@@ -13,7 +13,7 @@ namespace FluffyMultiplayer
   {
     lobby = selectedLobby;
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
-    std::string lobbyAsText = "------------------------------------------------";
+    lobbyAsText = "------------------------------------------------";
     lobbyAsText += "\nlobby id: " + std::to_string(selectedLobby.id);
     lobbyAsText += "\nlobby maxplayers: " + std::to_string(selectedLobby.maxPlayers);
     lobbyAsText += "\nlobby currentplayers: " + std::to_string(selectedLobby.currentPlayers);
@@ -25,6 +25,78 @@ namespace FluffyMultiplayer
     lobbyAsText += "\nis specter forbidden:" + boolToString(selectedLobby.isSpecterForbidden);
     lobbyAsText += "\nis lobby in-game:" + boolToString(selectedLobby.lobbyStatusInGame);
     lobbyAsText += "\nlobby will show in lobbyList: " + boolToString(selectedLobby.showLobbyInList);
+
+    std::string final=   "state StateShowLobbyDetails\nare you sure to join this lobby?\npress enter to join.\n\nlobby=\n\n" + lobbyAsText;
+    initSimpleText(fontPath,final);
+
+    buttonConfirm.init("Join",200.0,200.0, sf::Color::Black, sf::Color::White, 60,30, 22);
+    buttonCancel.init("Cancel",400.0,200.0, sf::Color::Black, sf::Color::White, 60,30, 22);
+  }
+
+
+
+
+
+  std::vector<int> StateShowLobbyDetails::dataIndexes(const std::string& data, const std::string& delimiter) const
+  {
+    std::vector<int> result;
+    std::string str;
+    str = data;
+
+    int index;
+    for(int i=0; i<data.length(); i++)
+    {
+      if(str.empty())
+        break;
+
+      index = str.find(delimiter);
+      if (index == std::string::npos) //delimiter not found
+        break;
+
+      str = str.substr(index+delimiter.length() ,str.length()-1);
+      result.push_back(index);
+    }
+
+    return result;
+  }
+  std::string StateShowLobbyDetails::dataSeparator(std::string& data, std::string delimiter)
+  {
+    std::string res;
+    std::array<std::string,MS_GET_LOBBY_LIST_LOBBY_FILEDS> result;
+
+    std::vector<int>indexes = dataIndexes(data,delimiter);
+    int index;
+    for(int i=0; i<MS_GET_LOBBY_LIST_LOBBY_FILEDS-1; i++)
+    {
+      index = indexes[i];
+      result[i] = data.substr(0,index);
+      data = data.substr(index+delimiter.length() ,data.length());
+    }
+
+    res = "------------------------------------------------";
+    res += "\nis lobby locked:" +  result[0];
+    res += "\nis voice chat forbidden:" +  result[1];
+    res += "\nis text chat forbidden:" +  result[2];
+    res += "\nis specter forbidden:" +  result[3];
+    res += "\nis lobby in-game:" +  result[4];
+    res += "\nlobby will show in lobbyList: " + result[5];
+    res += "\nlobby id: " + result[6];
+    res += "\nlobby maxplayers: " + result[7];
+    res += "\nlobby currentplayers: " +result[8];
+    res += "\nlobby gameMode: " + result[9];
+    res += "\nlobby address: " + result[10];
+
+    return res;
+  }
+
+
+  StateShowLobbyDetails::StateShowLobbyDetails(std::string selectedLobbyStr)
+  {
+    //convert string to lobby
+    lobbyAsText = dataSeparator(selectedLobbyStr,MC_REQUEST_DELIMITER);
+
+    std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
+
 
     std::string final=   "state StateShowLobbyDetails\nare you sure to join this lobby?\npress enter to join.\n\nlobby=\n\n" + lobbyAsText;
     initSimpleText(fontPath,final);

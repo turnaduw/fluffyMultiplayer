@@ -410,6 +410,16 @@ namespace FluffyMultiplayer
     return re;
   }
 
+  std::string StateWaitForResponse::getLobbyFromResponseData(const std::string& _data,std::string delimiter,std::string closer)
+  {
+    //remove 3 delimtier and closer chars
+    receivedData = receivedData.substr(0, receivedData.length()-3);
+
+    //remove responseCode
+    receivedData = receivedData.substr(MC_DATA_START_AT_INDEX, receivedData.length()-1);
+    return receivedData;
+  }
+
   void StateWaitForResponse::render(sf::RenderWindow& window)
   {
     if(timeoutCounter<=0)
@@ -491,7 +501,7 @@ namespace FluffyMultiplayer
               */
               else if(resultRC == responseCodeAcceptor2 && state3==nullptr && lobbyData_ptr!=nullptr)
               {
-                return new FluffyMultiplayer::StateShowLobbyDetails(*lobbyData_ptr);
+                return new FluffyMultiplayer::StateShowLobbyDetails(getLobbyFromResponseData(receivedData,MC_RESPONSE_DELIMITER,MC_RESPONSE_CLOSER));
               }
 
               else
