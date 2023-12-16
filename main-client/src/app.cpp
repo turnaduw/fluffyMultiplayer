@@ -136,13 +136,11 @@ namespace FluffyMultiplayer
        {
            // Request for closing the window
            if (event.type == sf::Event::Closed)
-               appWindow.close();
+                close();
 
            //notification box buttons
-           if(event.type == sf::Event::MouseButtonPressed)
+           if(event.type == sf::Event::MouseButtonPressed && notificationQueue.size()>=1)
            {
-             if(notificationQueue.size()>=1)
-             {
                mousePosition = appWindow.mapPixelToCoords(sf::Mouse::getPosition(appWindow));
                if(notificationBox.closeButton.getButtonBound().contains(mousePosition))
                {
@@ -158,7 +156,6 @@ namespace FluffyMultiplayer
                  notificationBox.closeBox();
                  notificationQueue.pop();
                }
-             }
            }
 
            //state events
