@@ -44,7 +44,6 @@ namespace FluffyMultiplayer
 
       void init(FluffyMultiplayer::NotificationData data, sf::Vector2u windowSize)
       {
-        std::cout << "init called. code=" << data.code << std::endl;
           notificationData = data;
           boxClosed=false;
           fgColor = sf::Color::White;
