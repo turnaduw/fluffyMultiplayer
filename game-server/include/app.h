@@ -11,9 +11,12 @@
 #include "dataSecurity.h"
 #include "config.h"
 #include "dataBase.h"
+#include "log.h"
+
+#include "gameModes.h"
 
 
-
+#include "lobby-request-response-list.h"
 
 namespace FluffyMultiplayer
 {
@@ -21,6 +24,8 @@ namespace FluffyMultiplayer
   {
     private:
       FluffyMultiplayer::DataBase db;
+      FluffyMultiplayer::Log log;
+      FluffyMultiplayer::DataSecurity ds;
 
       std::queue<FluffyMultiplayer::Player> connectedPlayers;
       std::queue<FluffyMultiplayer::BanList> bannedPlayers;
@@ -34,8 +39,6 @@ namespace FluffyMultiplayer
       //receive and send data.
       FluffyMultiplayer::UdpSocket socketText;
       FluffyMultiplayer::UdpSocket socketVoice;
-      boost::thread threadSend;
-      boost::thread threadReceive;
       boost::asio::io_context io_context_text;
       boost::asio::io_context io_context_voice;
       std::queue<FluffyMultiplayer::SocketReceiveData> receivedTextDataList;
@@ -44,11 +47,20 @@ namespace FluffyMultiplayer
       std::queue<FluffyMultiplayer::SocketSendData> sendTextDataList;
 
 
-    public:
-      App(): socketText(io_context_text, DEFAULT_PORT_TEXT),
-             socketVoice(io_context_voice, DEFAULT_PORT_VOICE)
-      {
+      void sendData();
+      void receiveData();
 
+    public:
+      boost::thread threadSend;
+      boost::thread threadReceive;
+
+      App(FluffyMultiplayer::lobbyData _lobby): socketText(io_context_text, _lobby.textPort),
+             socketVoice(io_context_voice, _lobby.voicePort)
+      {
+          currentGameMode=nullptr;
+          lobbyData = _lobby;
+          threadSend = boost::thread(&FluffyMultiplayer::App::sendData, this);
+          threadReceive = boost::thread(&FluffyMultiplayer::App::receiveData, this);
       }
 
       ~App()
@@ -56,12 +68,11 @@ namespace FluffyMultiplayer
 
       }
 
-      void init(int lobbyId);
+      void init(FluffyMultiplayer::LobbyData);
       void run();
       FluffyMultiplayer::GameMode* process();
 
-      bool checkConnection(FluffyMultiplayer::AnAddress);
-
+      bool checkConnection(const FluffyMultiplayer::AnAddress&);
 
       //convert
       FluffyMultiplayer::TimeAndDate stringToTime(const std::string&);
@@ -82,6 +93,9 @@ namespace FluffyMultiplayer
       bool kickPlayer(FluffyMultiplayer::Player&, const std::string& reason);
       bool banPlayer(FluffyMultiplayer::Player&, const std::string& reason, FluffyMultiplayer::TimeAndDate duration);
       bool playerAsSpecter(FluffyMultiplayer::Player&);
+      bool addPlayerToVoiceChat(); //enalbe his voiceChat
+      bool removePlayerFromVoiceChat(); //disable his voiceChat
+
 
       //lobby
       bool transferLobbyOwnerShip(FluffyMultiplayer::Player& newOwner);

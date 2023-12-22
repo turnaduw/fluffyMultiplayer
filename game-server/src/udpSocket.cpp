@@ -39,18 +39,27 @@ namespace FluffyMultiplayer
     if(!status)
       return;
 
-    for(FluffyMultiplayer::Player receiver : send_data.receivers)
+    for(FluffyMultiplayer::Player receiver : (*send_data.receivers))
     {
-      for(FluffyMultiplayer::Player except: send_data.except)
+      if(if send_data.except != nullptr)
       {
-        if(receiver == except)
-          continue;
-        else
+        for(FluffyMultiplayer::Player except: (*send_data.except))
         {
-          prepareData(send_data.data)
-          udp::endpoint receiverEndpoint(receiver.address.ip, receiver.address.port);
-          socket.send_to(boost::asio::buffer(send_data.data), receiverEndpoint);
+          if(receiver == except) //skip this client
+            continue;
+          else
+          {
+            prepareData(send_data.data);
+            udp::endpoint receiverEndpoint(receiver.address.ip, receiver.address.port);
+            socket.send_to(boost::asio::buffer(send_data.data), receiverEndpoint);
+          }
         }
+      }
+      else //there is no exception send to all
+      {
+        prepareData(send_data.data);
+        udp::endpoint receiverEndpoint(receiver.address.ip, receiver.address.port);
+        socket.send_to(boost::asio::buffer(send_data.data), receiverEndpoint);
       }
     }
   }
@@ -68,7 +77,7 @@ namespace FluffyMultiplayer
   {
     if(!status)
       return 0;
-      
+
     //make tempData empty
     for(int i=0; i<MC_RECEIVE_BUFFER; i++)
       tempData[i] = '\0';

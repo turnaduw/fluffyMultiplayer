@@ -13,6 +13,12 @@ namespace FluffyMultiplayer
       ~DataSecurity();
       void encryptData(std::string&);
       void decryptData(std::string&);
+      bool isSQLCodeIncluded(const std::string&);
+      void removeSQLCodeFromData(std::string&);
+
+
+      //data validation
+      bool isDataValidated();
   };
 }
 

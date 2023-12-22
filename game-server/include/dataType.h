@@ -10,6 +10,18 @@ namespace FluffyMultiplayer
   {
     boost::asio::ip::address ip;
     unsigned short port;
+
+    bool operator ==(const FluffyMultiplayer::AnAddress a)
+    {
+      if(a.ip == ip && a.port == port)
+        return true;
+      return false;
+    }
+    std::string getAsString()
+    {
+      return address.ip.to_string() + ":" + std::to_string(address.port);
+    }
+
   };
 
   struct Player
@@ -19,13 +31,13 @@ namespace FluffyMultiplayer
     std::string name;
     FluffyMultiplayer::AnAddress address;
     FluffyMultiplayer::TimeAndDate connectedTime;
+    bool voiceChatEnable;
 
     bool operator == (const FluffyMultiplayer::Player& p)
     {
       if(p.id==id)
         return true;
-      else
-        return false;
+      return false;
     }
   };
 
@@ -48,8 +60,8 @@ namespace FluffyMultiplayer
   {
     int code;
     std::string data;
-    std::queue<FluffyMultiplayer::Player> receivers;
-    std::queue<FluffyMultiplayer::Player> except;
+    std::queue<FluffyMultiplayer::Player>* receivers;
+    std::queue<FluffyMultiplayer::Player>* except;
   };
 
   struct LobbyData
@@ -65,6 +77,7 @@ namespace FluffyMultiplayer
     std::string password;
     unsigned short textPort;
     unsigned short voicePort;
+    int ownerId;
   };
 
 
