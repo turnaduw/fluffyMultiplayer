@@ -10,6 +10,8 @@
 #include "udpSocket.h"
 #include "dataSecurity.h"
 #include "config.h"
+#include "dataBase.h"
+
 
 
 
@@ -18,6 +20,8 @@ namespace FluffyMultiplayer
   class App
   {
     private:
+      FluffyMultiplayer::DataBase db;
+
       std::queue<FluffyMultiplayer::Player> connectedPlayers;
       std::queue<FluffyMultiplayer::BanList> bannedPlayers;
       std::queue<FluffyMultiplayer::AnAddress> blockedAddresses; //for spam
@@ -47,8 +51,12 @@ namespace FluffyMultiplayer
 
       }
 
-      ~App();
-      void init();
+      ~App()
+      {
+
+      }
+
+      void init(int lobbyId);
       void run();
       FluffyMultiplayer::GameMode* process();
 
