@@ -31,6 +31,7 @@ namespace FluffyMultiplayer
     std::string name;
     FluffyMultiplayer::AnAddress address;
     FluffyMultiplayer::TimeAndDate connectedTime;
+    bool voiceChatEnable;
 
     bool operator == (const FluffyMultiplayer::Player& p)
     {
