@@ -11,4 +11,7 @@
 #define PRINT_LOGS_LEVEL FluffyMultiplayer::LogType::all
 #define LOG_FILE "./gs.log"
 
+
+
+#define MS_RECEIVED_DATA_MINIMUM_LENGTH 1
 #endif

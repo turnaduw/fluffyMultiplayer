@@ -16,6 +16,7 @@
 #include "gameModes.h"
 
 
+#include "lobby-request-response-list.h"
 
 namespace FluffyMultiplayer
 {
@@ -24,6 +25,7 @@ namespace FluffyMultiplayer
     private:
       FluffyMultiplayer::DataBase db;
       FluffyMultiplayer::Log log;
+      FluffyMultiplayer::DataSecurity ds;
 
       std::queue<FluffyMultiplayer::Player> connectedPlayers;
       std::queue<FluffyMultiplayer::BanList> bannedPlayers;
@@ -70,8 +72,7 @@ namespace FluffyMultiplayer
       void run();
       FluffyMultiplayer::GameMode* process();
 
-      bool checkConnection(FluffyMultiplayer::AnAddress);
-
+      bool checkConnection(const FluffyMultiplayer::AnAddress&);
 
       //convert
       FluffyMultiplayer::TimeAndDate stringToTime(const std::string&);
@@ -92,6 +93,9 @@ namespace FluffyMultiplayer
       bool kickPlayer(FluffyMultiplayer::Player&, const std::string& reason);
       bool banPlayer(FluffyMultiplayer::Player&, const std::string& reason, FluffyMultiplayer::TimeAndDate duration);
       bool playerAsSpecter(FluffyMultiplayer::Player&);
+      bool addPlayerToVoiceChat(); //enalbe his voiceChat
+      bool removePlayerFromVoiceChat(); //disable his voiceChat
+
 
       //lobby
       bool transferLobbyOwnerShip(FluffyMultiplayer::Player& newOwner);
