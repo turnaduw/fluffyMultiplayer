@@ -29,7 +29,10 @@ namespace FluffyMultiplayer
         socket.non_blocking(true);
         port = default_port;
       }
-      ~UdpSocket();
+      ~UdpSocket()
+      {
+        
+      }
 
       //update status socket
       void enable();

@@ -19,6 +19,14 @@ namespace FluffyMultiplayer
     std::string name;
     FluffyMultiplayer::AnAddress address;
     FluffyMultiplayer::TimeAndDate connectedTime;
+
+    bool operator == (const FluffyMultiplayer::Player& p)
+    {
+      if(p.id==id)
+        return true;
+      else
+        return false;
+    }
   };
 
   struct BanList
