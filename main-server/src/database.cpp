@@ -52,9 +52,9 @@ namespace FluffyMultiplayer
 
     auto insertLobby = [this] (int i, std::string gm, std::string players, std::string pass,
              std::string ownerid,  std::string textchat,  std::string voicechat,  std::string specter,
-             std::string ipadd,  std::string portadd, std::string showOnlist, std::string lobbyStatus)
+             std::string ipadd,  std::string portadd, std::string voice_port, std::string showOnlist, std::string lobbyStatus)
     {
-      std::string test_query = "INSERT INTO fm_lobby (gameMode,maxPlayers,password,owner,textChatForbidden,voiceChatForbidden,specterForbidden,server_ip,server_port,showLobbyOnList,lobbyStatus) VALUES('";
+      std::string test_query = "INSERT INTO fm_lobby (gameMode,maxPlayers,password,owner,textChatForbidden,voiceChatForbidden,specterForbidden,server_ip,server_port,server_voice_port,showLobbyOnList,lobbyStatus) VALUES('";
       test_query += gm + "', '";
       test_query += players + "', '";
       test_query += pass + "', '";
@@ -64,6 +64,7 @@ namespace FluffyMultiplayer
       test_query += specter + "', '";
       test_query += ipadd + "', '";
       test_query += portadd + "', '";
+      test_query += voice_port + "', '";
       test_query += showOnlist + "', '";
       test_query += lobbyStatus + "');";
       if(query_to_db(test_query))
@@ -82,16 +83,16 @@ namespace FluffyMultiplayer
         std::cout << "[FAILED] lobby " << i << " (owner:" << ownerid << ", password:" << pass <<") to add.\n";
       };
 
-      insertLobby(1, "0", "10", "lobby1", "1", "0", "0" , "0", "127.0.0.1", "8888", "1", "0");
-      insertLobby(2, "1", "2", "lobby2", "2", "0", "1" , "0", "127.0.0.2", "8888", "1", "1");
-      insertLobby(3, "2", "6", "lobby3", "3", "0", "0" , "1", "127.0.0.3", "8888", "0", "0");
-      insertLobby(4, "1", "2", "lobby4", "4", "1", "1" , "0", "127.0.0.4", "8888", "1", "1");
-      insertLobby(5, "0", "3", "lobby5", "5", "0", "0" , "0", "127.0.0.5", "8888", "0", "1");
-      insertLobby(6, "0", "5", "", "6", "1", "1" , "1", "127.0.0.6", "8888", "1", "0");
-      insertLobby(7, "0", "10", "lobby7", "7", "1", "0" , "1", "127.0.0.7", "8888", "1", "0");
-      insertLobby(8, "1", "8", "lobby8", "8", "0", "1" , "0", "127.0.0.8", "8888", "1", "1");
-      insertLobby(9, "2", "10", "lobby9", "9", "0", "0" , "1", "127.0.0.9", "8888", "1", "0");
-      insertLobby(10, "2", "1", "lobby10", "10", "1", "0" , "0", "127.0.0.10", "8888", "1", "0");
+      insertLobby(1, "0", "10", "lobby1", "1", "0", "0" , "0", "127.0.0.1", "7777", "9999", "1", "0");
+      insertLobby(2, "1", "2", "lobby2", "2", "0", "1" , "0", "127.0.0.2", "7777", "9999", "1", "1");
+      insertLobby(3, "2", "6", "lobby3", "3", "0", "0" , "1", "127.0.0.3", "7777", "9999", "0", "0");
+      insertLobby(4, "1", "2", "lobby4", "4", "1", "1" , "0", "127.0.0.4", "7777", "9999", "1", "1");
+      insertLobby(5, "0", "3", "lobby5", "5", "0", "0" , "0", "127.0.0.5", "7777", "9999", "0", "1");
+      insertLobby(6, "0", "5", "", "6", "1", "1" , "1", "127.0.0.6", "7777", "9999", "1", "0");
+      insertLobby(7, "0", "10", "lobby7", "7", "1", "0" , "1", "127.0.0.7", "7777", "9999", "1", "0");
+      insertLobby(8, "1", "8", "lobby8", "8", "0", "1" , "0", "127.0.0.8", "7777", "9999", "1", "1");
+      insertLobby(9, "2", "10", "lobby9", "9", "0", "0" , "1", "127.0.0.9", "7777", "9999", "1", "0");
+      insertLobby(10, "2", "1", "lobby10", "10", "1", "0" , "0", "127.0.0.10", "7777", "9999", "1", "0");
 
     std::cout << "test data insertation finished." << std::endl;
   }
@@ -150,6 +151,7 @@ namespace FluffyMultiplayer
                              "id INTEGER PRIMARY KEY AUTOINCREMENT," //AUTOINCREMENT
                              "server_ip TEXT NOT NULL,"
                              "server_port TEXT NOT NULL,"
+                             "server_voice_port TEXT NOT NULL,"
                              "password TEXT," //not null or e default password
                              "gameMode INTEGER DEFAULT 1,"
                              "maxPlayers INTEGER DEFAULT 4,"
