@@ -37,6 +37,8 @@ namespace FluffyMultiplayer
     public:
       void print(std::string, FluffyMultiplayer::LogType);
 
+      void init(std::string, FluffyMultiplayer::LogType);
+      void close();
       Log();
       ~Log();
   };

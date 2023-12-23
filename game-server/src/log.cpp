@@ -51,8 +51,13 @@ namespace FluffyMultiplayer
 
   Log::Log()
   {
-    levelPrintOnConsole = PRINT_LOGS_LEVEL;
-    filename = LOG_FILE;
+
+  }
+
+  void Log::init(std::string file, FluffyMultiplayer::LogType level)
+  {
+    levelPrintOnConsole = level;
+    filename = file;
     try
     {
       file.open (filename, std::ofstream::out | std::ofstream::app);
@@ -63,7 +68,7 @@ namespace FluffyMultiplayer
     }
   }
 
-  Log::~Log()
+  void Log::close()
   {
     try
     {
@@ -76,6 +81,11 @@ namespace FluffyMultiplayer
     {
       std::cout << "could not close log file." << std::endl;
     }
+  }
+
+  Log::~Log()
+  {
+
   }
 
 

@@ -65,7 +65,7 @@ namespace FluffyMultiplayer
 
       ~App()
       {
-
+        log.close();
       }
 
       void init(FluffyMultiplayer::LobbyData);

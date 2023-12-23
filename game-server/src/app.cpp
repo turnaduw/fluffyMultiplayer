@@ -5,6 +5,7 @@ namespace FluffyMultiplayer
 
   void App::init()
   {
+    log.init(LOG_FILE,PRINT_LOGS_LEVEL);
     switch (lobbyData.gameMode)
     {
       case 1:
