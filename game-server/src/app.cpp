@@ -81,17 +81,7 @@ namespace FluffyMultiplayer
 
             }break;
 
-            case REQUEST_ENTERED_LOBBY_PASSWORD:
-            {
-
-            }break;
-
-            case REQUEST_SEND_TEXT_CHAT:
-            {
-
-            }break;
-
-            case REQUEST_SEND_VOICE_CHAT:
+            case REQUEST_JOIN_TO_LOBBY:
             {
 
             }break;
@@ -102,11 +92,6 @@ namespace FluffyMultiplayer
             }break;
 
             case REQUEST_UPDATE_LOBBY_SETTINGS:
-            {
-
-            }break;
-
-            case REQUEST_GET_LOBBY_INFO:
             {
 
             }break;
@@ -141,6 +126,16 @@ namespace FluffyMultiplayer
 
             }break;
 
+            case REQUEST_SEND_TEXT_CHAT:
+            {
+
+            }break;
+
+            case REQUEST_SEND_VOICE_CHAT:
+            {
+
+            }break;
+
             case REQUEST_ENABLE_VOICE_CHAT:
             {
 
@@ -150,7 +145,6 @@ namespace FluffyMultiplayer
             {
 
             }break;
-
 
             default:
             {
