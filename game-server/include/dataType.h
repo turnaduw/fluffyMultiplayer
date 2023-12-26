@@ -65,6 +65,12 @@ namespace FluffyMultiplayer
     int code;
     std::string data;
     FluffyMultiplayer::AnAddress sender;
+    void set(int c, std::string d, FluffyMultiplayer::AnAddress s)
+    {
+      code = c;
+      data = d;
+      sender = s;
+    }
   };
 
   struct SocketSendData
@@ -73,6 +79,15 @@ namespace FluffyMultiplayer
     std::string data;
     std::queue<FluffyMultiplayer::Player>* receivers;
     std::queue<FluffyMultiplayer::Player>* except;
+    void set(int c, std::string d,
+            std::queue<FluffyMultiplayer::Player>* r,
+            std::queue<FluffyMultiplayer::Player>* e)
+    {
+      code = c;
+      data = d;
+      receivers=r;
+      except=e;
+    }
   };
 
   struct LobbyData
