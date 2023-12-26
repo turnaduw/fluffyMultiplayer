@@ -24,6 +24,17 @@ namespace FluffyMultiplayer
 
   };
 
+  struct TimeAndDate
+  {
+    int year;
+    int month;
+    int day;
+    int hour;
+    int minute;
+    int second;
+  };
+
+
   struct Player
   {
     int id;
@@ -79,19 +90,6 @@ namespace FluffyMultiplayer
     unsigned short voicePort;
     int ownerId;
   };
-
-
-
-  struct TimeAndDate
-  {
-    int year;
-    int month;
-    int day;
-    int hour;
-    int minute;
-    int second;
-  };
-
 }
 
 #endif

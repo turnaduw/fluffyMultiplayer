@@ -41,7 +41,7 @@ namespace FluffyMultiplayer
 
     for(FluffyMultiplayer::Player receiver : (*send_data.receivers))
     {
-      if(if send_data.except != nullptr)
+      if(send_data.except != nullptr)
       {
         for(FluffyMultiplayer::Player except: (*send_data.except))
         {

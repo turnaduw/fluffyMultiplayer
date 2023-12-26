@@ -63,7 +63,7 @@ namespace FluffyMultiplayer
 
       GameModeMensch()
       {
-        gamModeId = 1;
+        gameModeId = 1;
         gs = nullptr;
       }
       ~GameModeMensch();
