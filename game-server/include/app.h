@@ -107,6 +107,7 @@ namespace FluffyMultiplayer
       bool checkEnteredPassword(const std::string&) const;
       bool textChat(const std::string&) const;
       bool voiceChat(const std::string&) const;
+      void updatePlayerVoiceChatStatus(const int&, bool);
       bool kickPlayer(FluffyMultiplayer::Player&, const std::string& reason);
       bool banPlayer(FluffyMultiplayer::Player&, const std::string& reason, FluffyMultiplayer::TimeAndDate duration);
       // bool unbanPlayer();
@@ -120,7 +121,7 @@ namespace FluffyMultiplayer
       bool isPlayerIdExistsOnLobby(const int&) const;
       bool doesItHavePermission(const FluffyMultiplayer::AnAddress&);
       FluffyMultiplayer::AnAddress getPlayerAddressById(const int&) const;
-      int App::getSenderId(const FluffyMultiplayer::AnAddress&) const;
+      int getSenderId(const FluffyMultiplayer::AnAddress&) const;
 
       //lobby
       bool transferLobbyOwnerShip(FluffyMultiplayer::Player& newOwner);

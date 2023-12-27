@@ -153,6 +153,13 @@ namespace FluffyMultiplayer
     return result; //i guess if not found will return an 0.0.0.0 with a random port
   }
 
+  void updatePlayerVoiceChatStatus(const int& id, bool status)
+  {
+    for(auto e: inLobbyPlayers)
+      if(e.id == id)
+        e.voiceChatEnable=status;
+  }
+
   void App::processText()
   {
     FluffyMultiplayer::SocketReceiveData currentItem;
@@ -393,16 +400,22 @@ namespace FluffyMultiplayer
             case REQUEST_UPDATE_LOBBY_SETTINGS:
             /*
                 client will send: [0]->(maxPlayers), [1]->gameMode,
-                                  [2]->currentPlayers, [3]->isVoiceChatForbidden
-                                  [4]->isTextChatForbidden, [5]->isSpecterForbidden,
-                                  [6]->password, [7]->ownerId
+                                  [2]->isVoiceChatForbidden
+                                  [3]->isTextChatForbidden, [4]->isSpecterForbidden,
+                                  [5]->password, [6]->ownerId
             */
             {
               if(doesItHavePermission(currentItem.sender))
               {
                 //apply received changes into lobby
-                jiogjotrjhiotrjiohjtrhjitrjhiotrj//........................................................................
-
+                lobbyData.maxPlayers = stringToInt(cData[0]);
+                lobbyData.gameMode = stringToInt(cData[1]);
+                lobbyData.isVoiceChatForbidden = stringToBool(cData[2]);
+                lobbyData.isTextChatForbidden = stringToBool(cData[3]);
+                lobbyData.isSpecterForbidden = stringToBool(cData[4]);
+                lobbyData.password = cData[5];
+                lobbyData.ownerId = stringToInt(cData[6]);
+                log.print("lobby settings updated "+lobbyData.getAsStringForOwner(), FluffyMultiplayer::LogType::Information);
 
 
                 //broadcast lobby setting changes to in lobby
@@ -628,9 +641,53 @@ namespace FluffyMultiplayer
             }
             }break;
 
-            case REQUEST_TRANSFER_LOBBY_OWNERSHIP: //client will send (targetId)
+            case REQUEST_TRANSFER_LOBBY_OWNERSHIP: //client will send: [0]->(targetId)
             {
+              if(doesItHavePermission(currentItem.sender))
+              {
+                int targetId=stringToInt(cData[0]);
+                if(isPlayerIdExistsOnLobby(targetId))
+                {
+                  db.queryStr = "UPDATE fm_lobby SET owner='";
+                  db.queryStr+= std::to_string(targetId) + "' WHERE id='";
+                  db.queryStr+= std::to_string(lobbyData.id) + "';";
+                  if(db.query_to_db())
+                  {
+                    lobbyData.ownerId=targetId;
 
+                    log.print("lobby owner changed to ("+std::to_string(targetId), FluffyMultiplayer::LogType::Information);
+
+                    std::string response = std::to_string(targetId) + std::to_string(MS_DATA_DELIMITER);
+
+                    //broadcast to inLobbyPlayers, player has been kicked from lobby
+                    sendTemp.set(REQUEST_TRANSFER_LOBBY_OWNERSHIP,response,&inLobbyPlayers,nullptr);
+                    sendTextDataList.push(sendTemp);
+
+                    //broadcast to specters, player has been kicked from lobby
+                    if(lobbySpecters.size()>=1)
+                    {
+                      sendTemp.set(REQUEST_TRANSFER_LOBBY_OWNERSHIP,response,&lobbySpecters,nullptr);
+                      sendTextDataList.push(sendTemp);
+                    }
+                  }
+                  else
+                  {
+                    sendTemp.set(RESPONSE_INTERNAL_ERROR_FAILED_TO_TRANSFER_LOBBY_OWNERSHIP,currentItem.sender);
+                    sendTextDataList.push(sendTemp);
+                  }
+                }
+                else
+                {
+                  sendTemp.set(RESPONSE_ERROR_TRANSFER_OWNERSHIP_INVALID_TARGET,currentItem.sender);
+                  sendTextDataList.push(sendTemp);
+                }
+
+              }
+              else
+              {
+                sendTemp.set(RESPONSE_ERROR_TRANSFER_OWNERSHIP_NO_PERMISSION,currentItem.sender);
+                sendTextDataList.push(sendTemp);
+              }
             }break;
 
             case REQUEST_SEND_TEXT_CHAT: //client will send: [0]->(messageText)
@@ -662,11 +719,43 @@ namespace FluffyMultiplayer
 
             case REQUEST_ENABLE_VOICE_CHAT:
             {
+              int cid = getSenderId(currentItem.sender);
+              if(cid>=1)
+                updatePlayerVoiceChatStatus(cid,true);
+
+                std::string response = std::to_string(cid) + std::to_string(MS_DATA_DELIMITER); //later can write reason and ban time to tell other clients
+
+                //broadcast to inLobbyPlayers, player has been kicked from lobby
+                sendTemp.set(RESPONSE_PLAYER_VOICE_CHAT_ENABLED,response,&inLobbyPlayers,nullptr);
+                sendTextDataList.push(sendTemp);
+
+                //broadcast to specters, player has been kicked from lobby
+                if(lobbySpecters.size()>=1)
+                {
+                  sendTemp.set(RESPONSE_PLAYER_VOICE_CHAT_ENABLED,response,&lobbySpecters,nullptr);
+                  sendTextDataList.push(sendTemp);
+                }
 
             }break;
 
             case REQUEST_DISABLE_VOICE_CHAT:
             {
+              int cid = getSenderId(currentItem.sender);
+              if(cid>=1)
+                updatePlayerVoiceChatStatus(cid,false);
+
+                std::string response = std::to_string(cid) + std::to_string(MS_DATA_DELIMITER); //later can write reason and ban time to tell other clients
+
+                //broadcast to inLobbyPlayers, player has been kicked from lobby
+                sendTemp.set(RESPONSE_PLAYER_VOICE_CHAT_DISABLED,response,&inLobbyPlayers,nullptr);
+                sendTextDataList.push(sendTemp);
+
+                //broadcast to specters, player has been kicked from lobby
+                if(lobbySpecters.size()>=1)
+                {
+                  sendTemp.set(RESPONSE_PLAYER_VOICE_CHAT_DISABLED,response,&lobbySpecters,nullptr);
+                  sendTextDataList.push(sendTemp);
+                }
 
             }break;
 
