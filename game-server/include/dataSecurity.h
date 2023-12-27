@@ -19,6 +19,7 @@ namespace FluffyMultiplayer
 
       //data validation
       bool isDataValidated();
+      bool isIdentityValid(const std::string&);
   };
 }
 

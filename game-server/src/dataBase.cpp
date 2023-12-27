@@ -104,7 +104,7 @@ namespace FluffyMultiplayer
     //--------------------
     bool DataBase::query_to_db(const std::string& _q)
     {
-          bool result;
+          bool result=false;
           char* final_query = new char[_q.length()+1];
           std::strcpy(final_query, _q.c_str());
 

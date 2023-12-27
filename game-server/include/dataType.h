@@ -3,6 +3,7 @@
 
 #include <boost/asio.hpp>
 #include <string>
+#include "config.h"
 
 namespace FluffyMultiplayer
 {
@@ -33,7 +34,7 @@ namespace FluffyMultiplayer
     int minute;
     int second;
 
-    TimeAndDate now()
+    FluffyMultiplayer::TimeAndDate now()
     {
       // Get current time
       time_t now = time(0);
@@ -48,7 +49,8 @@ namespace FluffyMultiplayer
   {
     int id;
     std::string identity;
-    std::string name;
+    std::string name; //same username
+    bool isAdmin;
     FluffyMultiplayer::AnAddress address;
     FluffyMultiplayer::TimeAndDate connectedTime;
     bool voiceChatEnable;
@@ -63,13 +65,15 @@ namespace FluffyMultiplayer
     void set(int _id,
         std::string _identity,
         FluffyMultiplayer::AnAddress _address,
-        std::string _name="?name?",
-        bool _voiceChatEnable=false,
+        std::string _name=DEFAULT_PLAYER_NAME,
+        bool _isAdmin=false,
+        bool _voiceChatEnable=DEFAULT_PLAYER_VOICE_ENABLE,
         FluffyMultiplayer::TimeAndDate _connectedTime=FluffyMultiplayer::TimeAndDate::now())
     {
       id=_id;
       identity=_identity;
       name=_name;
+      isAdmin=_isAdmin;
       address=_address;
       connectedTime=_connectedTime;
       voiceChatEnable=_voiceChatEnable;

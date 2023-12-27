@@ -24,15 +24,17 @@ namespace FluffyMultiplayer
   {
     private:
       FluffyMultiplayer::DataBase db;
+      std::string dbQueryStr;
+
       FluffyMultiplayer::Log log;
       FluffyMultiplayer::DataSecurity ds;
 
-      std::queue<FluffyMultiplayer::Player> connectedPlayers;
+      std::queue<FluffyMultiplayer::AnAddress> connectedPlayers;
       std::queue<FluffyMultiplayer::BanList> bannedPlayers;
       std::queue<FluffyMultiplayer::AnAddress> blockedAddresses; //for spam
-
-      std::queue<FluffyMultiplayer::Player> inGamePlayers;
+      std::queue<FluffyMultiplayer::Player> inLobbyPlayers;
       std::queue<FluffyMultiplayer::Player> lobbySpecters;
+
       FluffyMultiplayer::LobbyData lobbyData;
       FluffyMultiplayer::GameMode* currentGameMode;
 
@@ -46,9 +48,20 @@ namespace FluffyMultiplayer
       std::queue<FluffyMultiplayer::SocketSendData> sendVoiceDataList;
       std::queue<FluffyMultiplayer::SocketSendData> sendTextDataList;
 
+      /*to avoid create every time an object from type
+        e.g: SocketSendData while want push into queue<SocketSendData> create once here*/
+      FluffyMultiplayer::SocketSendData sendTemp;
+      FluffyMultiplayer::SocketReceiveData receiveTemp;
+      FluffyMultiplayer::Player tempPlayer;
+
 
       void sendData();
       void receiveData();
+
+      //data splitters
+      std::vector<int> dataIndexes(const std::string& data, const std::string& delimiter) const;
+      std::vector<std::string> dataSeparator(const std::string& data, std::string delimiter, int startIndex);
+      FluffyMultiplayer::SocketReceiveData unpackData(std::string&); //remove request code and last delimiter and closer from received data
 
     public:
       boost::thread threadSend;
@@ -71,8 +84,13 @@ namespace FluffyMultiplayer
       void init(FluffyMultiplayer::LobbyData);
       void run();
       FluffyMultiplayer::GameMode* process();
+      FluffyMultiplayer::GameMode* processVoice();
+      FluffyMultiplayer::GameMode* processText();
 
-      bool checkConnection(const FluffyMultiplayer::AnAddress&);
+
+      //connection
+      bool isConnectionExists(const FluffyMultiplayer::AnAddress&);
+      bool isConnectionBlocked(const FluffyMultiplayer::AnAddress&);
 
       //convert
       FluffyMultiplayer::TimeAndDate stringToTime(const std::string&);
@@ -84,9 +102,10 @@ namespace FluffyMultiplayer
 
 
       //player
-      bool connectPlayer(FluffyMultiplayer::Player&);
+      bool connectPlayer(FluffyMultiplayer::AnAddress&);
+      bool reconnectPlayer(FluffyMultiplayer::AnAddress&);
       bool disconnectPlayer(FluffyMultiplayer::Player&);
-      bool reconnectPlayer(FluffyMultiplayer::Player&);
+      bool joinPlayerInLobby(FluffyMultiplayer::Player&);
       bool checkEnteredPassword(const std::string&);
       bool textChat(const std::string&);
       bool voiceChat(const std::string&);
@@ -95,13 +114,12 @@ namespace FluffyMultiplayer
       bool playerAsSpecter(FluffyMultiplayer::Player&);
       bool addPlayerToVoiceChat(); //enalbe his voiceChat
       bool removePlayerFromVoiceChat(); //disable his voiceChat
-
+      bool isIdBannedFromLobby(const int&);
 
       //lobby
       bool transferLobbyOwnerShip(FluffyMultiplayer::Player& newOwner);
       std::string getLobbySettings();
       bool updateLobby(FluffyMultiplayer::LobbyData);
-      std::string lobbyInfo(); //will report lobby players and details for first time to connected player
       bool startGame();
       bool stopGame();
       bool deleteLobby();

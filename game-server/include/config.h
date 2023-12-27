@@ -14,4 +14,11 @@
 
 
 #define MS_RECEIVED_DATA_MINIMUM_LENGTH 1
+#define MS_DATA_DELIMITER ",&"
+#define MS_REQUEST_CLOSER "~"
+
+
+#define DEFAULT_PLAYER_NAME "?player?"
+#define DEFAULT_PLAYER_VOICE_ENABLE false
+
 #endif
