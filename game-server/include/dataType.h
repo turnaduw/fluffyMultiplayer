@@ -9,6 +9,11 @@ namespace FluffyMultiplayer
 {
   struct AnAddress
   {
+    AnAddress()
+    {
+
+    }
+
     boost::asio::ip::address ip;
     unsigned short port;
 
@@ -82,10 +87,10 @@ namespace FluffyMultiplayer
 
   struct BanList
   {
-    std::string id;
+    int id;
     FluffyMultiplayer::AnAddress address;
     FluffyMultiplayer::TimeAndDate bannedTime;
-    FluffyMultiplayer::TimeAndDate banDuration;
+    int banDuration;
   };
 
   struct SocketReceiveData
@@ -134,6 +139,15 @@ namespace FluffyMultiplayer
     {
       code = c;
       data = d;
+      receivers=r;
+      except=e;
+    }
+    void set(int c,
+            const std::queue<FluffyMultiplayer::Player>* r,
+            const std::queue<FluffyMultiplayer::Player>* e)
+    {
+      code = c;
+      data = "";
       receivers=r;
       except=e;
     }

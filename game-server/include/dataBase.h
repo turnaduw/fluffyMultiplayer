@@ -18,6 +18,7 @@ namespace FluffyMultiplayer
       void printTime(std::string, const FluffyMultiplayer::TimeAndDate&);
 
     public:
+      std::string queryStr; //to avoid define every time when want call dbQueryStr
       DataBase()
       {
 
@@ -35,6 +36,8 @@ namespace FluffyMultiplayer
       bool isExists_in_db(std::string& _q, int lengthField);
 
       bool query_to_db(const std::string&);
+      bool query_to_db();
+
   };
 }
 

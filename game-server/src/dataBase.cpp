@@ -102,6 +102,10 @@ namespace FluffyMultiplayer
     }
 
     //--------------------
+    bool DataBase::query_to_db()
+    {
+      return query_to_db(queryStr);
+    }
     bool DataBase::query_to_db(const std::string& _q)
     {
           bool result=false;

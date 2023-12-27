@@ -2,7 +2,6 @@
 #define GM_MENSCH
 
 #include "../gameMode.h"
-#include "../dataType.h"
 
 #define MENSCH_PLAYERS_COUNT 4
 
@@ -56,7 +55,12 @@ namespace FluffyMultiplayer
       std::array<MenschPlayer,MENSCH_PLAYERS_COUNT> players;
       MenschBoard mboard;
     public:
-      FluffyMultiplayer::GameMode* process(FluffyMultiplayer::SocketReceiveData) override;
+      FluffyMultiplayer::GameMode* process(FluffyMultiplayer::SocketReceiveData& currentItem,
+                                                   FluffyMultiplayer::SocketSendData& tempSend,
+                                                   FluffyMultiplayer::Player& tempPlayer,
+                                                   std::queue<FluffyMultiplayer::SocketSendData>& sendTextDataList,
+                                                   FluffyMultiplayer::Log& log,
+                                                   FluffyMultiplayer::DataBase& db) override;
       void roleDice();
       void nowTurn();
       void movePiece();
