@@ -89,16 +89,16 @@ namespace FluffyMultiplayer
 
 
       //connection
-      bool isConnectionExists(const FluffyMultiplayer::AnAddress&);
-      bool isConnectionBlocked(const FluffyMultiplayer::AnAddress&);
+      bool isConnectionExists(const FluffyMultiplayer::AnAddress&) const;
+      bool isConnectionBlocked(const FluffyMultiplayer::AnAddress&) const;
 
       //convert
-      FluffyMultiplayer::TimeAndDate stringToTime(const std::string&);
-      FluffyMultiplayer::Player stringToPlayer(const std::string&);
-      FluffyMultiplayer::LobbyData stringToLobbyData(const std::string&);
-      FluffyMultiplayer::AnAddress stringToAnAddress(const std::string&);
-      int stringToInt(const std::string&);
-      bool stringToBool(const std::string&);
+      FluffyMultiplayer::TimeAndDate stringToTime(const std::string&) const;
+      FluffyMultiplayer::Player stringToPlayer(const std::string&) const;
+      FluffyMultiplayer::LobbyData stringToLobbyData(const std::string&) const;
+      FluffyMultiplayer::AnAddress stringToAnAddress(const std::string&) const;
+      int stringToInt(const std::string&) const;
+      bool stringToBool(const std::string&) const;
 
 
       //player
@@ -106,15 +106,20 @@ namespace FluffyMultiplayer
       bool reconnectPlayer(FluffyMultiplayer::AnAddress&);
       bool disconnectPlayer(FluffyMultiplayer::Player&);
       bool joinPlayerInLobby(FluffyMultiplayer::Player&);
-      bool checkEnteredPassword(const std::string&);
-      bool textChat(const std::string&);
-      bool voiceChat(const std::string&);
+      bool checkEnteredPassword(const std::string&) const;
+      bool textChat(const std::string&) const;
+      bool voiceChat(const std::string&) const;
       bool kickPlayer(FluffyMultiplayer::Player&, const std::string& reason);
       bool banPlayer(FluffyMultiplayer::Player&, const std::string& reason, FluffyMultiplayer::TimeAndDate duration);
       bool playerAsSpecter(FluffyMultiplayer::Player&);
       bool addPlayerToVoiceChat(); //enalbe his voiceChat
       bool removePlayerFromVoiceChat(); //disable his voiceChat
-      bool isIdBannedFromLobby(const int&);
+      bool isIdBannedFromLobby(const int&) const;
+      bool isInLobby(const FluffyMultiplayer::Player&) const;
+      int getIndexPlayerInLobbyByAddress(const FluffyMultiplayer::AnAddress&) const;
+      std::string getPlayerUsernameById(const int&) const;
+      bool isPlayerIdExistsOnLobby(const int&) const;
+      bool doesItHavePermission(const FluffyMultiplayer::AnAddress&);
 
       //lobby
       bool transferLobbyOwnerShip(FluffyMultiplayer::Player& newOwner);

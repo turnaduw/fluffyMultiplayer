@@ -21,4 +21,5 @@
 #define DEFAULT_PLAYER_NAME "?player?"
 #define DEFAULT_PLAYER_VOICE_ENABLE false
 
+#define LOBBY_MINIMUM_PASSWORD_LENGTH 1
 #endif

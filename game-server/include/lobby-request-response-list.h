@@ -45,6 +45,7 @@
 #define RESPONSE_PLAYER_CONNECTION_LOST // to all
 #define RESPONSE_LOBBY_DELETED //to all
 #define RESPONSE_LOBBY_SETTINGS_UPDATED //to all
+#define RESPONSE_LOBBY_SETTINGS_IS
 #define RESPONSE_LOBBY_OWNER_CHANGED //to all
 
 // = = = errors 301 (to sender)

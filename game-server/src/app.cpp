@@ -74,6 +74,56 @@ namespace FluffyMultiplayer
   }
 
 
+  std::string getPlayerUsernameById(const int& _id)
+  {
+    for(auto e: inLobbyPlayers)
+    {
+      if(e.id == _id)
+        return e.name;
+    }
+    return "";
+  }
+
+
+  int getIndexPlayerInLobbyByAddress(const FluffyMultiplayer::AnAddress& ad) const
+  {
+    for(int i=0; i<inLobbyPlayers.size(); i++)
+    {
+      if(inLobbyPlayers[i].address == ad)
+        return i;
+    }
+    return -1;
+  }
+  bool isPlayerIdExistsOnLobby(const int& id)
+  {
+    for(auto e: inLobbyPlayers)
+      if(e.id == id)
+        return true;
+    return false;
+  }
+
+  int getSenderId(const FluffyMultiplayer::AnAddress& ad)
+  {
+    int index=getIndexPlayerInLobbyByAddress(ad);
+    if(index>=0)
+    {
+      int id=inLobbyPlayers[index].id;
+      if(isPlayerIdExistsOnLobby(id))
+        return id;
+    }
+    return -1;
+  }
+
+  bool doesItHavePermission(const FluffyMultiplayer::AnAddress& sender)
+  {
+    int id=getSenderId(currentItem.sender);
+    if(id>=1)
+      if(inLobbyPlayers[id].isAdmin || id == lobbyData.ownerId)
+        return true;
+    return false;
+  }
+
+
   FluffyMultiplayer::GameMode* App::processText()
   {
     FluffyMultiplayer::SocketReceiveData currentItem;
@@ -94,7 +144,7 @@ namespace FluffyMultiplayer
       //check connection blocked
       if(isConnectionBlocked(currentItem.sender))
       {
-        sendTemp.set(RESPONSE_ERROR_CONNECTION_BLOCKED,"",currentItem.sender); //maybe later return blocked time to client
+        sendTemp.set(RESPONSE_ERROR_CONNECTION_BLOCKED,currentItem.sender); //maybe later return blocked time to client
         sendTextDataList.push(sendTemp);
       }
       else if(!isConnectionExists(currentItem.sender))
@@ -109,12 +159,12 @@ namespace FluffyMultiplayer
           //add to connected list
           if(connectPlayer(currentItem.sender))
           {
-            sendTemp.set(RESPONSE_CONNECTION_ACCEPTED,"",currentItem.sender);
+            sendTemp.set(RESPONSE_CONNECTION_ACCEPTED,currentItem.sender);
             sendTextDataList.push(sendTemp);
           }
           else
           {
-            sendTemp.set(RESPONSE_INTERNAL_ERROR_FAILED_TO_CONNECT,"",currentItem.sender);
+            sendTemp.set(RESPONSE_INTERNAL_ERROR_FAILED_TO_CONNECT,currentItem.sender);
             sendTextDataList.push(sendTemp);
           }
         }
@@ -130,7 +180,7 @@ namespace FluffyMultiplayer
         }
         else
         {
-          sendTemp.set(RESPONSE_ERROR_CONNECTION_NOT_EXISTS,"",currentItem.sender);
+          sendTemp.set(RESPONSE_ERROR_CONNECTION_NOT_EXISTS,currentItem.sender);
           sendTextDataList.push(sendTemp);
         }
       }
@@ -155,14 +205,14 @@ namespace FluffyMultiplayer
           {
             case REQUEST_CONNECT_TO_LOBBY:
             {
-              sendTemp.set(RESPONSE_ERROR_CONNECTION_EXISTS,"",currentItem.sender);
+              sendTemp.set(RESPONSE_ERROR_CONNECTION_EXISTS,currentItem.sender);
               sendTextDataList.push(sendTemp);
             }break;
 
             case REQUEST_RECONNECT_TO_LOBBY:
             {
               //that ip and port have not exists while player want reconnect
-              sendTemp.set(RESPONSE_ERROR_CONNECTION_EXISTS,"",currentItem.sender);
+              sendTemp.set(RESPONSE_ERROR_CONNECTION_EXISTS,currentItem.sender);
               sendTextDataList.push(sendTemp);
             }break;
 
@@ -202,7 +252,7 @@ namespace FluffyMultiplayer
                     //check for ban by id
                     if(isIdBannedFromLobby(tempPlayer.id))
                     {
-                      sendTemp.set(RESPONSE_ERROR_JOIN_LOBBY_YOU_ARE_BANNED,"",currentItem.sender);
+                      sendTemp.set(RESPONSE_ERROR_JOIN_LOBBY_YOU_ARE_BANNED,currentItem.sender);
                       sendTextDataList.push(sendTemp);
                     }
                     else
@@ -246,7 +296,7 @@ namespace FluffyMultiplayer
                       {
                         //faield to join lobby maybe client is already in lobby or have some databse insert issue
                         // RESPONSE_ERROR_JOIN_LOBBY_YOU_ARE_ALREADY_JOINT -> because of using INSERT OR REPLACE INTO this problem solved for many cases
-                        sendTemp.set(RESPONSE_INTERNAL_ERROR_FAILED_TO_JOIN_INTO_LOBBY,"",currentItem.sender);
+                        sendTemp.set(RESPONSE_INTERNAL_ERROR_FAILED_TO_JOIN_INTO_LOBBY,currentItem.sender);
                         sendTextDataList.push(sendTemp);
                       }
                     }
@@ -255,14 +305,14 @@ namespace FluffyMultiplayer
                   else
                   {
                     //id is <=0 so invalid. player not found -> invalid identity
-                    sendTemp.set(RESPONSE_ERROR_JOIN_LOBBY_INVALID_IDENTITY,"",currentItem.sender);
+                    sendTemp.set(RESPONSE_ERROR_JOIN_LOBBY_INVALID_IDENTITY,currentItem.sender);
                     sendTextDataList.push(sendTemp);
                   }
                 }
                 else
                 {
                   log.print("join to lobby: invalid identity. data="+currentItem.data, FluffyMultiplayer::LogType::Information);
-                  sendTemp.set(RESPONSE_ERROR_JOIN_LOBBY_INVALID_IDENTITY,"",currentItem.sender);
+                  sendTemp.set(RESPONSE_ERROR_JOIN_LOBBY_INVALID_IDENTITY,currentItem.sender);
                   sendTextDataList.push(sendTemp);
                 }
 
@@ -270,11 +320,35 @@ namespace FluffyMultiplayer
 
             case REQUEST_GET_LOBBY_SETTINGS:
             {
+              if(doesItHavePermission(currentItem.sender))
+                sendTemp.set(RESPONSE_LOBBY_SETTINGS_IS,lobbyData.getAsStringForOwner(),currentItem.sender);
+              else
+                sendTemp.set(RESPONSE_ERROR_GET_LOBBY_SETTINGS_NO_PERMISSION,currentItem.sender);
 
+              sendTextDataList.push(sendTemp);
             }break;
 
             case REQUEST_UPDATE_LOBBY_SETTINGS: //client will send (?)
             {
+              if(doesItHavePermission(currentItem.sender))
+              {
+                //broadcast lobby setting changes to in lobby
+                sendTemp.set(RESPONSE_LOBBY_SETTINGS_UPDATED,lobbyData.getAsStringForPlayers(),&inLobbyPlayers,nullptr);
+                sendTextDataList.push(sendTemp);
+
+                //broadcast lobby setting changes to specters
+                if(lobbySpecters.size()>=1)
+                {
+                  sendTemp.set(RESPONSE_LOBBY_SETTINGS_UPDATED,lobbyData.getAsStringForPlayers(),&lobbySpecters,nullptr);
+                  sendTextDataList.push(sendTemp);
+                }
+
+              }
+              else
+              {
+                sendTemp.set(RESPONSE_ERROR_UPDATE_LOBBY_SETTINGS_NO_PERMISSION,currentItem.sender);
+                sendTextDataList.push(sendTemp);
+              }
 
             }break;
 

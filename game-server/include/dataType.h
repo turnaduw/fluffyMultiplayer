@@ -106,8 +106,8 @@ namespace FluffyMultiplayer
     int code;
     std::string data;
     FluffyMultiplayer::AnAddress receiver; //if receivers == nulltpr then use this
-    std::queue<FluffyMultiplayer::Player>* receivers;
-    std::queue<FluffyMultiplayer::Player>* except;
+    const std::queue<FluffyMultiplayer::Player>* receivers;
+    const std::queue<FluffyMultiplayer::Player>* except;
 
     //one receiver
     void set(int c, std::string d, const FluffyMultiplayer::AnAddress& r)
@@ -118,11 +118,19 @@ namespace FluffyMultiplayer
       data = d;
       receiver = r;
     }
+    void set(int c, const FluffyMultiplayer::AnAddress& r)
+    {
+      receivers=nullptr;
+      except=nullptr;
+      code = c;
+      data = "";
+      receiver = r;
+    }
 
     //broadcast
     void set(int c, std::string d,
-            std::queue<FluffyMultiplayer::Player>* r,
-            std::queue<FluffyMultiplayer::Player>* e)
+            const std::queue<FluffyMultiplayer::Player>* r,
+            const std::queue<FluffyMultiplayer::Player>* e)
     {
       code = c;
       data = d;
@@ -145,6 +153,32 @@ namespace FluffyMultiplayer
     unsigned short textPort;
     unsigned short voicePort;
     int ownerId;
+
+    std::string getAsStringForOwner(const std::string& ownerUsername)
+    {
+      return std::to_string(id) + std::to_string(MS_DATA_DELIMITER) +
+             std::to_string(maxPlayers) + std::to_string(MS_DATA_DELIMITER) +
+             std::to_string(gameMode) + std::to_string(MS_DATA_DELIMITER) +
+             std::to_string(currentPlayers) + std::to_string(MS_DATA_DELIMITER) +
+             std::to_string(isVoiceChatForbidden) + std::to_string(MS_DATA_DELIMITER) +
+             std::to_string(isTextChatForbidden) + std::to_string(MS_DATA_DELIMITER) +
+             std::to_string(isSpecterForbidden) + std::to_string(MS_DATA_DELIMITER) +
+             password + std::to_string(MS_DATA_DELIMITER) +
+
+             std::to_string(ownerId) + std::to_string(MS_DATA_DELIMITER)+
+             ownerUsername+ std::to_string(MS_DATA_DELIMITER);
+    }
+    std::string getAsStringForPlayers()
+    {
+      return std::to_string(maxPlayers) + std::to_string(MS_DATA_DELIMITER) +
+             std::to_string(gameMode) + std::to_string(MS_DATA_DELIMITER) +
+             std::to_string(currentPlayers) + std::to_string(MS_DATA_DELIMITER) +
+             std::to_string(isVoiceChatForbidden) + std::to_string(MS_DATA_DELIMITER) +
+             std::to_string(isTextChatForbidden) + std::to_string(MS_DATA_DELIMITER) +
+             std::to_string(isSpecterForbidden) + std::to_string(MS_DATA_DELIMITER) +
+             (password.length()>LOBBY_MINIMUM_PASSWORD_LENGTH? "1","0") + std::to_string(MS_DATA_DELIMITER) + //is lcoked
+             std::to_string(ownerId) + std::to_string(MS_DATA_DELIMITER);
+    }
   };
 }
 
