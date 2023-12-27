@@ -32,6 +32,15 @@ namespace FluffyMultiplayer
     int hour;
     int minute;
     int second;
+
+    TimeAndDate now()
+    {
+      // Get current time
+      time_t now = time(0);
+      tm* ltm = localtime(&now);
+      // Extract current time components
+      return FluffyMultiplayer::TimeAndDate {1900 + ltm->tm_year, 1 + ltm->tm_mon,ltm->tm_mday,ltm->tm_hour,ltm->tm_min,ltm->tm_sec};
+    }
   };
 
 
@@ -49,6 +58,21 @@ namespace FluffyMultiplayer
       if(p.id==id)
         return true;
       return false;
+    }
+
+    void set(int _id,
+        std::string _identity,
+        FluffyMultiplayer::AnAddress _address,
+        std::string _name="?name?",
+        bool _voiceChatEnable=false,
+        FluffyMultiplayer::TimeAndDate _connectedTime=FluffyMultiplayer::TimeAndDate::now())
+    {
+      id=_id;
+      identity=_identity;
+      name=_name;
+      address=_address;
+      connectedTime=_connectedTime;
+      voiceChatEnable=_voiceChatEnable;
     }
   };
 
@@ -77,8 +101,21 @@ namespace FluffyMultiplayer
   {
     int code;
     std::string data;
+    FluffyMultiplayer::AnAddress receiver; //if receivers == nulltpr then use this
     std::queue<FluffyMultiplayer::Player>* receivers;
     std::queue<FluffyMultiplayer::Player>* except;
+
+    //one receiver
+    void set(int c, std::string d, const FluffyMultiplayer::AnAddress& r)
+    {
+      receivers=nullptr;
+      except=nullptr;
+      code = c;
+      data = d;
+      receiver = r;
+    }
+
+    //broadcast
     void set(int c, std::string d,
             std::queue<FluffyMultiplayer::Player>* r,
             std::queue<FluffyMultiplayer::Player>* e)
