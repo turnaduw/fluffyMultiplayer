@@ -4,16 +4,45 @@
 namespace FluffyMultiplayer
 {
 
+    void init(std::string filename)
+    {
+      log.init(DATABASE_LOG_FILENAME,DATABASE_PRINT_LOGS_LEVEL);
+      int rc = sqlite3_open(DATABASE_FILENAME, &db);
+      if(rc)
+        log.print("can not open database: "+sqlite3_errmsg(db)+"\n", FluffyMultiplayer::LogType::Error);
+      else
+        log.print("Database opened/created fine.\n", FluffyMultiplayer::LogType::Success);
+    }
+
+
+    void close()
+    {
+      int rc = sqlite3_close(db);
+      if(rc)
+        log.print("error while close database: "+sqlite3_errmsg(db)+"\n", FluffyMultiplayer::LogType::Error);
+      else
+        log.print("database closed fine.\n", FluffyMultiplayer::LogType::Success);
+
+      log.close();
+      db=nullptr;
+      errMsg=nullptr;
+      // delete db;
+      delete errMsg;
+    }
+
     //database----------
     int DataBase::search_in_db_callback_nofield(void* data, int argc, char** argv, char** azColName)
     {
         std::string* _result = static_cast<std::string*>(data);
         for (int i = 0; i < argc; i++)
         {
-            std::cout << "db search noField i=" << i  << "\t"<< azColName[i] << '=' << (argv[i] ? argv[i] : "NULL") << std::endl;
+            // std::cout << "db search noField i=" << i  << "\t"<< azColName[i] << '=' << (argv[i] ? argv[i] : "NULL") << std::endl;
+            // log.print("(search_in_db_callback_nofield): (..convert data to print here..) ", FluffyMultiplayer::LogType::Information);
             *_result +=  (argv[i] ? argv[i] : "NULL");
         }
-        std::cout << std::endl;
+        // std::cout << std::endl;
+        log.print("(search_in_db_callback_nofield): _result="+(*_result)+"\n", FluffyMultiplayer::LogType::Information);
+
         return 0;
     }
 
@@ -22,13 +51,16 @@ namespace FluffyMultiplayer
         std::string* _result = static_cast<std::string*>(data);
         for (int i = 0; i < argc; i++)
         {
-            std::cout << "db search i=" << i  << "\t"<< azColName[i] << '=' << (argv[i] ? argv[i] : "NULL") << std::endl;
+            // std::cout << "db search i=" << i  << "\t"<< azColName[i] << '=' << (argv[i] ? argv[i] : "NULL") << std::endl;
+            // log.print("(search_in_db_callback): (..convert data to print here..) ", FluffyMultiplayer::LogType::Information);
             *_result += azColName[i];
             *_result += '=';
             *_result +=  (argv[i] ? argv[i] : "NULL");
             *_result += "\n";
         }
-        std::cout << std::endl;
+        // std::cout << std::endl;
+        log.print("(search_in_db_callback): _result="+(*_result), FluffyMultiplayer::LogType::Information);
+
         return 0;
     }
 
@@ -50,56 +82,13 @@ namespace FluffyMultiplayer
 
         if (rc != SQLITE_OK)
         {
-            std::cout << "(search_in_db) SQL search error: " << errMsg << "\tquery=" << _q << std::endl;
+            // std::cout << "(search_in_db) SQL search error: " << errMsg << "\tquery=" << _q << std::endl;
+            log.print("(search_in_db): SQL search error: "+errMsg+"\tquery="+_q , FluffyMultiplayer::LogType::Error);
             sqlite3_free(errMsg);
         }
         return result;
     }
 
-
-
-    //----------
-    int DataBase::isExists_in_db_callback(void* data, int argc, char** argv, char** azColName)
-    {
-      std::string* _result = static_cast<std::string*>(data);
-      for (int i = 0; i < argc; i++)
-      {
-          std::cout << "db isExists i=" << i  << "\t"<< azColName[i] << '=' << (argv[i] ? argv[i] : "NULL") << std::endl;
-          *_result += azColName[i];
-          *_result += '=';
-          *_result +=  (argv[i] ? argv[i] : "NULL");
-          *_result += "\n";
-      }
-      std::cout << std::endl;
-      return 0;
-    }
-    bool DataBase::isExists_in_db(std::string& _q, int lengthField)
-    {
-      char* final_query = new char[_q.length()+1];
-      std::strcpy(final_query, _q.c_str());
-
-      std::string result;
-      int rc = sqlite3_exec(db, final_query, &DataBase::isExists_in_db_callback, &result , &errMsg);
-
-      bool isExists=false;
-      lengthField++; //because of charecter '='
-
-      std::cout << "isExists_in_db() result.len=" << result.length() << " lengthField=" << lengthField << std::endl;
-      std::cout << "isExists_in_db() result= " << result << std::endl;
-      if(result.length() > lengthField)
-        isExists=true;
-
-      final_query = nullptr;
-      delete[] final_query;
-
-      if (rc != SQLITE_OK)
-      {
-          std::cout << "(isExists_in_db) SQL search error: " << errMsg << "\tquery=" << _q << std::endl;
-          sqlite3_free(errMsg);
-      }
-
-      return isExists;
-    }
 
     //--------------------
     bool DataBase::query_to_db()
@@ -121,7 +110,8 @@ namespace FluffyMultiplayer
 
           if (rc != SQLITE_OK)
           {
-              std::cout << "(query_to_db) SQL error: " << errMsg << "\tquery=" << _q << std::endl;
+              // std::cout << "(query_to_db) SQL error: " << errMsg << "\tquery=" << _q << std::endl;
+              log.print("(query_to_db): SQL error: "+errMsg+"\tquery="+_q , FluffyMultiplayer::LogType::Error);
               sqlite3_free(errMsg);
           }
           else

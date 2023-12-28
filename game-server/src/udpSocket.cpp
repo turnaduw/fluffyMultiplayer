@@ -29,45 +29,59 @@ namespace FluffyMultiplayer
   }
 
 
-  void UdpSocket::prepareData(std::string& data)
+  void UdpSocket::prepareData(const int& code, std::string& data)
   {
-     data = send_data.code + send_data.data + std::string(DELIMITER) + std::string(CLOSER);
+     data = std::to_string(code) + data + std::string(MS_DATA_DELIMITER) + std::string(MS_REQUEST_CLOSER);
   }
 
-  void UdpSocket::broadcast(FluffyMultiplayer::SocketSendData& send_data)
+  void UdpSocket::broadcast(FluffyMultiplayer::SocketSendData& currentItem)
   {
-    if(!status)
-      return;
+    udp::endpoint receiverEndpoint;
 
-    for(FluffyMultiplayer::Player receiver : (*send_data.receivers))
+
+    auto sendTo = [&] (std::string& data, FluffyMultiplayer::AnAddress& address) -> void
     {
-      if(send_data.except != nullptr)
-      {
-        for(FluffyMultiplayer::Player except: (*send_data.except))
-        {
+      receiverEndpoint.ip= address.ip;
+      receiverEndpoint.port= address.port;
+      socket.send_to(boost::asio::buffer(data), receiverEndpoint);
+    };
+
+    for(FluffyMultiplayer::Player receiver : currentItem.receivers)
+    {
+      if(currentItem.except != nullptr)
+        for(FluffyMultiplayer::Player except: currentItem.except)
           if(receiver == except) //skip this client
             continue;
           else
-          {
-            prepareData(send_data.data);
-            udp::endpoint receiverEndpoint(receiver.address.ip, receiver.address.port);
-            socket.send_to(boost::asio::buffer(send_data.data), receiverEndpoint);
-          }
-        }
-      }
+            sendTo(currentItem.data, receiver.address);
       else //there is no exception send to all
-      {
-        prepareData(send_data.data);
-        udp::endpoint receiverEndpoint(receiver.address.ip, receiver.address.port);
-        socket.send_to(boost::asio::buffer(send_data.data), receiverEndpoint);
-      }
+        sendTo(currentItem.data, receiver.address);
     }
   }
 
-  void UdpSocket::send(std::string& data, const FluffyMultiplayer::AnAddress& receiver)
+  void udpSocket::send(FluffyMultiplayer::SocketSendData& currentItem)
   {
+    //if socket is disabled skip send
     if(!status)
       return;
+
+    //combine code with data and add some delimiter and closer at end of data
+    prepareData(currentItem.code, currentItem.data);
+
+
+    //check if receivers are only one sendDirect else send as broadcast
+    if(currentItem.receivers == nullptr)
+      sendDirect(currentItem.data,currentItem.receiver);
+    else
+      broadcast(currentItem);
+  }
+  void UdpSocket::sendDirect(std::string& data,
+                const FluffyMultiplayer::AnAddress& receiver,
+                bool areDataPrepared=true, int& code=0)
+  {
+    if(!areDataPrepared)
+      prepareData(code,data);
+
     udp::endpoint receiverEndpoint(receiver.ip, receiver.port);
     socket.send_to(boost::asio::buffer(data), receiverEndpoint);
   }

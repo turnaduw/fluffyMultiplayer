@@ -2,8 +2,13 @@
 #define H_DATA_TYPES
 
 #include <boost/asio.hpp>
+
 #include <string>
 #include "config.h"
+
+
+using boost::asio::ip::udp;
+
 
 namespace FluffyMultiplayer
 {
@@ -26,6 +31,12 @@ namespace FluffyMultiplayer
     std::string getAsString()
     {
       return address.ip.to_string() + ":" + std::to_string(address.port);
+    }
+
+    void setFromEndpoint(udp::endpoin& e)
+    {
+      sender.ip = e.ip;
+      sender.port = e.port;
     }
 
   };

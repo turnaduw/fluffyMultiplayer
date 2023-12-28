@@ -3,6 +3,7 @@
 
 #include "config.h"
 #include "dataType.h"
+#include "log.h"
 
 #include <boost/asio.hpp>
 using boost::asio::ip::udp;
@@ -21,6 +22,7 @@ namespace FluffyMultiplayer
       char tempData[MC_RECEIVE_BUFFER];
       bool status;
       unsigned short port;
+      FluffyMultiplayer::Log log;
 
     public:
       UdpSocket(boost::asio::io_context& io_context, unsigned short default_port)
@@ -28,10 +30,12 @@ namespace FluffyMultiplayer
       {
         socket.non_blocking(true);
         port = default_port;
+        log.init(SOCKET_LOG_FILENAME,SOCKET_PRINT_LOGS_LEVEL);
       }
       ~UdpSocket()
       {
-        
+        socket.close();
+        log.close();
       }
 
       //update status socket
@@ -46,8 +50,15 @@ namespace FluffyMultiplayer
 
 
       //send and receive
-      void prepareData(std::string& data);
-      void send(std::string& data, const FluffyMultiplayer::AnAddress& receiver);
+      void prepareData(const int&, std::string&);
+
+
+      void sendDirect(std::string& data,
+              const FluffyMultiplayer::AnAddress& receiver,
+              bool areDataPrepared,
+              int& code);
+
+      void send(FluffyMultiplayer::SocketSendData&);
       void broadcast(FluffyMultiplayer::SocketSendData&);
       size_t receive(char* const data, udp::endpoint& senderAddress);
   };

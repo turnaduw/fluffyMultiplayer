@@ -81,7 +81,7 @@ namespace FluffyMultiplayer
 
       void init(FluffyMultiplayer::LobbyData);
       void run();
-      FluffyMultiplayer::GameMode* process();
+      void process();
       void processVoice();
       void processText();
 

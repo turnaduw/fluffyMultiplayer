@@ -3,23 +3,149 @@
 namespace FluffyMultiplayer
 {
 
-  void sendData() //thread function
+  void App::sendData()
   {
+    FluffyMultiplayer::SocketSendData currentItem;
     while(true)
     {
-      // socketText.send(...)
 
+      //text data
+      if(sendTextDataList.size()>=1) //on that socket self will check socketStatus before send
+      {
+        currentItem = sendTextDataList.front();
+        ds.encryptData(currentItem.data);
+
+        socketText.send(currentItem);
+
+        //remove proceessed element
+        sendTextDataList.pop();
+      }
+
+      //voice data
+      if(sendVoiceDataList.size()>=1) //on that socket self will check socketStatus before send
+      {
+        currentItem = sendVoiceDataList.front();
+        ds.encryptData(currentItem.data);
+
+        socketVoice.send(currentItem);
+
+        //remove proccessed element
+        sendVoiceDataList.pop();
+      }
     }
   }
 
-  void receiveData() //thread function
+  void App::prepareData(FluffyMultiplayer::SocketReceiveData& currentItem)
   {
-    while(true)
-    {
-      // unpackData(..receiveddata..);
 
+    //get code
+    //these MS_DATA_CODE_INDEX_X are from config.h
+    std::string str = currentItem.data[MS_DATA_CODE_INDEX_A];
+    str += currentItem.data[MS_DATA_CODE_INDEX_B];
+    str += currentItem.data[MS_DATA_CODE_INDEX_C];
+    currentItem.code = stringToInt(str);
+
+
+    std::string delimiter = MS_DATA_DELIMITER;
+    std::string closer = MS_REQUEST_CLOSER;
+    //remove code and end (delimiter and closer)
+    currentItem.code = currentItem.code.substr(3,currentItem.code.length()-(delimiter.length()+closer.length()));
+  }
+
+  void App::receiveData()
+  {
+    FluffyMultiplayer::SocketReceiveData currentItem;
+    udp::endpoint senderEndpoint;
+    size_t receive_length;
+
+    while (true)
+    {
+      try
+      {
+
+        //text socket receive
+        {
+          char receive_data[MC_RECEIVE_BUFFER_TEXT];
+          receive_length = socketText.receive(receive_data,senderEndpoint);
+          currentItem.sender.setFromEndpoint(senderEndpoint);
+
+          if(isConnectionBlocked(currentItem.sender))
+          {
+              // RESPONSE_ERROR_CONNECTION_BLOCKED
+          }
+          else
+          {
+            if(receive_length >=1)
+            {
+              currentItem.data = std::string(receive_data,receive_length);
+              ds.decryptData(currentItem.data);
+
+              //sperate c.code and data and remove code and closers from .data
+              prepareData(currentItem);
+
+              log.print("received text from="+currentItem.sender.getAsString()+
+                      "\tcode="+std::to_string(currentItem.code)+"\tdata="+
+                        std::to_string(currentItem.data), FluffyMultiplayer::LogType::Information);
+
+              // std::cout << "received from: " <<  senderEndpoint.address() << ":" << senderEndpoint.port() << " data = " << data << "]" << std::endl;
+              receivedTextDataList.push(currentItem);
+            }
+          }
+        }
+
+
+
+
+
+        //socket voice receive
+        {
+          if(!lobbyData.isVoiceChatForbidden)
+          {
+            char receive_data[MC_RECEIVE_BUFFER_VOICE];
+            receive_length = socketText.receive(receive_data,senderEndpoint);
+            currentItem.sender.setFromEndpoint(senderEndpoint);
+
+            if(isConnectionBlocked(currentItem.sender))
+            {
+                // RESPONSE_ERROR_CONNECTION_BLOCKED
+            }
+            else
+            {
+              if(receive_length >=1)
+              {
+                currentItem.data = std::string(receive_data,receive_length);
+                ds.decryptData(currentItem.data);
+
+                //sperate c.code and data and remove code and closers from .data
+                prepareData(currentItem);
+
+                log.print("received voice from="+currentItem.sender.getAsString()+
+                        "\tcode="+std::to_string(currentItem.code)+"\tdata="+
+                          std::to_string(currentItem.data), FluffyMultiplayer::LogType::Information);
+
+                // std::cout << "received from: " <<  senderEndpoint.address() << ":" << senderEndpoint.port() << " data = " << data << "]" << std::endl;
+                receivedVoiceDataList.push(currentItem);
+              }
+            }
+          }
+        }
+
+      }
+      catch (std::exception& e)
+      {
+          std::string errorMsg = e.what();
+          if (errorMsg.find("receive_from: Resource temporarily unavailable") != std::string::npos)
+          {
+              continue;
+          }
+          else
+          {
+              throw;
+          }
+      }
     }
   }
+
 
   void App::init()
   {
@@ -30,7 +156,13 @@ namespace FluffyMultiplayer
     threadSend = boost::thread(&FluffyMultiplayer::App::sendData, this);
     threadReceive = boost::thread(&FluffyMultiplayer::App::receiveData, this);
 
+    socketText.enable();
+
+    if(!lobbyData.isVoiceChatForbidden)
+      socketVoice.enable();
+
     log.init(LOG_FILE,PRINT_LOGS_LEVEL);
+    db.init(DATABASE_FILENAME);
 
     switch (lobbyData.gameMode)
     {
@@ -163,12 +295,11 @@ namespace FluffyMultiplayer
   void App::processText()
   {
     FluffyMultiplayer::SocketReceiveData currentItem;
-    std::string basic_query;
 
     for(int i=0; i<receivedTextDataList.size(); i++)
     {
       currentItem = receivedTextDataList.front();
-      log.print("sender="+currentItem.sender.getAsString()+
+      log.print("[text] sender="+currentItem.sender.getAsString()+
           "received data="+receiveData, FluffyMultiplayer::LogType::Information);
 
       log.print("process currentItem.code="
@@ -703,13 +834,13 @@ namespace FluffyMultiplayer
                                               ": " + cData[0] + "\n";
 
                   //broadcast  new text message.. to inLobbyPlayers
-                  sendTemp.set(REQUEST_SEND_TEXT_CHAT,response,&inLobbyPlayers,nullptr);
+                  sendTemp.set(RESPONSE_PLAYER_SENT_TEXT_MESSAGE,response,&inLobbyPlayers,nullptr);
                   sendTextDataList.push(sendTemp);
 
                   //broadcast new text message.. to specters
                   if(lobbySpecters.size()>=1 && SEND_TEXT_CHAT_TO_SPECTERS)
                   {
-                    sendTemp.set(REQUEST_SEND_TEXT_CHAT,response,&lobbySpecters,nullptr);
+                    sendTemp.set(RESPONSE_PLAYER_SENT_TEXT_MESSAGE,response,&lobbySpecters,nullptr);
                     sendTextDataList.push(sendTemp);
                   }
               }
@@ -795,14 +926,79 @@ namespace FluffyMultiplayer
     receivedTextDataList.pop();
   }
 
-  void processVoice()
+  void App::processVoice()
   {
-    // case REQUEST_SEND_VOICE_CHAT:
-    // {
+    FluffyMultiplayer::SocketReceiveData currentItem;
 
-    // }break;
+    for(int i=0; i<receivedVoiceDataList.size(); i++)
+    {
+      currentItem = receivedVoiceDataList.front();
+      log.print("[voice] sender="+currentItem.sender.getAsString()+
+          "received data="+receiveData, FluffyMultiplayer::LogType::Information);
+
+      log.print("process currentItem.code="
+            +std::to_string(currentItem.code)+";~;",
+            FluffyMultiplayer::LogType::Information);
+
+
+
+      //check connection blocked
+      if(isConnectionBlocked(currentItem.sender))
+      {
+        sendTemp.set(RESPONSE_ERROR_CONNECTION_BLOCKED,currentItem.sender); //maybe later return blocked time to client
+        sendVoiceDataList.push(sendTemp);
+      }
+      else if(!isConnectionExists(currentItem.sender))
+      {
+        sendTemp.set(RESPONSE_ERROR_CONNECTION_NOT_EXISTS,currentItem.sender);
+        sendVoiceDataList.push(sendTemp);
+      }
+      else
+      {
+        //voice
+        if(lobbyData.isVoiceChatForbidden)
+        {
+          sendTemp.set(RESPONSE_ERROR_SEND_VOICE_CHAT_DISABLED,currentItem.sender);
+          sendVoiceDataList.push(sendTemp);
+        }
+        else
+        {
+          //prepare ovice chat data
+          std::string response = currentItem.data;
+
+
+          //broadcast  new voice message.. to inLobbyPlayers
+          for(auto e: inLobbyPlayers)
+          {
+            if(e.voiceChatEnable)
+            {
+              sendTemp.set(RESPONSE_PLAYER_SENT_VOICE_MESSAGE,response,e.address);
+              sendVoiceDataList.push(sendTemp);
+            }
+          }
+
+          //broadcast new voice message.. to specters
+          if(lobbySpecters.size()>=1 && SEND_VOICE_CHAT_TO_SPECTERS)
+          {
+            for(auto e: lobbySpecters)
+            {
+              if(e.voiceChatEnable)
+              {
+                sendTemp.set(RESPONSE_PLAYER_SENT_VOICE_MESSAGE,response,e.address);
+                sendVoiceDataList.push(sendTemp);
+              }
+            }
+          }
+        }
+      }
+    }
+
+      //remove processed element
+      receivedVoiceDataList.pop();
   }
-  FluffyMultiplayer::GameMode* App::process()
+
+
+  void App::process()
   {
     //process text requests
     processText();
@@ -814,15 +1010,11 @@ namespace FluffyMultiplayer
   }
 
 
-  bool addPlayerToVoiceChat(); //enalbe his voiceChat
-  bool removePlayerFromVoiceChat(); //disable his voiceChat
-
-
   void App::run()
   {
     while(appIsRunning)
     {
-      currentGameMode = process();
+      process();
     }
   }
 
@@ -844,13 +1036,6 @@ namespace FluffyMultiplayer
       strptime(time.c_str(), "%Y-%m-%d %H:%M:%S", &tm);
       return FluffyMultiplayer::TimeAndDate {1900 + tm.tm_year, 1 + tm.tm_mon,tm.tm_mday,tm.tm_hour,tm.tm_min,tm.tm_sec};
   }
-
-  FluffyMultiplayer::Player App::stringToPlayer(const std::string&);
-  FluffyMultiplayer::LobbyData App::stringToLobbyData(const std::string&);
-  FluffyMultiplayer::AnAddress App::stringToAnAddress(const std::string&);
-  int App::stringToInt(const std::string&);
-  bool App::stringToBool(const std::string&);
-
 
   //player
   bool App::connectPlayer(FluffyMultiplayer::Player& p)
@@ -907,7 +1092,6 @@ namespace FluffyMultiplayer
     return true;
   }
 
-  bool App::reconnectPlayer(FluffyMultiplayer::Player&);
   bool App::checkEnteredPassword(const std::string& password)
   {
     if(lobby.password == password)
@@ -915,21 +1099,7 @@ namespace FluffyMultiplayer
     return false;
   }
 
-  bool App::textChat(const std::string& text)
-  {
-
-  }
-
-  bool App::voiceChat(const std::string&);
-  bool App::kickPlayer(FluffyMultiplayer::Player&, const std::string& reason);
-  bool App::banPlayer(FluffyMultiplayer::Player&, const std::string& reason, FluffyMultiplayer::TimeAndDate duration);
-  bool App::playerAsSpecter(FluffyMultiplayer::Player&);
-
   //lobby
-  bool App::transferLobbyOwnerShip(FluffyMultiplayer::Player& newOwner);
-  std::string App::getLobbySettings();
-  bool App::updateLobby(FluffyMultiplayer::LobbyData);
-  std::string App::lobbyInfo(); //will report lobby players and details for first time to connected player
   bool App::startGame()
   {
     gameIsRunning=true;
@@ -949,5 +1119,4 @@ namespace FluffyMultiplayer
     return false;
   }
 
-  bool App::deleteLobby();
 }
