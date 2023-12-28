@@ -27,7 +27,7 @@
 
 namespace FluffyMultiplayer
 {
-  struct Color { Black=0, White, Red, Green, Blue, Purple, Gray, Cyan, Yellow };
+  enum Color { Black=0, White, Red, Green, Blue, Purple, Gray, Cyan, Yellow };
 
   struct Piece
   {
@@ -56,11 +56,11 @@ namespace FluffyMultiplayer
       MenschBoard mboard;
     public:
       FluffyMultiplayer::GameMode* process(FluffyMultiplayer::SocketReceiveData& currentItem,
-                                                   FluffyMultiplayer::SocketSendData& tempSend,
-                                                   FluffyMultiplayer::Player& tempPlayer,
                                                    std::queue<FluffyMultiplayer::SocketSendData>& sendTextDataList,
                                                    FluffyMultiplayer::Log& log,
-                                                   FluffyMultiplayer::DataBase& db) override;
+                                                   FluffyMultiplayer::DataBase& db,
+                                                   FluffyMultiplayer::DataSecurity& ds) override;
+
       void roleDice();
       void nowTurn();
       void movePiece();

@@ -28,7 +28,7 @@ namespace FluffyMultiplayer
     }
     catch (std::exception& e)
     {
-      if(printOnConsole)
+      if(levelPrintOnConsole)
         std::cout << "failed to write on log file.\ttext="<< text;
     }
   }
@@ -54,13 +54,13 @@ namespace FluffyMultiplayer
 
   }
 
-  void Log::init(std::string file, FluffyMultiplayer::LogType level)
+  void Log::init(std::string _file, FluffyMultiplayer::LogType level)
   {
     levelPrintOnConsole = level;
-    filename = file;
+    filename = _file;
     try
     {
-      file.open (filename, std::ofstream::out | std::ofstream::app);
+      file.open(filename, std::ofstream::out | std::ofstream::app);
     }
     catch (std::exception& e)
     {

@@ -15,7 +15,7 @@ namespace FluffyMultiplayer
         currentItem = sendTextDataList.front();
         ds.encryptData(currentItem.data);
 
-        socketText.send(currentItem);
+        socketText->send(currentItem);
 
         //remove proceessed element
         sendTextDataList.pop();
@@ -27,7 +27,7 @@ namespace FluffyMultiplayer
         currentItem = sendVoiceDataList.front();
         ds.encryptData(currentItem.data);
 
-        socketVoice.send(currentItem);
+        socketVoice->send(currentItem);
 
         //remove proccessed element
         sendVoiceDataList.pop();
@@ -40,16 +40,16 @@ namespace FluffyMultiplayer
 
     //get code
     //these MS_DATA_CODE_INDEX_X are from config.h
-    std::string str = currentItem.data[MS_DATA_CODE_INDEX_A];
-    str += currentItem.data[MS_DATA_CODE_INDEX_B];
-    str += currentItem.data[MS_DATA_CODE_INDEX_C];
+    std::string str = std::string(currentItem.data[MS_DATA_CODE_INDEX_A]);
+    str += std::string(currentItem.data[MS_DATA_CODE_INDEX_B]);
+    str += std::string(currentItem.data[MS_DATA_CODE_INDEX_C]);
     currentItem.code = stringToInt(str);
 
 
     std::string delimiter = MS_DATA_DELIMITER;
     std::string closer = MS_REQUEST_CLOSER;
     //remove code and end (delimiter and closer)
-    currentItem.code = currentItem.code.substr(3,currentItem.code.length()-(delimiter.length()+closer.length()));
+    currentItem.data = currentItem.data.substr(3,currentItem.data.length()-(delimiter.length()+closer.length()));
   }
 
   void App::receiveData()
@@ -66,7 +66,7 @@ namespace FluffyMultiplayer
         //text socket receive
         {
           char receive_data[MC_RECEIVE_BUFFER_TEXT];
-          receive_length = socketText.receive(receive_data,senderEndpoint);
+          receive_length = socketText->receive(receive_data,senderEndpoint);
           currentItem.sender.setFromEndpoint(senderEndpoint);
 
           if(isConnectionBlocked(currentItem.sender))
@@ -84,8 +84,8 @@ namespace FluffyMultiplayer
               prepareData(currentItem);
 
               log.print("received text from="+currentItem.sender.getAsString()+
-                      "\tcode="+std::to_string(currentItem.code)+"\tdata="+
-                        std::to_string(currentItem.data), FluffyMultiplayer::LogType::Information);
+                        "\tcode="+std::to_string(currentItem.code)+"\tdata="+
+                        currentItem.data, FluffyMultiplayer::LogType::Information);
 
               // std::cout << "received from: " <<  senderEndpoint.address() << ":" << senderEndpoint.port() << " data = " << data << "]" << std::endl;
               receivedTextDataList.push(currentItem);
@@ -102,7 +102,7 @@ namespace FluffyMultiplayer
           if(!lobbyData.isVoiceChatForbidden)
           {
             char receive_data[MC_RECEIVE_BUFFER_VOICE];
-            receive_length = socketText.receive(receive_data,senderEndpoint);
+            receive_length = socketText->receive(receive_data,senderEndpoint);
             currentItem.sender.setFromEndpoint(senderEndpoint);
 
             if(isConnectionBlocked(currentItem.sender))
@@ -121,7 +121,7 @@ namespace FluffyMultiplayer
 
                 log.print("received voice from="+currentItem.sender.getAsString()+
                         "\tcode="+std::to_string(currentItem.code)+"\tdata="+
-                          std::to_string(currentItem.data), FluffyMultiplayer::LogType::Information);
+                          currentItem.data, FluffyMultiplayer::LogType::Information);
 
                 // std::cout << "received from: " <<  senderEndpoint.address() << ":" << senderEndpoint.port() << " data = " << data << "]" << std::endl;
                 receivedVoiceDataList.push(currentItem);
@@ -146,9 +146,20 @@ namespace FluffyMultiplayer
     }
   }
 
-
-  void App::init()
+  App::App()
   {
+
+  }
+
+  App::~App()
+  {
+    log.close();
+    db.close();
+  }
+
+  void App::init(FluffyMultiplayer::LobbyData _lobby)
+  {
+    lobbyData = _lobby;
     currentGameMode=nullptr;
     gameIsRunning=false;
     appIsRunning=true; //a flag close or continue app while loop
@@ -156,10 +167,13 @@ namespace FluffyMultiplayer
     threadSend = boost::thread(&FluffyMultiplayer::App::sendData, this);
     threadReceive = boost::thread(&FluffyMultiplayer::App::receiveData, this);
 
-    socketText.enable();
+    socketText = new FluffyMultiplayer::UdpSocket(io_context_text, _lobby.textPort, MC_RECEIVE_BUFFER_TEXT);
+    socketVoice = new FluffyMultiplayer::UdpSocket(io_context_voice, _lobby.voicePort, MC_RECEIVE_BUFFER_VOICE);
+
+    socketText->enable();
 
     if(!lobbyData.isVoiceChatForbidden)
-      socketVoice.enable();
+      socketVoice->enable();
 
     log.init(LOG_FILE,PRINT_LOGS_LEVEL);
     db.init(DATABASE_FILENAME);
@@ -213,8 +227,7 @@ namespace FluffyMultiplayer
     return result;
   }
 
-
-  std::string App::getPlayerUsernameById(const int& _id)
+  std::string App::getPlayerUsernameById(const int& _id) const
   {
     for(auto e: inLobbyPlayers)
     {
@@ -234,7 +247,7 @@ namespace FluffyMultiplayer
     }
     return -1;
   }
-  bool App::isPlayerIdExistsOnLobby(const int& id)
+  bool App::isPlayerIdExistsOnLobby(const int& id) const
   {
     for(auto e: inLobbyPlayers)
       if(e.id == id)
@@ -256,7 +269,7 @@ namespace FluffyMultiplayer
 
   bool App::doesItHavePermission(const FluffyMultiplayer::AnAddress& sender)
   {
-    int id=getSenderId(currentItem.sender);
+    int id=getSenderId(sender);
     if(id>=1)
       if(inLobbyPlayers[id].isAdmin || id == lobbyData.ownerId)
         return true;
@@ -285,7 +298,9 @@ namespace FluffyMultiplayer
     return result; //i guess if not found will return an 0.0.0.0 with a random port
   }
 
-  void updatePlayerVoiceChatStatus(const int& id, bool status)
+
+
+  void App::updatePlayerVoiceChatStatus(const int& id, bool status)
   {
     for(auto e: inLobbyPlayers)
       if(e.id == id)
@@ -300,7 +315,7 @@ namespace FluffyMultiplayer
     {
       currentItem = receivedTextDataList.front();
       log.print("[text] sender="+currentItem.sender.getAsString()+
-          "received data="+receiveData, FluffyMultiplayer::LogType::Information);
+                  "received data="+currentItem.data, FluffyMultiplayer::LogType::Information);
 
       log.print("process currentItem.code="
             +std::to_string(currentItem.code)+";~;",
@@ -398,10 +413,10 @@ namespace FluffyMultiplayer
                 if(db.query_to_db())
                 {
                   // remove from connectedPlayers and inLobbyPlayers and lobbySpecter if exists
+                  std::string response = std::to_string(cid) + MS_DATA_DELIMITER;
+
                   if(disconnectPlayer(currentItem.sender))
                   {
-                    std::string response = std::to_string(cid) + std::to_string(MS_DATA_DELIMITER);
-
                     //broadcast to lobby players
                     sendTemp.set(RESPONSE_PLAYER_DISCONNECTED,response,&inLobbyPlayers, nullptr);
                     sendTextDataList.push(sendTemp);
@@ -468,7 +483,7 @@ namespace FluffyMultiplayer
 
                           //add to inLobbyPlayers
                           tempPlayer.set(cId,cData[0],currentItem.sender,cUsername,cIsAdmin);
-                          inLobbyPlayers.push(tempPlayer);
+                          inLobbyPlayers.push_back(tempPlayer);
 
                           //tell sender his id
                           sendTemp.set(RESPONSE_YOU_ARE_JOINT_INTO_LOBBY,"joint into lobby and your data is =.. + lobbyData + lobbyPlayers + ...",currentItem.sender);
@@ -521,7 +536,7 @@ namespace FluffyMultiplayer
             case REQUEST_GET_LOBBY_SETTINGS:
             {
               if(doesItHavePermission(currentItem.sender))
-                sendTemp.set(RESPONSE_LOBBY_SETTINGS_IS,lobbyData.getAsStringForOwner(),currentItem.sender);
+                sendTemp.set(RESPONSE_LOBBY_SETTINGS_IS,lobbyData.getAsStringForOwner(getPlayerUsernameById(lobbyData.ownerId)),currentItem.sender);
               else
                 sendTemp.set(RESPONSE_ERROR_GET_LOBBY_SETTINGS_NO_PERMISSION,currentItem.sender);
 
@@ -546,7 +561,7 @@ namespace FluffyMultiplayer
                 lobbyData.isSpecterForbidden = stringToBool(cData[4]);
                 lobbyData.password = cData[5];
                 lobbyData.ownerId = stringToInt(cData[6]);
-                log.print("lobby settings updated "+lobbyData.getAsStringForOwner(), FluffyMultiplayer::LogType::Information);
+                log.print("lobby settings updated "+lobbyData.getAsStringForOwner(getPlayerUsernameById(lobbyData.ownerId)), FluffyMultiplayer::LogType::Information);
 
 
                 //broadcast lobby setting changes to in lobby
@@ -681,7 +696,7 @@ namespace FluffyMultiplayer
                               ") has been kicked from lobby ("+std::to_string(lobbyData.id)+")",
                               FluffyMultiplayer::LogType::Information);
 
-                    std::string response = std::to_string(targetId) + std::to_string(MS_DATA_DELIMITER);
+                    std::string response = std::to_string(targetId) + MS_DATA_DELIMITER;
 
                     //broadcast to inLobbyPlayers, player has been kicked from lobby
                     sendTemp.set(RESPONSE_PLAYER_KICKED_FROM_LOBBY,response,&inLobbyPlayers,nullptr);
@@ -695,7 +710,8 @@ namespace FluffyMultiplayer
                     }
 
                     //this line written blow of those, because we want to tell all (speacilly that target to you are kicked if put this line up would not send to targetId)
-                    disconnectPlayer(getPlayerAddressById(targetId));
+                    FluffyMultiplayer::AnAddress targetAddress = getPlayerAddressById(targetId);
+                    disconnectPlayer(targetAddress);
                   }
                   else
                   {
@@ -738,11 +754,11 @@ namespace FluffyMultiplayer
                     FluffyMultiplayer::BanList targetAsBan
                     {
                       targetId, getPlayerAddressById(targetId),
-                      FluffyMultiplayer::TimeAndDate::now(), convertStringToInt(cData[2])
+                      FluffyMultiplayer::TimeAndDate::now(), stringToInt(cData[2])
                     };
-                    bannedPlayers.push(targetAsBan);
+                    bannedPlayers.push_back(targetAsBan);
 
-                    std::string response = std::to_string(targetId) + std::to_string(MS_DATA_DELIMITER); //later can write reason and ban time to tell other clients
+                    std::string response = std::to_string(targetId) + MS_DATA_DELIMITER; //later can write reason and ban time to tell other clients
 
                     //broadcast to inLobbyPlayers, player has been kicked from lobby
                     sendTemp.set(RESPONSE_PLAYER_BANNED_FROM_LOBBY,response,&inLobbyPlayers,nullptr);
@@ -756,7 +772,8 @@ namespace FluffyMultiplayer
                     }
 
                     //this line written blow of those, because we want to tell all (speacilly that target to you are banned if put this line up would not send to targetId)
-                    disconnectPlayer(getPlayerAddressById(targetId));
+                    FluffyMultiplayer::AnAddress targetAddress = getPlayerAddressById(targetId);
+                    disconnectPlayer(targetAddress);
                 }
                 else
                 {
@@ -788,7 +805,7 @@ namespace FluffyMultiplayer
 
                     log.print("lobby owner changed to ("+std::to_string(targetId), FluffyMultiplayer::LogType::Information);
 
-                    std::string response = std::to_string(targetId) + std::to_string(MS_DATA_DELIMITER);
+                    std::string response = std::to_string(targetId) + MS_DATA_DELIMITER;
 
                     //broadcast to inLobbyPlayers, player has been kicked from lobby
                     sendTemp.set(REQUEST_TRANSFER_LOBBY_OWNERSHIP,response,&inLobbyPlayers,nullptr);
@@ -854,7 +871,7 @@ namespace FluffyMultiplayer
               if(cid>=1)
                 updatePlayerVoiceChatStatus(cid,true);
 
-                std::string response = std::to_string(cid) + std::to_string(MS_DATA_DELIMITER); //later can write reason and ban time to tell other clients
+                std::string response = std::to_string(cid) + MS_DATA_DELIMITER; //later can write reason and ban time to tell other clients
 
                 //broadcast to inLobbyPlayers, player has been kicked from lobby
                 sendTemp.set(RESPONSE_PLAYER_VOICE_CHAT_ENABLED,response,&inLobbyPlayers,nullptr);
@@ -875,7 +892,7 @@ namespace FluffyMultiplayer
               if(cid>=1)
                 updatePlayerVoiceChatStatus(cid,false);
 
-                std::string response = std::to_string(cid) + std::to_string(MS_DATA_DELIMITER); //later can write reason and ban time to tell other clients
+                std::string response = std::to_string(cid) + MS_DATA_DELIMITER; //later can write reason and ban time to tell other clients
 
                 //broadcast to inLobbyPlayers, player has been kicked from lobby
                 sendTemp.set(RESPONSE_PLAYER_VOICE_CHAT_DISABLED,response,&inLobbyPlayers,nullptr);
@@ -897,7 +914,7 @@ namespace FluffyMultiplayer
                 if(currentGameMode!=nullptr)
                 {
                   log.print("unknown request code lets passing it to gamemode", FluffyMultiplayer::LogType::Information);
-                  currentGameMode = currentGameMode->process(currentItem,sendTemp,sendTextDataList);
+                  currentGameMode = currentGameMode->process(currentItem,sendTextDataList,log,db,ds);
                   //response to client will push by currentGameMode->process
                 }
                 else
@@ -934,7 +951,7 @@ namespace FluffyMultiplayer
     {
       currentItem = receivedVoiceDataList.front();
       log.print("[voice] sender="+currentItem.sender.getAsString()+
-          "received data="+receiveData, FluffyMultiplayer::LogType::Information);
+          "received data="+currentItem.data, FluffyMultiplayer::LogType::Information);
 
       log.print("process currentItem.code="
             +std::to_string(currentItem.code)+";~;",
@@ -1005,8 +1022,6 @@ namespace FluffyMultiplayer
 
     //process voice requests
     processVoice();
-
-    return this;
   }
 
 
@@ -1018,9 +1033,9 @@ namespace FluffyMultiplayer
     }
   }
 
-  bool App::isConnectionExists(const FluffyMultiplayer::AnAddress& address)
+  bool App::isConnectionExists(const FluffyMultiplayer::AnAddress& address) const
   {
-    for(FluffyMultiplayer::AnAddress e : connectedPlayers.address)
+    for(FluffyMultiplayer::AnAddress e : connectedPlayers)
     {
       if(e == address)
         return true;
@@ -1030,31 +1045,35 @@ namespace FluffyMultiplayer
 
 
   //convert
-  FluffyMultiplayer::TimeAndDate App::stringToTime(const std::string& time)
+  int App::stringToInt(const std::string& str)
   {
-      std::tm tm = {};
-      strptime(time.c_str(), "%Y-%m-%d %H:%M:%S", &tm);
-      return FluffyMultiplayer::TimeAndDate {1900 + tm.tm_year, 1 + tm.tm_mon,tm.tm_mday,tm.tm_hour,tm.tm_min,tm.tm_sec};
+    const char* c = str.c_str();
+    return std::atoi(c);
+  }
+  bool App::stringToBool(const std::string& str)
+  {
+    const char* c = str.c_str();
+    return static_cast<bool>(std::atoi(c));
   }
 
   //player
-  bool App::connectPlayer(FluffyMultiplayer::Player& p)
+  bool App::connectPlayer(FluffyMultiplayer::AnAddress& p)
   {
-    connectedPlayers.push(p);
-    log.print("id(" + p.id + ") name(" + p.name + ") ip(" + p.address.getAsString() + ") "
+    connectedPlayers.push_back(p);
+    log.print("ip(" + p.getAsString() + ") "
       + "connected to the lobby.", FluffyMultiplayer::LogType::Information);
   }
   bool App::disconnectPlayer(FluffyMultiplayer::AnAddress& ad)
   {
     int currentPlayersBefore = lobbyData.currentPlayers;
     //remove from connectedPlayers
-    std::queue<FluffyMultiplayer::AnAddress> _connectedPlayers;
+    std::vector<FluffyMultiplayer::AnAddress> _connectedPlayers;
     for(auto e: connectedPlayers)
     {
       if(e == ad)
         lobbyData.currentPlayers--;
       else
-        _connectedPlayers.push(e);
+        _connectedPlayers.push_back(e);
     }
     connectedPlayers = _connectedPlayers;
 
@@ -1067,36 +1086,29 @@ namespace FluffyMultiplayer
 
 
     //remove from inLobbyPlayers
-    std::queue<FluffyMultiplayer::Player> _inLobbyPlayers;
+    std::vector<FluffyMultiplayer::Player> _inLobbyPlayers;
     for(auto e: inLobbyPlayers)
     {
       if(e.address == ad)
         continue;
       else
-        _inLobbyPlayers.push(e);
+        _inLobbyPlayers.push_back(e);
     }
     inLobbyPlayers = _inLobbyPlayers;
 
 
     //remove from lobbySpecters
-    std::queue<FluffyMultiplayer::Player> _lobbySpecters;
+    std::vector<FluffyMultiplayer::Player> _lobbySpecters;
     for(auto e: lobbySpecters)
     {
       if(e.address == ad)
         continue;
       else
-        _lobbySpecters.push(e);
+        _lobbySpecters.push_back(e);
     }
     lobbySpecters = _lobbySpecters;
 
     return true;
-  }
-
-  bool App::checkEnteredPassword(const std::string& password)
-  {
-    if(lobby.password == password)
-      return true;
-    return false;
   }
 
   //lobby

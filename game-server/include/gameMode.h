@@ -7,7 +7,8 @@
 #include "config.h"
 #include "gameState.h"
 #include "log.h"
-#include "database.h"
+#include "dataBase.h"
+#include "dataSecurity.h"
 
 
 namespace FluffyMultiplayer
@@ -20,11 +21,10 @@ namespace FluffyMultiplayer
 
     public:
       virtual FluffyMultiplayer::GameMode* process(FluffyMultiplayer::SocketReceiveData& currentItem,
-                                                   FluffyMultiplayer::SocketSendData& tempSend,
-                                                   FluffyMultiplayer::Player& tempPlayer,
                                                    std::queue<FluffyMultiplayer::SocketSendData>& sendTextDataList,
                                                    FluffyMultiplayer::Log& log,
-                                                   FluffyMultiplayer::DataBase& db) = 0;
+                                                   FluffyMultiplayer::DataBase& db,
+                                                   FluffyMultiplayer::DataSecurity& ds) = 0;
   };
 }
 

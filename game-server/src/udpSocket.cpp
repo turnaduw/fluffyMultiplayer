@@ -4,15 +4,15 @@ namespace FluffyMultiplayer
 {
   void UdpSocket::enable()
   {
-    status=true;
+    statusSocket=true;
   }
   void UdpSocket::disable()
   {
-    status=true;
+    statusSocket=true;
   }
   bool UdpSocket::getStatus() const
   {
-    return status;
+    return statusSocket;
   }
 
   void UdpSocket::setPort(unsigned short newPort)
@@ -41,15 +41,16 @@ namespace FluffyMultiplayer
 
     auto sendTo = [&] (std::string& data, FluffyMultiplayer::AnAddress& address) -> void
     {
-      receiverEndpoint.ip= address.ip;
+      receiverEndpoint = address;
+      receiverEndpoint.address= address.ip;
       receiverEndpoint.port= address.port;
       socket.send_to(boost::asio::buffer(data), receiverEndpoint);
     };
 
-    for(FluffyMultiplayer::Player receiver : currentItem.receivers)
+    for(auto receiver : currentItem.receivers->address)
     {
       if(currentItem.except != nullptr)
-        for(FluffyMultiplayer::Player except: currentItem.except)
+        for(auto except: currentItem.except->address)
           if(receiver == except) //skip this client
             continue;
           else
@@ -62,7 +63,7 @@ namespace FluffyMultiplayer
   void udpSocket::send(FluffyMultiplayer::SocketSendData& currentItem)
   {
     //if socket is disabled skip send
-    if(!status)
+    if(!statusSocket)
       return;
 
     //combine code with data and add some delimiter and closer at end of data
@@ -89,11 +90,12 @@ namespace FluffyMultiplayer
 
   size_t UdpSocket::receive(char * const data, udp::endpoint& senderAddress)
   {
-    if(!status)
+    char tempData[bufferSize];
+    if(!statusSocket)
       return 0;
 
     //make tempData empty
-    for(int i=0; i<MC_RECEIVE_BUFFER; i++)
+    for(int i=0; i<bufferSize; i++)
       tempData[i] = '\0';
 
 
@@ -102,7 +104,7 @@ namespace FluffyMultiplayer
 
 
     //set data
-    for(int i=0; i<MC_RECEIVE_BUFFER; i++)
+    for(int i=0; i<bufferSize; i++)
       data[i] = tempData[i];
 
 

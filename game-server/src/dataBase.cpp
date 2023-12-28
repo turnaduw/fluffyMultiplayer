@@ -4,22 +4,22 @@
 namespace FluffyMultiplayer
 {
 
-    void init(std::string filename)
+    void DataBase::init(std::string filename)
     {
       log.init(DATABASE_LOG_FILENAME,DATABASE_PRINT_LOGS_LEVEL);
       int rc = sqlite3_open(DATABASE_FILENAME, &db);
       if(rc)
-        log.print("can not open database: "+sqlite3_errmsg(db)+"\n", FluffyMultiplayer::LogType::Error);
+        log.print("can not open database: "+std::string(sqlite3_errmsg(db))+"\n", FluffyMultiplayer::LogType::Error);
       else
         log.print("Database opened/created fine.\n", FluffyMultiplayer::LogType::Success);
     }
 
 
-    void close()
+    void DataBase::close()
     {
       int rc = sqlite3_close(db);
       if(rc)
-        log.print("error while close database: "+sqlite3_errmsg(db)+"\n", FluffyMultiplayer::LogType::Error);
+        log.print("error while close database: "+std::string(sqlite3_errmsg(db))+"\n", FluffyMultiplayer::LogType::Error);
       else
         log.print("database closed fine.\n", FluffyMultiplayer::LogType::Success);
 
@@ -83,7 +83,7 @@ namespace FluffyMultiplayer
         if (rc != SQLITE_OK)
         {
             // std::cout << "(search_in_db) SQL search error: " << errMsg << "\tquery=" << _q << std::endl;
-            log.print("(search_in_db): SQL search error: "+errMsg+"\tquery="+_q , FluffyMultiplayer::LogType::Error);
+            log.print("(search_in_db): SQL search error: "+std::string(errMsg)+"\tquery="+_q , FluffyMultiplayer::LogType::Error);
             sqlite3_free(errMsg);
         }
         return result;
@@ -111,7 +111,7 @@ namespace FluffyMultiplayer
           if (rc != SQLITE_OK)
           {
               // std::cout << "(query_to_db) SQL error: " << errMsg << "\tquery=" << _q << std::endl;
-              log.print("(query_to_db): SQL error: "+errMsg+"\tquery="+_q , FluffyMultiplayer::LogType::Error);
+              log.print("(query_to_db): SQL error: "+std::string(errMsg)+"\tquery="+_q , FluffyMultiplayer::LogType::Error);
               sqlite3_free(errMsg);
           }
           else

@@ -22,7 +22,7 @@ namespace FluffyMultiplayer
 
     public:
       std::string queryStr; //to avoid define every time when want call dbQueryStr
-      void init();
+      void init(std::string filename);
       void close();
 
       DataBase()

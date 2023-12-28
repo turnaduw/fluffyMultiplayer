@@ -4,6 +4,8 @@
 #include <boost/asio.hpp>
 
 #include <string>
+#include <queue>
+#include <vector>
 #include "config.h"
 
 
@@ -14,7 +16,7 @@ namespace FluffyMultiplayer
 {
   struct AnAddress
   {
-    AnAddress()
+    AnAddress() //somewhere trying to create AnAddress object
     {
 
     }
@@ -22,7 +24,7 @@ namespace FluffyMultiplayer
     boost::asio::ip::address ip;
     unsigned short port;
 
-    bool operator ==(const FluffyMultiplayer::AnAddress a)
+    bool operator ==(const FluffyMultiplayer::AnAddress& a) const
     {
       if(a.ip == ip && a.port == port)
         return true;
@@ -30,13 +32,13 @@ namespace FluffyMultiplayer
     }
     std::string getAsString()
     {
-      return address.ip.to_string() + ":" + std::to_string(address.port);
+      return ip.to_string() + ":" + std::to_string(port);
     }
 
-    void setFromEndpoint(udp::endpoin& e)
+    void setFromEndpoint(udp::endpoint& e)
     {
-      sender.ip = e.ip;
-      sender.port = e.port;
+      ip = e.address();
+      port = e.port();
     }
 
   };
@@ -50,7 +52,7 @@ namespace FluffyMultiplayer
     int minute;
     int second;
 
-    FluffyMultiplayer::TimeAndDate now()
+    static FluffyMultiplayer::TimeAndDate now()
     {
       // Get current time
       time_t now = time(0);
@@ -122,8 +124,8 @@ namespace FluffyMultiplayer
     int code;
     std::string data;
     FluffyMultiplayer::AnAddress receiver; //if receivers == nulltpr then use this
-    const std::queue<FluffyMultiplayer::Player>* receivers;
-    const std::queue<FluffyMultiplayer::Player>* except;
+    const std::vector<FluffyMultiplayer::Player>* receivers;
+    const std::vector<FluffyMultiplayer::Player>* except;
 
     //one receiver
     void set(int c, std::string d, const FluffyMultiplayer::AnAddress& r)
@@ -145,8 +147,8 @@ namespace FluffyMultiplayer
 
     //broadcast
     void set(int c, std::string d,
-            const std::queue<FluffyMultiplayer::Player>* r,
-            const std::queue<FluffyMultiplayer::Player>* e)
+            const std::vector<FluffyMultiplayer::Player>* r,
+            const std::vector<FluffyMultiplayer::Player>* e)
     {
       code = c;
       data = d;
@@ -154,8 +156,8 @@ namespace FluffyMultiplayer
       except=e;
     }
     void set(int c,
-            const std::queue<FluffyMultiplayer::Player>* r,
-            const std::queue<FluffyMultiplayer::Player>* e)
+            const std::vector<FluffyMultiplayer::Player>* r,
+            const std::vector<FluffyMultiplayer::Player>* e)
     {
       code = c;
       data = "";
@@ -181,28 +183,28 @@ namespace FluffyMultiplayer
 
     std::string getAsStringForOwner(const std::string& ownerUsername)
     {
-      return std::to_string(id) + std::to_string(MS_DATA_DELIMITER) +
-             std::to_string(maxPlayers) + std::to_string(MS_DATA_DELIMITER) +
-             std::to_string(gameMode) + std::to_string(MS_DATA_DELIMITER) +
-             std::to_string(currentPlayers) + std::to_string(MS_DATA_DELIMITER) +
-             std::to_string(isVoiceChatForbidden) + std::to_string(MS_DATA_DELIMITER) +
-             std::to_string(isTextChatForbidden) + std::to_string(MS_DATA_DELIMITER) +
-             std::to_string(isSpecterForbidden) + std::to_string(MS_DATA_DELIMITER) +
-             password + std::to_string(MS_DATA_DELIMITER) +
+      return std::to_string(id) + MS_DATA_DELIMITER +
+             std::to_string(maxPlayers) + MS_DATA_DELIMITER +
+             std::to_string(gameMode) + MS_DATA_DELIMITER +
+             std::to_string(currentPlayers) + MS_DATA_DELIMITER +
+             std::to_string(isVoiceChatForbidden) + MS_DATA_DELIMITER +
+             std::to_string(isTextChatForbidden) + MS_DATA_DELIMITER +
+             std::to_string(isSpecterForbidden) + MS_DATA_DELIMITER +
+             password + MS_DATA_DELIMITER +
 
-             std::to_string(ownerId) + std::to_string(MS_DATA_DELIMITER)+
-             ownerUsername+ std::to_string(MS_DATA_DELIMITER);
+             std::to_string(ownerId) + MS_DATA_DELIMITER+
+             ownerUsername+ MS_DATA_DELIMITER;
     }
     std::string getAsStringForPlayers()
     {
-      return std::to_string(maxPlayers) + std::to_string(MS_DATA_DELIMITER) +
-             std::to_string(gameMode) + std::to_string(MS_DATA_DELIMITER) +
-             std::to_string(currentPlayers) + std::to_string(MS_DATA_DELIMITER) +
-             std::to_string(isVoiceChatForbidden) + std::to_string(MS_DATA_DELIMITER) +
-             std::to_string(isTextChatForbidden) + std::to_string(MS_DATA_DELIMITER) +
-             std::to_string(isSpecterForbidden) + std::to_string(MS_DATA_DELIMITER) +
-             (password.length()>LOBBY_MINIMUM_PASSWORD_LENGTH? "1","0") + std::to_string(MS_DATA_DELIMITER) + //is lcoked
-             std::to_string(ownerId) + std::to_string(MS_DATA_DELIMITER);
+      return std::to_string(maxPlayers) + MS_DATA_DELIMITER +
+             std::to_string(gameMode) + MS_DATA_DELIMITER +
+             std::to_string(currentPlayers) + MS_DATA_DELIMITER +
+             std::to_string(isVoiceChatForbidden) + MS_DATA_DELIMITER +
+             std::to_string(isTextChatForbidden) + MS_DATA_DELIMITER +
+             std::to_string(isSpecterForbidden) + MS_DATA_DELIMITER +
+             (password.length()>LOBBY_MINIMUM_PASSWORD_LENGTH? "1":"0") + MS_DATA_DELIMITER + //is lcoked
+             std::to_string(ownerId) + MS_DATA_DELIMITER;
     }
   };
 }

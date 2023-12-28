@@ -19,15 +19,16 @@ namespace FluffyMultiplayer
       udp::socket socket;
       udp::endpoint senderEndpoint;
       size_t receive_length;
-      char tempData[MC_RECEIVE_BUFFER];
-      bool status;
+      bool statusSocket;
       unsigned short port;
       FluffyMultiplayer::Log log;
+      int bufferSize;
 
     public:
-      UdpSocket(boost::asio::io_context& io_context, unsigned short default_port)
+      UdpSocket(boost::asio::io_context& io_context, unsigned short default_port, int _bufferSize)
           : socket(io_context, udp::endpoint(udp::v4(), default_port))
       {
+        bufferSize = _bufferSize;
         socket.non_blocking(true);
         port = default_port;
         log.init(SOCKET_LOG_FILENAME,SOCKET_PRINT_LOGS_LEVEL);
