@@ -41,7 +41,7 @@ namespace FluffyMultiplayer
             *_result +=  (argv[i] ? argv[i] : "NULL");
         }
         // std::cout << std::endl;
-        log.print("(search_in_db_callback_nofield): _result="+(*_result)+"\n", FluffyMultiplayer::LogType::Information);
+        // log.print("(search_in_db_callback_nofield): _result="+(*_result)+"\n", FluffyMultiplayer::LogType::Information);
 
         return 0;
     }
@@ -59,7 +59,7 @@ namespace FluffyMultiplayer
             *_result += "\n";
         }
         // std::cout << std::endl;
-        log.print("(search_in_db_callback): _result="+(*_result), FluffyMultiplayer::LogType::Information);
+        // log.print("(search_in_db_callback): _result="+(*_result), FluffyMultiplayer::LogType::Information);
 
         return 0;
     }

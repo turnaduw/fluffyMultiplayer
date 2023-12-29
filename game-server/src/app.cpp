@@ -8,29 +8,38 @@ namespace FluffyMultiplayer
     FluffyMultiplayer::SocketSendData currentItem;
     while(true)
     {
-
-      //text data
-      if(sendTextDataList.size()>=1) //on that socket self will check socketStatus before send
+      try
       {
-        currentItem = sendTextDataList.front();
-        ds.encryptData(currentItem.data);
+        //text data
+        if(sendTextDataList.size()>=1) //on that socket self will check socketStatus before send
+        {
+          currentItem = sendTextDataList.front();
+          ds.encryptData(currentItem.data);
 
-        socketText->send(currentItem);
+          socketText->send(currentItem);
 
-        //remove proceessed element
-        sendTextDataList.pop();
+          //remove proceessed element
+          sendTextDataList.pop();
+        }
+
+        //voice data
+        if(sendVoiceDataList.size()>=1) //on that socket self will check socketStatus before send
+        {
+          currentItem = sendVoiceDataList.front();
+          ds.encryptData(currentItem.data);
+
+          socketVoice->send(currentItem);
+
+          //remove proccessed element
+          sendVoiceDataList.pop();
+        }
+
       }
-
-      //voice data
-      if(sendVoiceDataList.size()>=1) //on that socket self will check socketStatus before send
+      catch (std::exception& e)
       {
-        currentItem = sendVoiceDataList.front();
-        ds.encryptData(currentItem.data);
-
-        socketVoice->send(currentItem);
-
-        //remove proccessed element
-        sendVoiceDataList.pop();
+          std::string errorMsg = e.what();
+          log.print("from App::sendData catched exception: "+errorMsg, FluffyMultiplayer::LogType::Warning);
+          continue;
       }
     }
   }
@@ -40,10 +49,9 @@ namespace FluffyMultiplayer
 
     //get code
     //these MS_DATA_CODE_INDEX_X are from config.h
-    std::string str = std::string(currentItem.data[MS_DATA_CODE_INDEX_A]);
-    str += std::string(currentItem.data[MS_DATA_CODE_INDEX_B]);
-    str += std::string(currentItem.data[MS_DATA_CODE_INDEX_C]);
-    currentItem.code = stringToInt(str);
+    char codes [3] = {currentItem.data[MS_DATA_CODE_INDEX_A], currentItem.data[MS_DATA_CODE_INDEX_B], currentItem.data[MS_DATA_CODE_INDEX_C]};
+    const char* temp = codes;
+    currentItem.code = std::atoi(temp);
 
 
     std::string delimiter = MS_DATA_DELIMITER;
@@ -140,7 +148,9 @@ namespace FluffyMultiplayer
           }
           else
           {
-              throw;
+            log.print("from App::receiveData catched exception: "+errorMsg, FluffyMultiplayer::LogType::Warning);
+            continue;
+            // throw;
           }
       }
     }
@@ -159,6 +169,9 @@ namespace FluffyMultiplayer
 
   void App::init(FluffyMultiplayer::LobbyData _lobby)
   {
+    //because of non-blocking turned-on on socket this ip will receive after each second so better way is to ignore so now we just block that
+    blockedAddresses.push_back({"0.0.0.0",0});
+
     lobbyData = _lobby;
     currentGameMode=nullptr;
     gameIsRunning=false;
@@ -185,6 +198,14 @@ namespace FluffyMultiplayer
       default:
         currentGameMode = nullptr; break;
     }
+  }
+
+  bool App::isConnectionBlocked(const FluffyMultiplayer::AnAddress& address) const
+  {
+    for(auto e: blockedAddresses)
+      if(e == address)
+        return true;
+    return false;
   }
 
   std::vector<int> App::dataIndexes(const std::string& data, const std::string& delimiter) const
@@ -314,14 +335,6 @@ namespace FluffyMultiplayer
     for(int i=0; i<receivedTextDataList.size(); i++)
     {
       currentItem = receivedTextDataList.front();
-      log.print("[text] sender="+currentItem.sender.getAsString()+
-                  "received data="+currentItem.data, FluffyMultiplayer::LogType::Information);
-
-      log.print("process currentItem.code="
-            +std::to_string(currentItem.code)+";~;",
-            FluffyMultiplayer::LogType::Information);
-
-
 
       //check connection blocked
       if(isConnectionBlocked(currentItem.sender))
@@ -331,6 +344,16 @@ namespace FluffyMultiplayer
       }
       else if(!isConnectionExists(currentItem.sender))
       {
+        log.print("[text] size="+std::to_string(receivedTextDataList.size()), FluffyMultiplayer::LogType::Information);
+        log.print("[text] sender="+currentItem.sender.getAsString()+
+                    "received data="+currentItem.data, FluffyMultiplayer::LogType::Information);
+
+        log.print("process currentItem.code="
+              +std::to_string(currentItem.code)+";~;",
+              FluffyMultiplayer::LogType::Information);
+
+
+
         /*
         have to process connect and reconenct dedicated
         because if leave it will check connection and these
@@ -1062,6 +1085,7 @@ namespace FluffyMultiplayer
     connectedPlayers.push_back(p);
     log.print("ip(" + p.getAsString() + ") "
       + "connected to the lobby.", FluffyMultiplayer::LogType::Information);
+    return true;
   }
   bool App::disconnectPlayer(FluffyMultiplayer::AnAddress& ad)
   {

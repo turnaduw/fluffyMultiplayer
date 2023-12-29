@@ -21,6 +21,12 @@ namespace FluffyMultiplayer
 
     }
 
+    AnAddress(std::string str,unsigned short _port)
+    {
+      ip = boost::asio::ip::address::from_string(str);
+      port = _port;
+    }
+
     boost::asio::ip::address ip;
     unsigned short port;
 
@@ -73,7 +79,7 @@ namespace FluffyMultiplayer
     FluffyMultiplayer::TimeAndDate connectedTime;
     bool voiceChatEnable;
 
-    bool operator == (const FluffyMultiplayer::Player& p)
+    bool operator ==(const FluffyMultiplayer::Player& p) const
     {
       if(p.id==id)
         return true;

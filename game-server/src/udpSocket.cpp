@@ -17,11 +17,19 @@ namespace FluffyMultiplayer
 
   void UdpSocket::setPort(unsigned short newPort)
   {
-    socket.close(); // Close the existing socket
+    try
+    {
+      socket.close(); // Close the existing socket
 
-    udp::endpoint newEndpoint(udp::v4(), newPort);
-    socket.open(newEndpoint.protocol());
-    socket.bind(newEndpoint);
+      udp::endpoint newEndpoint(udp::v4(), newPort);
+      socket.open(newEndpoint.protocol());
+      socket.bind(newEndpoint);
+    }
+    catch (std::exception& e)
+    {
+        std::string errorMsg = e.what();
+        log.print("from UdpSocket::setPort catched exception: "+errorMsg, FluffyMultiplayer::LogType::Warning);
+    }
   }
   unsigned short UdpSocket::getPort() const
   {
@@ -36,31 +44,28 @@ namespace FluffyMultiplayer
 
   void UdpSocket::broadcast(FluffyMultiplayer::SocketSendData& currentItem)
   {
-    udp::endpoint receiverEndpoint;
 
 
-    auto sendTo = [&] (std::string& data, FluffyMultiplayer::AnAddress& address) -> void
-    {
-      receiverEndpoint = address;
-      receiverEndpoint.address= address.ip;
-      receiverEndpoint.port= address.port;
-      socket.send_to(boost::asio::buffer(data), receiverEndpoint);
-    };
+    // auto sendTo = [&] (std::string& data, FluffyMultiplayer::AnAddress& address) -> void
+    // {
+    //   udp::endpoint receiverEndpoint(address.ip, address.port);
+    //   socket.send_to(boost::asio::buffer(data), receiverEndpoint);
+    // };
 
-    for(auto receiver : currentItem.receivers->address)
+    for(int i=0; i<currentItem.receivers->size();i++)
     {
       if(currentItem.except != nullptr)
-        for(auto except: currentItem.except->address)
-          if(receiver == except) //skip this client
+        for(int j=0; j<currentItem.except->size();j++)
+          if(currentItem.receivers[i] == currentItem.except[j]) //skip this client
             continue;
           else
-            sendTo(currentItem.data, receiver.address);
+            sendDirect(currentItem.data, (*currentItem.receivers)[i].address,true,0);
       else //there is no exception send to all
-        sendTo(currentItem.data, receiver.address);
+        sendDirect(currentItem.data, (*currentItem.receivers)[i].address,true,0);
     }
   }
 
-  void udpSocket::send(FluffyMultiplayer::SocketSendData& currentItem)
+  void UdpSocket::send(FluffyMultiplayer::SocketSendData& currentItem)
   {
     //if socket is disabled skip send
     if(!statusSocket)
@@ -72,46 +77,64 @@ namespace FluffyMultiplayer
 
     //check if receivers are only one sendDirect else send as broadcast
     if(currentItem.receivers == nullptr)
-      sendDirect(currentItem.data,currentItem.receiver);
+      sendDirect(currentItem.data,currentItem.receiver,true,0);
     else
       broadcast(currentItem);
   }
   void UdpSocket::sendDirect(std::string& data,
                 const FluffyMultiplayer::AnAddress& receiver,
-                bool areDataPrepared=true, int& code=0)
+                bool areDataPrepared, int code)
   {
-    if(!areDataPrepared)
-      prepareData(code,data);
+    try
+    {
+      if(!areDataPrepared)
+        prepareData(code,data);
 
-    udp::endpoint receiverEndpoint(receiver.ip, receiver.port);
-    socket.send_to(boost::asio::buffer(data), receiverEndpoint);
+      udp::endpoint receiverEndpoint(receiver.ip, receiver.port);
+      socket.send_to(boost::asio::buffer(data), receiverEndpoint);
+    }
+    catch (std::exception& e)
+    {
+        std::string errorMsg = e.what();
+        log.print("from UdpSocket::sendDirect catched exception: "+errorMsg, FluffyMultiplayer::LogType::Warning);
+    }
   }
 
 
   size_t UdpSocket::receive(char * const data, udp::endpoint& senderAddress)
   {
-    char tempData[bufferSize];
-    if(!statusSocket)
-      return 0;
+    try
+    {
+      char buffer[bufferSize];
+      if(!statusSocket)
+        return 0;
 
-    //make tempData empty
-    for(int i=0; i<bufferSize; i++)
-      tempData[i] = '\0';
-
-
-    //will return to tell caller how much has length
-    receive_length = socket.receive_from(boost::asio::buffer(tempData), senderEndpoint);
+      //make buffer empty
+      for(int i=0; i<bufferSize; i++)
+        buffer[i] = '\0';
 
 
-    //set data
-    for(int i=0; i<bufferSize; i++)
-      data[i] = tempData[i];
+      //will return to tell caller how much has length
+      char temp[bufferSize];
+      receive_length = socket.receive_from(boost::asio::buffer(buffer,bufferSize), senderEndpoint);
 
 
-    //by ref to tell caller what are sender info
-    senderAddress = senderEndpoint;
+      //set data
+      for(int i=0; i<bufferSize; i++)
+        data[i] = buffer[i];
 
-    return receive_length;
+
+      //by ref to tell caller what are sender info
+      senderAddress = senderEndpoint;
+
+      return receive_length;
+    }
+    catch (std::exception& e)
+    {
+        std::string errorMsg = e.what();
+        log.print("from UdpSocket::receive catched exception: "+errorMsg, FluffyMultiplayer::LogType::Warning);
+    }
+    return 0;
   }
 
 }

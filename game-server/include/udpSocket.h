@@ -57,7 +57,7 @@ namespace FluffyMultiplayer
       void sendDirect(std::string& data,
               const FluffyMultiplayer::AnAddress& receiver,
               bool areDataPrepared,
-              int& code);
+              int code);
 
       void send(FluffyMultiplayer::SocketSendData&);
       void broadcast(FluffyMultiplayer::SocketSendData&);
