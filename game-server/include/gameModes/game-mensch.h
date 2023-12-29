@@ -2,7 +2,6 @@
 #define GM_MENSCH
 
 #include "../gameMode.h"
-#include "../dataType.h"
 
 #define MENSCH_PLAYERS_COUNT 4
 
@@ -28,7 +27,7 @@
 
 namespace FluffyMultiplayer
 {
-  struct Color { Black=0, White, Red, Green, Blue, Purple, Gray, Cyan, Yellow };
+  enum Color { Black=0, White, Red, Green, Blue, Purple, Gray, Cyan, Yellow };
 
   struct Piece
   {
@@ -56,17 +55,25 @@ namespace FluffyMultiplayer
       std::array<MenschPlayer,MENSCH_PLAYERS_COUNT> players;
       MenschBoard mboard;
     public:
-      FluffyMultiplayer::GameMode* process(FluffyMultiplayer::SocketReceiveData) override;
+      FluffyMultiplayer::GameMode* process(FluffyMultiplayer::SocketReceiveData& currentItem,
+                                                   std::queue<FluffyMultiplayer::SocketSendData>& sendTextDataList,
+                                                   FluffyMultiplayer::Log& log,
+                                                   FluffyMultiplayer::DataBase& db,
+                                                   FluffyMultiplayer::DataSecurity& ds) override;
+
       void roleDice();
       void nowTurn();
       void movePiece();
 
       GameModeMensch()
       {
-        gamModeId = 1;
+        gameModeId = 1;
         gs = nullptr;
       }
-      ~GameModeMensch();
+      ~GameModeMensch()
+      {
+        
+      }
 
   };
 }

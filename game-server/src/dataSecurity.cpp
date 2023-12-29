@@ -3,6 +3,28 @@
 
 namespace FluffyMultiplayer
 {
+  bool DataSecurity::isSQLCodeIncluded(const std::string& str)
+  {
+    return false;
+  }
+
+  void DataSecurity::removeSQLCodeFromData(std::string& str)
+  {
+
+  }
+
+  //data validation
+  bool DataSecurity::isDataValidated()
+  {
+    return true;
+  }
+
+  bool DataSecurity::isIdentityValid(const std::string& str)
+  {
+    return true;
+  }
+
+
   DataSecurity::DataSecurity()
   {
 

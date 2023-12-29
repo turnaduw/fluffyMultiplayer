@@ -6,6 +6,8 @@
 #include <cstring>
 
 #include "dataType.h"
+#include "log.h"
+
 
 namespace FluffyMultiplayer
 {
@@ -13,11 +15,16 @@ namespace FluffyMultiplayer
   {
       sqlite3* db;
       char* errMsg = nullptr;
+      FluffyMultiplayer::Log log;
       FluffyMultiplayer::TimeAndDate convertDatabaseTimeStamp(std::string);
       FluffyMultiplayer::TimeAndDate getCurrentTime();
       void printTime(std::string, const FluffyMultiplayer::TimeAndDate&);
 
     public:
+      std::string queryStr; //to avoid define every time when want call dbQueryStr
+      void init(std::string filename);
+      void close();
+
       DataBase()
       {
 
@@ -31,10 +38,9 @@ namespace FluffyMultiplayer
       static int search_in_db_callback(void* data, int argc, char** argv, char** azColName);
       std::string search_in_db(const std::string&,bool withoutFieldName);
 
-      static int isExists_in_db_callback(void* data, int argc, char** argv, char** azColName);
-      bool isExists_in_db(std::string& _q, int lengthField);
-
       bool query_to_db(const std::string&);
+      bool query_to_db();
+
   };
 }
 
