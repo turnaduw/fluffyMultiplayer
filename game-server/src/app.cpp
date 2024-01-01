@@ -10,6 +10,11 @@ namespace FluffyMultiplayer
     {
       try
       {
+
+        //lock mutex for socket to avoid segment fault or data corruption.
+        boost::lock_guard<boost::mutex> lock(socketMutex);
+
+
         //text data
         if(sendTextDataList.size()>=1) //on that socket self will check socketStatus before send
         {
@@ -155,6 +160,44 @@ namespace FluffyMultiplayer
       }
     }
   }
+
+
+  void App::safePushToList(std::queue<FluffyMultiplayer::SocketSendData>& list)
+  {
+    boost::lock_guard<boost::mutex> lock(socketMutex);
+    list.push(sendTemp);
+  }
+
+  void App::response(std::queue<FluffyMultiplayer::SocketSendData>& list, int code,
+                FluffyMultiplayer::AnAddress receiver)
+  {
+    sendTemp.set(code,receiver);
+    safePushToList(list);
+  }
+
+  void App::response(std::queue<FluffyMultiplayer::SocketSendData>& list, int code, std::string data,
+                FluffyMultiplayer::AnAddress receiver)
+  {
+    sendTemp.set(code,data,receiver);
+    safePushToList(list);
+  }
+
+  void App::response(std::queue<FluffyMultiplayer::SocketSendData>& list, int code,
+                const std::vector<FluffyMultiplayer::Player>* receivers,
+                const std::vector<FluffyMultiplayer::Player>* except)
+  {
+    sendTemp.set(code,receivers,except);
+    safePushToList(list);
+  }
+
+  void App::response(std::queue<FluffyMultiplayer::SocketSendData>& list, int code, std::string data,
+                      const std::vector<FluffyMultiplayer::Player>* receivers,
+                      const std::vector<FluffyMultiplayer::Player>* except)
+  {
+    sendTemp.set(code,data,receivers,except);
+    safePushToList(list);
+  }
+
 
   App::App()
   {
@@ -339,8 +382,7 @@ namespace FluffyMultiplayer
       //check connection blocked
       if(isConnectionBlocked(currentItem.sender))
       {
-        sendTemp.set(RESPONSE_ERROR_CONNECTION_BLOCKED,currentItem.sender); //maybe later return blocked time to client
-        sendTextDataList.push(sendTemp);
+        // response(sendTextDataList, RESPONSE_ERROR_CONNECTION_BLOCKED,currentItem.sender); //maybe later return blocked time to client
       }
       else if(!isConnectionExists(currentItem.sender))
       {
@@ -364,13 +406,11 @@ namespace FluffyMultiplayer
           //add to connected list
           if(connectPlayer(currentItem.sender))
           {
-            sendTemp.set(RESPONSE_CONNECTION_ACCEPTED,currentItem.sender);
-            sendTextDataList.push(sendTemp);
+            response(sendTextDataList, RESPONSE_CONNECTION_ACCEPTED, currentItem.sender);
           }
           else
           {
-            sendTemp.set(RESPONSE_INTERNAL_ERROR_FAILED_TO_CONNECT,currentItem.sender);
-            sendTextDataList.push(sendTemp);
+            response(sendTextDataList, RESPONSE_INTERNAL_ERROR_FAILED_TO_CONNECT, currentItem.sender);
           }
         }
         else if(currentItem.code == REQUEST_RECONNECT_TO_LOBBY)
@@ -385,8 +425,7 @@ namespace FluffyMultiplayer
         }
         else
         {
-          sendTemp.set(RESPONSE_ERROR_CONNECTION_NOT_EXISTS,currentItem.sender);
-          sendTextDataList.push(sendTemp);
+          response(sendTextDataList, RESPONSE_ERROR_CONNECTION_NOT_EXISTS,currentItem.sender);
         }
       }
       else
@@ -410,15 +449,13 @@ namespace FluffyMultiplayer
           {
             case REQUEST_CONNECT_TO_LOBBY:
             {
-              sendTemp.set(RESPONSE_ERROR_CONNECTION_EXISTS,currentItem.sender);
-              sendTextDataList.push(sendTemp);
+              response(sendTextDataList, RESPONSE_ERROR_CONNECTION_EXISTS,currentItem.sender);
             }break;
 
             case REQUEST_RECONNECT_TO_LOBBY:
             {
               //that ip and port have not exists while player want reconnect
-              sendTemp.set(RESPONSE_ERROR_CONNECTION_EXISTS,currentItem.sender);
-              sendTextDataList.push(sendTemp);
+              response(sendTextDataList, RESPONSE_ERROR_CONNECTION_EXISTS,currentItem.sender);
             }break;
 
 
@@ -436,32 +473,27 @@ namespace FluffyMultiplayer
                 if(db.query_to_db())
                 {
                   // remove from connectedPlayers and inLobbyPlayers and lobbySpecter if exists
-                  std::string response = std::to_string(cid) + MS_DATA_DELIMITER;
+                  std::string responseStr = std::to_string(cid) + MS_DATA_DELIMITER;
 
                   if(disconnectPlayer(currentItem.sender))
                   {
                     //broadcast to lobby players
-                    sendTemp.set(RESPONSE_PLAYER_DISCONNECTED,response,&inLobbyPlayers, nullptr);
-                    sendTextDataList.push(sendTemp);
+                    response(sendTextDataList, RESPONSE_PLAYER_DISCONNECTED,responseStr,&inLobbyPlayers, nullptr);
 
                     //broadcast to specters
                     if(lobbySpecters.size()>=1)
                     {
-                      sendTemp.set(RESPONSE_PLAYER_DISCONNECTED,response,&lobbySpecters, nullptr);
-                      sendTextDataList.push(sendTemp);
+                      response(sendTextDataList, RESPONSE_PLAYER_DISCONNECTED,responseStr,&lobbySpecters, nullptr);
                     }
                   }
                   else //connection not found to disconnect
                   {
-                    sendTemp.set(RESPONSE_ERROR_DISCONNECT_YOU_ARE_NOT_CONNECTED,response,&lobbySpecters, nullptr);
-                    sendTextDataList.push(sendTemp);
+                    response(sendTextDataList, RESPONSE_ERROR_DISCONNECT_YOU_ARE_NOT_CONNECTED,responseStr,&lobbySpecters, nullptr);
                   }
                 }
                 else
                 {
-                  sendTemp.set(RESPONSE_INTERNAL_ERROR_FAILED_TO_DISCONNECT,currentItem.sender);
-                  sendTextDataList.push(sendTemp);
-                }
+                  response(sendTextDataList, RESPONSE_INTERNAL_ERROR_FAILED_TO_DISCONNECT,currentItem.sender);                }
               }
             }break;
 
@@ -481,8 +513,7 @@ namespace FluffyMultiplayer
                       //check for ban by id
                       if(isIdBannedFromLobby(tempPlayer.id))
                       {
-                        sendTemp.set(RESPONSE_ERROR_JOIN_LOBBY_YOU_ARE_BANNED,currentItem.sender);
-                        sendTextDataList.push(sendTemp);
+                        response(sendTextDataList, RESPONSE_ERROR_JOIN_LOBBY_YOU_ARE_BANNED,currentItem.sender);
                       }
                       else
                       {
@@ -509,18 +540,15 @@ namespace FluffyMultiplayer
                           inLobbyPlayers.push_back(tempPlayer);
 
                           //tell sender his id
-                          sendTemp.set(RESPONSE_YOU_ARE_JOINT_INTO_LOBBY,"joint into lobby and your data is =.. + lobbyData + lobbyPlayers + ...",currentItem.sender);
-                          sendTextDataList.push(sendTemp);
+                          response(sendTextDataList, RESPONSE_YOU_ARE_JOINT_INTO_LOBBY,"joint into lobby and your data is =.. + lobbyData + lobbyPlayers + ...",currentItem.sender);
 
                           //broadcast to in lobby client joint
-                          sendTemp.set(RESPONSE_PLAYER_JOINT_INTO_LOBBY,"player joint in lobby his info=..",&inLobbyPlayers,nullptr);
-                          sendTextDataList.push(sendTemp);
+                          response(sendTextDataList, RESPONSE_PLAYER_JOINT_INTO_LOBBY,"player joint in lobby his info=..",&inLobbyPlayers,nullptr);
 
                           //broadcast to speceter
                           if(lobbySpecters.size()>=1)
                           {
-                            sendTemp.set(RESPONSE_PLAYER_JOINT_INTO_LOBBY,"player joint in lobby his info=..",&lobbySpecters,nullptr);
-                            sendTextDataList.push(sendTemp);
+                            response(sendTextDataList, RESPONSE_PLAYER_JOINT_INTO_LOBBY,"player joint in lobby his info=..",&lobbySpecters,nullptr);
                           }
 
                         }
@@ -528,8 +556,7 @@ namespace FluffyMultiplayer
                         {
                           //faield to join lobby maybe client is already in lobby or have some databse insert issue
                           // RESPONSE_ERROR_JOIN_LOBBY_YOU_ARE_ALREADY_JOINT -> because of using INSERT OR REPLACE INTO this problem solved for many cases
-                          sendTemp.set(RESPONSE_INTERNAL_ERROR_FAILED_TO_JOIN_INTO_LOBBY,currentItem.sender);
-                          sendTextDataList.push(sendTemp);
+                          response(sendTextDataList, RESPONSE_INTERNAL_ERROR_FAILED_TO_JOIN_INTO_LOBBY,currentItem.sender);
                         }
                       }
 
@@ -537,21 +564,18 @@ namespace FluffyMultiplayer
                     else
                     {
                       //id is <=0 so invalid. player not found -> invalid identity
-                      sendTemp.set(RESPONSE_ERROR_JOIN_LOBBY_INVALID_IDENTITY,currentItem.sender);
-                      sendTextDataList.push(sendTemp);
+                      response(sendTextDataList, RESPONSE_ERROR_JOIN_LOBBY_INVALID_IDENTITY,currentItem.sender);
                     }
                   }
                   else
                   {
                     log.print("join to lobby: invalid identity. data="+currentItem.data, FluffyMultiplayer::LogType::Information);
-                    sendTemp.set(RESPONSE_ERROR_JOIN_LOBBY_INVALID_IDENTITY,currentItem.sender);
-                    sendTextDataList.push(sendTemp);
+                    response(sendTextDataList, RESPONSE_ERROR_JOIN_LOBBY_INVALID_IDENTITY,currentItem.sender);
                   }
                 }
                 else //incorrect password
                 {
-                  sendTemp.set(RESPONSE_ERROR_JOIN_LOBBY_PASSWORD_INCORRECT,currentItem.sender);
-                  sendTextDataList.push(sendTemp);
+                  response(sendTextDataList, RESPONSE_ERROR_JOIN_LOBBY_PASSWORD_INCORRECT,currentItem.sender);
                 }
 
             }break;
@@ -559,11 +583,10 @@ namespace FluffyMultiplayer
             case REQUEST_GET_LOBBY_SETTINGS:
             {
               if(doesItHavePermission(currentItem.sender))
-                sendTemp.set(RESPONSE_LOBBY_SETTINGS_IS,lobbyData.getAsStringForOwner(getPlayerUsernameById(lobbyData.ownerId)),currentItem.sender);
+                response(sendTextDataList, RESPONSE_LOBBY_SETTINGS_IS,lobbyData.getAsStringForOwner(getPlayerUsernameById(lobbyData.ownerId)),currentItem.sender);
               else
-                sendTemp.set(RESPONSE_ERROR_GET_LOBBY_SETTINGS_NO_PERMISSION,currentItem.sender);
+                response(sendTextDataList, RESPONSE_ERROR_GET_LOBBY_SETTINGS_NO_PERMISSION,currentItem.sender);
 
-              sendTextDataList.push(sendTemp);
             }break;
 
             case REQUEST_UPDATE_LOBBY_SETTINGS:
@@ -588,21 +611,18 @@ namespace FluffyMultiplayer
 
 
                 //broadcast lobby setting changes to in lobby
-                sendTemp.set(RESPONSE_LOBBY_SETTINGS_UPDATED,lobbyData.getAsStringForPlayers(),&inLobbyPlayers,nullptr);
-                sendTextDataList.push(sendTemp);
+                response(sendTextDataList, RESPONSE_LOBBY_SETTINGS_UPDATED,lobbyData.getAsStringForPlayers(),&inLobbyPlayers,nullptr);
 
                 //broadcast lobby setting changes to specters
                 if(lobbySpecters.size()>=1)
                 {
-                  sendTemp.set(RESPONSE_LOBBY_SETTINGS_UPDATED,lobbyData.getAsStringForPlayers(),&lobbySpecters,nullptr);
-                  sendTextDataList.push(sendTemp);
+                  response(sendTextDataList, RESPONSE_LOBBY_SETTINGS_UPDATED,lobbyData.getAsStringForPlayers(),&lobbySpecters,nullptr);
                 }
 
               }
               else
               {
-                sendTemp.set(RESPONSE_ERROR_UPDATE_LOBBY_SETTINGS_NO_PERMISSION,currentItem.sender);
-                sendTextDataList.push(sendTemp);
+                response(sendTextDataList, RESPONSE_ERROR_UPDATE_LOBBY_SETTINGS_NO_PERMISSION,currentItem.sender);
               }
 
             }break;
@@ -613,27 +633,23 @@ namespace FluffyMultiplayer
               {
                 if(gameIsRunning)
                 {
-                  sendTemp.set(RESPONSE_ERROR_START_GAME_ALREADY_RUN,currentItem.sender);
-                  sendTextDataList.push(sendTemp);
+                  response(sendTextDataList, RESPONSE_ERROR_START_GAME_ALREADY_RUN,currentItem.sender);
                 }
                 else
                 {
                   if(startGame())
                   {
-                    sendTemp.set(RESPONSE_GAME_STARTED,&inLobbyPlayers,nullptr);
-                    sendTextDataList.push(sendTemp);
+                    response(sendTextDataList, RESPONSE_GAME_STARTED,&inLobbyPlayers,nullptr);
                   }
                   else
                   {
-                    sendTemp.set(RESPONSE_INTERNAL_ERROR_FAILED_TO_START_GAME,currentItem.sender);
-                    sendTextDataList.push(sendTemp);
+                    response(sendTextDataList, RESPONSE_INTERNAL_ERROR_FAILED_TO_START_GAME,currentItem.sender);
                   }
                 }
               }
               else
               {
-                sendTemp.set(RESPONSE_ERROR_START_GAME_NO_PERMISSION,currentItem.sender);
-                sendTextDataList.push(sendTemp);
+                response(sendTextDataList, RESPONSE_ERROR_START_GAME_NO_PERMISSION,currentItem.sender);
               }
             }break;
 
@@ -643,27 +659,23 @@ namespace FluffyMultiplayer
               {
                 if(!gameIsRunning)
                 {
-                  sendTemp.set(RESPONSE_ERROR_STOP_GAME_NOT_STARTED,currentItem.sender);
-                  sendTextDataList.push(sendTemp);
+                  response(sendTextDataList, RESPONSE_ERROR_STOP_GAME_NOT_STARTED,currentItem.sender);
                 }
                 else
                 {
                   if(stopGame())
                   {
-                    sendTemp.set(RESPONSE_GAME_STOPPED,&inLobbyPlayers,nullptr);
-                    sendTextDataList.push(sendTemp);
+                    response(sendTextDataList, RESPONSE_GAME_STOPPED,&inLobbyPlayers,nullptr);
                   }
                   else
                   {
-                    sendTemp.set(RESPONSE_INTERNAL_ERROR_FAILED_TO_STOP_GAME,currentItem.sender);
-                    sendTextDataList.push(sendTemp);
+                    response(sendTextDataList, RESPONSE_INTERNAL_ERROR_FAILED_TO_STOP_GAME,currentItem.sender);
                   }
                 }
               }
               else
               {
-                sendTemp.set(RESPONSE_ERROR_STOP_GAME_NO_PERMISSION,currentItem.sender);
-                sendTextDataList.push(sendTemp);
+                response(sendTextDataList, RESPONSE_ERROR_STOP_GAME_NO_PERMISSION,currentItem.sender);
               }
             }break;
 
@@ -677,12 +689,10 @@ namespace FluffyMultiplayer
                 if(db.query_to_db())
                 {
                   //tell inLobbyPlayers lobby is deleted.
-                  sendTemp.set(RESPONSE_LOBBY_DELETED,&inLobbyPlayers,nullptr);
-                  sendTextDataList.push(sendTemp);
+                  response(sendTextDataList, RESPONSE_LOBBY_DELETED,&inLobbyPlayers,nullptr);
 
                   //tell lobbySpecters lobby is deleted.
-                  sendTemp.set(RESPONSE_LOBBY_DELETED,&lobbySpecters,nullptr);
-                  sendTextDataList.push(sendTemp);
+                  response(sendTextDataList, RESPONSE_LOBBY_DELETED,&lobbySpecters,nullptr);
 
                   //close server application
                   log.print("lobby deleted. lobbyId="+std::to_string(lobbyData.id), FluffyMultiplayer::LogType::Information);
@@ -690,14 +700,12 @@ namespace FluffyMultiplayer
                 }
                 else
                 {
-                  sendTemp.set(RESPONSE_INTERNAL_ERROR_FAILED_TO_DELETE_LOBBY,currentItem.sender);
-                  sendTextDataList.push(sendTemp);
+                  response(sendTextDataList, RESPONSE_INTERNAL_ERROR_FAILED_TO_DELETE_LOBBY,currentItem.sender);
                 }
               }
               else
               {
-                sendTemp.set(RESPONSE_ERROR_DELETE_LOBBY_NO_PERMISSION,currentItem.sender);
-                sendTextDataList.push(sendTemp);
+                response(sendTextDataList, RESPONSE_ERROR_DELETE_LOBBY_NO_PERMISSION,currentItem.sender);
               }
             }break;
 
@@ -719,17 +727,15 @@ namespace FluffyMultiplayer
                               ") has been kicked from lobby ("+std::to_string(lobbyData.id)+")",
                               FluffyMultiplayer::LogType::Information);
 
-                    std::string response = std::to_string(targetId) + MS_DATA_DELIMITER;
+                    std::string responseStr = std::to_string(targetId) + MS_DATA_DELIMITER;
 
                     //broadcast to inLobbyPlayers, player has been kicked from lobby
-                    sendTemp.set(RESPONSE_PLAYER_KICKED_FROM_LOBBY,response,&inLobbyPlayers,nullptr);
-                    sendTextDataList.push(sendTemp);
+                    response(sendTextDataList, RESPONSE_PLAYER_KICKED_FROM_LOBBY,responseStr,&inLobbyPlayers,nullptr);
 
                     //broadcast to specters, player has been kicked from lobby
                     if(lobbySpecters.size()>=1)
                     {
-                      sendTemp.set(RESPONSE_PLAYER_KICKED_FROM_LOBBY,response,&lobbySpecters,nullptr);
-                      sendTextDataList.push(sendTemp);
+                      response(sendTextDataList, RESPONSE_PLAYER_KICKED_FROM_LOBBY,responseStr,&lobbySpecters,nullptr);
                     }
 
                     //this line written blow of those, because we want to tell all (speacilly that target to you are kicked if put this line up would not send to targetId)
@@ -738,20 +744,17 @@ namespace FluffyMultiplayer
                   }
                   else
                   {
-                    sendTemp.set(RESPONSE_INTERNAL_ERROR_FAILED_TO_KICK_PLAYER,currentItem.sender);
-                    sendTextDataList.push(sendTemp);
+                    response(sendTextDataList, RESPONSE_INTERNAL_ERROR_FAILED_TO_KICK_PLAYER,currentItem.sender);
                   }
                 }
                 else
                 {
-                  sendTemp.set(RESPONSE_ERROR_KICK_PLAYER_INVALID_TARGET,currentItem.sender);
-                  sendTextDataList.push(sendTemp);
+                  response(sendTextDataList, RESPONSE_ERROR_KICK_PLAYER_INVALID_TARGET,currentItem.sender);
                 }
               }
               else
               {
-                sendTemp.set(RESPONSE_ERROR_KICK_PLAYER_NO_PERMISSION,currentItem.sender);
-                sendTextDataList.push(sendTemp);
+                response(sendTextDataList, RESPONSE_ERROR_KICK_PLAYER_NO_PERMISSION,currentItem.sender);
               }
             }break;
 
@@ -781,17 +784,15 @@ namespace FluffyMultiplayer
                     };
                     bannedPlayers.push_back(targetAsBan);
 
-                    std::string response = std::to_string(targetId) + MS_DATA_DELIMITER; //later can write reason and ban time to tell other clients
+                    std::string responseStr = std::to_string(targetId) + MS_DATA_DELIMITER; //later can write reason and ban time to tell other clients
 
                     //broadcast to inLobbyPlayers, player has been kicked from lobby
-                    sendTemp.set(RESPONSE_PLAYER_BANNED_FROM_LOBBY,response,&inLobbyPlayers,nullptr);
-                    sendTextDataList.push(sendTemp);
+                    response(sendTextDataList, RESPONSE_PLAYER_BANNED_FROM_LOBBY,responseStr,&inLobbyPlayers,nullptr);
 
                     //broadcast to specters, player has been kicked from lobby
                     if(lobbySpecters.size()>=1)
                     {
-                      sendTemp.set(RESPONSE_PLAYER_BANNED_FROM_LOBBY,response,&lobbySpecters,nullptr);
-                      sendTextDataList.push(sendTemp);
+                      response(sendTextDataList, RESPONSE_PLAYER_BANNED_FROM_LOBBY,responseStr,&lobbySpecters,nullptr);
                     }
 
                     //this line written blow of those, because we want to tell all (speacilly that target to you are banned if put this line up would not send to targetId)
@@ -800,14 +801,12 @@ namespace FluffyMultiplayer
                 }
                 else
                 {
-                  sendTemp.set(RESPONSE_ERROR_BAN_PLAYER_INVALID_TARGET,currentItem.sender);
-                  sendTextDataList.push(sendTemp);
+                  response(sendTextDataList, RESPONSE_ERROR_BAN_PLAYER_INVALID_TARGET,currentItem.sender);
                 }
               }
               else
               {
-                sendTemp.set(RESPONSE_ERROR_BAN_PLAYER_NO_PERMISSION,currentItem.sender);
-                sendTextDataList.push(sendTemp);
+                response(sendTextDataList, RESPONSE_ERROR_BAN_PLAYER_NO_PERMISSION,currentItem.sender);
               }
             }
             }break;
@@ -828,36 +827,31 @@ namespace FluffyMultiplayer
 
                     log.print("lobby owner changed to ("+std::to_string(targetId), FluffyMultiplayer::LogType::Information);
 
-                    std::string response = std::to_string(targetId) + MS_DATA_DELIMITER;
+                    std::string responseStr = std::to_string(targetId) + MS_DATA_DELIMITER;
 
                     //broadcast to inLobbyPlayers, player has been kicked from lobby
-                    sendTemp.set(REQUEST_TRANSFER_LOBBY_OWNERSHIP,response,&inLobbyPlayers,nullptr);
-                    sendTextDataList.push(sendTemp);
+                    response(sendTextDataList, REQUEST_TRANSFER_LOBBY_OWNERSHIP,responseStr,&inLobbyPlayers,nullptr);
 
                     //broadcast to specters, player has been kicked from lobby
                     if(lobbySpecters.size()>=1)
                     {
-                      sendTemp.set(REQUEST_TRANSFER_LOBBY_OWNERSHIP,response,&lobbySpecters,nullptr);
-                      sendTextDataList.push(sendTemp);
+                      response(sendTextDataList, REQUEST_TRANSFER_LOBBY_OWNERSHIP,responseStr,&lobbySpecters,nullptr);
                     }
                   }
                   else
                   {
-                    sendTemp.set(RESPONSE_INTERNAL_ERROR_FAILED_TO_TRANSFER_LOBBY_OWNERSHIP,currentItem.sender);
-                    sendTextDataList.push(sendTemp);
+                    response(sendTextDataList, RESPONSE_INTERNAL_ERROR_FAILED_TO_TRANSFER_LOBBY_OWNERSHIP,currentItem.sender);
                   }
                 }
                 else
                 {
-                  sendTemp.set(RESPONSE_ERROR_TRANSFER_OWNERSHIP_INVALID_TARGET,currentItem.sender);
-                  sendTextDataList.push(sendTemp);
+                  response(sendTextDataList, RESPONSE_ERROR_TRANSFER_OWNERSHIP_INVALID_TARGET,currentItem.sender);
                 }
 
               }
               else
               {
-                sendTemp.set(RESPONSE_ERROR_TRANSFER_OWNERSHIP_NO_PERMISSION,currentItem.sender);
-                sendTextDataList.push(sendTemp);
+                response(sendTextDataList, RESPONSE_ERROR_TRANSFER_OWNERSHIP_NO_PERMISSION,currentItem.sender);
               }
             }break;
 
@@ -865,23 +859,20 @@ namespace FluffyMultiplayer
             {
               if(lobbyData.isTextChatForbidden)
               {
-                sendTemp.set(RESPONSE_ERROR_SEND_TEXT_CHAT_DISABLED,currentItem.sender);
-                sendTextDataList.push(sendTemp);
+                response(sendTextDataList, RESPONSE_ERROR_SEND_TEXT_CHAT_DISABLED,currentItem.sender);
               }
               else
               {
-                  std::string response = getPlayerUsernameById(getSenderId(currentItem.sender)) +
+                  std::string responseStr = getPlayerUsernameById(getSenderId(currentItem.sender)) +
                                               ": " + cData[0] + "\n";
 
                   //broadcast  new text message.. to inLobbyPlayers
-                  sendTemp.set(RESPONSE_PLAYER_SENT_TEXT_MESSAGE,response,&inLobbyPlayers,nullptr);
-                  sendTextDataList.push(sendTemp);
+                  response(sendTextDataList, RESPONSE_PLAYER_SENT_TEXT_MESSAGE,responseStr,&inLobbyPlayers,nullptr);
 
                   //broadcast new text message.. to specters
                   if(lobbySpecters.size()>=1 && SEND_TEXT_CHAT_TO_SPECTERS)
                   {
-                    sendTemp.set(RESPONSE_PLAYER_SENT_TEXT_MESSAGE,response,&lobbySpecters,nullptr);
-                    sendTextDataList.push(sendTemp);
+                    response(sendTextDataList, RESPONSE_PLAYER_SENT_TEXT_MESSAGE,responseStr,&lobbySpecters,nullptr);
                   }
               }
             }break;
@@ -894,17 +885,15 @@ namespace FluffyMultiplayer
               if(cid>=1)
                 updatePlayerVoiceChatStatus(cid,true);
 
-                std::string response = std::to_string(cid) + MS_DATA_DELIMITER; //later can write reason and ban time to tell other clients
+                std::string responseStr = std::to_string(cid) + MS_DATA_DELIMITER; //later can write reason and ban time to tell other clients
 
                 //broadcast to inLobbyPlayers, player has been kicked from lobby
-                sendTemp.set(RESPONSE_PLAYER_VOICE_CHAT_ENABLED,response,&inLobbyPlayers,nullptr);
-                sendTextDataList.push(sendTemp);
+                response(sendTextDataList, RESPONSE_PLAYER_VOICE_CHAT_ENABLED,responseStr,&inLobbyPlayers,nullptr);
 
                 //broadcast to specters, player has been kicked from lobby
                 if(lobbySpecters.size()>=1)
                 {
-                  sendTemp.set(RESPONSE_PLAYER_VOICE_CHAT_ENABLED,response,&lobbySpecters,nullptr);
-                  sendTextDataList.push(sendTemp);
+                  response(sendTextDataList, RESPONSE_PLAYER_VOICE_CHAT_ENABLED,responseStr,&lobbySpecters,nullptr);
                 }
 
             }break;
@@ -915,17 +904,15 @@ namespace FluffyMultiplayer
               if(cid>=1)
                 updatePlayerVoiceChatStatus(cid,false);
 
-                std::string response = std::to_string(cid) + MS_DATA_DELIMITER; //later can write reason and ban time to tell other clients
+                std::string responseStr = std::to_string(cid) + MS_DATA_DELIMITER; //later can write reason and ban time to tell other clients
 
                 //broadcast to inLobbyPlayers, player has been kicked from lobby
-                sendTemp.set(RESPONSE_PLAYER_VOICE_CHAT_DISABLED,response,&inLobbyPlayers,nullptr);
-                sendTextDataList.push(sendTemp);
+                response(sendTextDataList, RESPONSE_PLAYER_VOICE_CHAT_DISABLED,responseStr,&inLobbyPlayers,nullptr);
 
                 //broadcast to specters, player has been kicked from lobby
                 if(lobbySpecters.size()>=1)
                 {
-                  sendTemp.set(RESPONSE_PLAYER_VOICE_CHAT_DISABLED,response,&lobbySpecters,nullptr);
-                  sendTextDataList.push(sendTemp);
+                  response(sendTextDataList, RESPONSE_PLAYER_VOICE_CHAT_DISABLED,responseStr,&lobbySpecters,nullptr);
                 }
 
             }break;
@@ -943,16 +930,14 @@ namespace FluffyMultiplayer
                 else
                 {
                   log.print("unknown request code and gamemode is nullptr (game is not started)", FluffyMultiplayer::LogType::Warning);
-                  sendTemp.set(RESPONSE_UNKNOWN_REQUEST_GAME_IS_NOT_STARTED,currentItem.sender);
-                  sendTextDataList.push(sendTemp);
+                  response(sendTextDataList, RESPONSE_UNKNOWN_REQUEST_GAME_IS_NOT_STARTED,currentItem.sender);
                 }
 
               }
               else
               {
                 log.print("unknown request code and game running = false (not started or paused)", FluffyMultiplayer::LogType::Warning);
-                sendTemp.set(RESPONSE_UNKNOWN_REQUESST_GAME_PAUSED_OR_NOT_STARTED,currentItem.sender);
-                sendTextDataList.push(sendTemp);
+                response(sendTextDataList, RESPONSE_UNKNOWN_REQUESST_GAME_PAUSED_OR_NOT_STARTED,currentItem.sender);
               }
             }
 
@@ -985,26 +970,23 @@ namespace FluffyMultiplayer
       //check connection blocked
       if(isConnectionBlocked(currentItem.sender))
       {
-        sendTemp.set(RESPONSE_ERROR_CONNECTION_BLOCKED,currentItem.sender); //maybe later return blocked time to client
-        sendVoiceDataList.push(sendTemp);
+        // response(sendVoiceDataList, RESPONSE_ERROR_CONNECTION_BLOCKED,currentItem.sender); //maybe later return blocked time to client
       }
       else if(!isConnectionExists(currentItem.sender))
       {
-        sendTemp.set(RESPONSE_ERROR_CONNECTION_NOT_EXISTS,currentItem.sender);
-        sendVoiceDataList.push(sendTemp);
+        response(sendVoiceDataList, RESPONSE_ERROR_CONNECTION_NOT_EXISTS,currentItem.sender);
       }
       else
       {
         //voice
         if(lobbyData.isVoiceChatForbidden)
         {
-          sendTemp.set(RESPONSE_ERROR_SEND_VOICE_CHAT_DISABLED,currentItem.sender);
-          sendVoiceDataList.push(sendTemp);
+          response(sendVoiceDataList, RESPONSE_ERROR_SEND_VOICE_CHAT_DISABLED,currentItem.sender);
         }
         else
         {
           //prepare ovice chat data
-          std::string response = currentItem.data;
+          std::string responseStr = currentItem.data;
 
 
           //broadcast  new voice message.. to inLobbyPlayers
@@ -1012,8 +994,7 @@ namespace FluffyMultiplayer
           {
             if(e.voiceChatEnable)
             {
-              sendTemp.set(RESPONSE_PLAYER_SENT_VOICE_MESSAGE,response,e.address);
-              sendVoiceDataList.push(sendTemp);
+              response(sendVoiceDataList, RESPONSE_PLAYER_SENT_VOICE_MESSAGE,responseStr,e.address);
             }
           }
 
@@ -1024,8 +1005,7 @@ namespace FluffyMultiplayer
             {
               if(e.voiceChatEnable)
               {
-                sendTemp.set(RESPONSE_PLAYER_SENT_VOICE_MESSAGE,response,e.address);
-                sendVoiceDataList.push(sendTemp);
+                response(sendVoiceDataList, RESPONSE_PLAYER_SENT_VOICE_MESSAGE,responseStr,e.address);
               }
             }
           }
