@@ -1,6 +1,9 @@
 #ifndef H_LOG_CLASS
 #define H_LOG_CLASS
 
+
+#include "dataType.h"
+
 #include <string>
 #include <iostream>
 
@@ -8,23 +11,12 @@
 //work with file
 #include <fstream>
 
-
-
 //current time
 #include <ctime>
 
 
 namespace FluffyMultiplayer
 {
-  enum LogType
-  {
-      Error=0,
-      Warning,
-      Success,
-      Information,
-      All
-  };
-
   class Log
   {
     private:

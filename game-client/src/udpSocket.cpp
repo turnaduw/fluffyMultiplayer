@@ -1,68 +1,140 @@
-#ifndef H_UDP_SOCKET_CLASS
-#define H_UDP_SOCKET_CLASS
-
-#include "config.h"
-#include "dataType.h"
-#include "log.h"
-
-#include <boost/asio.hpp>
-using boost::asio::ip::udp;
-
-#include <string>
-#include <queue>
+#include "../include/udpSocket.h"
 
 namespace FluffyMultiplayer
 {
-  class UdpSocket
+  void UdpSocket::enable()
   {
-    private:
-      udp::socket socket;
-      udp::endpoint senderEndpoint;
-      size_t receive_length;
-      bool statusSocket;
-      unsigned short port;
-      FluffyMultiplayer::Log log;
-      int bufferSize;
+    statusSocket=true;
+  }
+  void UdpSocket::disable()
+  {
+    statusSocket=true;
+  }
+  bool UdpSocket::getStatus() const
+  {
+    return statusSocket;
+  }
 
-    public:
-      UdpSocket(boost::asio::io_context& io_context, unsigned short default_port, int _bufferSize)
-          : socket(io_context, udp::endpoint(udp::v4(), default_port))
-      {
-        bufferSize = _bufferSize;
-        socket.non_blocking(true);
-        port = default_port;
-        log.init(SOCKET_LOG_FILENAME,SOCKET_PRINT_LOGS_LEVEL);
-      }
-      ~UdpSocket()
-      {
-        socket.close();
-        log.close();
-      }
+  void UdpSocket::setPort(unsigned short newPort)
+  {
+    try
+    {
+      socket.close(); // Close the existing socket
 
-      //update status socket
-      void enable();
-      void disable();
-      bool getStatus() const;
-
-
-      //port
-      void setPort(unsigned short newPort);
-      unsigned short getPort() const;
+      udp::endpoint newEndpoint(udp::v4(), newPort);
+      socket.open(newEndpoint.protocol());
+      socket.bind(newEndpoint);
+    }
+    catch (std::exception& e)
+    {
+        std::string errorMsg = e.what();
+        log.print("from UdpSocket::setPort catched exception: "+errorMsg, FluffyMultiplayer::LogType::Warning);
+    }
+  }
+  unsigned short UdpSocket::getPort() const
+  {
+    return port;
+  }
 
 
-      //send and receive
-      void prepareData(const int&, std::string&);
+  void UdpSocket::prepareData(const int& code, std::string& data)
+  {
+     data = std::to_string(code) + data + std::string(MS_DATA_DELIMITER) + std::string(MS_REQUEST_CLOSER);
+  }
+
+  void UdpSocket::broadcast(FluffyMultiplayer::SocketSendData& currentItem)
+  {
 
 
-      void sendDirect(std::string& data,
-              const FluffyMultiplayer::AnAddress& receiver,
-              bool areDataPrepared,
-              int code);
+    // auto sendTo = [&] (std::string& data, FluffyMultiplayer::AnAddress& address) -> void
+    // {
+    //   udp::endpoint receiverEndpoint(address.ip, address.port);
+    //   socket.send_to(boost::asio::buffer(data), receiverEndpoint);
+    // };
 
-      void send(FluffyMultiplayer::SocketSendData&);
-      void broadcast(FluffyMultiplayer::SocketSendData&);
-      size_t receive(char* const data, udp::endpoint& senderAddress);
-  };
+    for(int i=0; i<currentItem.receivers->size();i++)
+    {
+      if(currentItem.except != nullptr)
+        for(int j=0; j<currentItem.except->size();j++)
+          if(currentItem.receivers[i] == currentItem.except[j]) //skip this client
+            continue;
+          else
+            sendDirect(currentItem.data, (*currentItem.receivers)[i].address,true,0);
+      else //there is no exception send to all
+        sendDirect(currentItem.data, (*currentItem.receivers)[i].address,true,0);
+    }
+  }
+
+  void UdpSocket::send(FluffyMultiplayer::SocketSendData& currentItem)
+  {
+    //if socket is disabled skip send
+    if(!statusSocket)
+      return;
+
+    //combine code with data and add some delimiter and closer at end of data
+    prepareData(currentItem.code, currentItem.data);
+
+
+    //check if receivers are only one sendDirect else send as broadcast
+    if(currentItem.receivers == nullptr)
+      sendDirect(currentItem.data,currentItem.receiver,true,0);
+    else
+      broadcast(currentItem);
+  }
+  void UdpSocket::sendDirect(std::string& data,
+                const FluffyMultiplayer::AnAddress& receiver,
+                bool areDataPrepared, int code)
+  {
+    try
+    {
+      if(!areDataPrepared)
+        prepareData(code,data);
+
+      udp::endpoint receiverEndpoint(receiver.ip, receiver.port);
+      socket.send_to(boost::asio::buffer(data), receiverEndpoint);
+    }
+    catch (std::exception& e)
+    {
+        std::string errorMsg = e.what();
+        log.print("from UdpSocket::sendDirect catched exception: "+errorMsg, FluffyMultiplayer::LogType::Warning);
+    }
+  }
+
+
+  size_t UdpSocket::receive(char * const data, udp::endpoint& senderAddress)
+  {
+    try
+    {
+      char buffer[bufferSize];
+      if(!statusSocket)
+        return 0;
+
+      //make buffer empty
+      for(int i=0; i<bufferSize; i++)
+        buffer[i] = '\0';
+
+
+      //will return to tell caller how much has length
+      char temp[bufferSize];
+      receive_length = socket.receive_from(boost::asio::buffer(buffer,bufferSize), senderEndpoint);
+
+
+      //set data
+      for(int i=0; i<bufferSize; i++)
+        data[i] = buffer[i];
+
+
+      //by ref to tell caller what are sender info
+      senderAddress = senderEndpoint;
+
+      return receive_length;
+    }
+    catch (std::exception& e)
+    {
+        std::string errorMsg = e.what();
+        log.print("from UdpSocket::receive catched exception: "+errorMsg, FluffyMultiplayer::LogType::Warning);
+    }
+    return 0;
+  }
+
 }
-
-#endif
