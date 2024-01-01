@@ -50,6 +50,8 @@ namespace FluffyMultiplayer
       std::queue<FluffyMultiplayer::SocketReceiveData> receivedVoiceDataList;
       std::queue<FluffyMultiplayer::SocketSendData> sendVoiceDataList;
       std::queue<FluffyMultiplayer::SocketSendData> sendTextDataList;
+      boost::mutex socketMutex;
+
 
       /*to avoid create every time an object from type
         e.g: SocketSendData while want push into queue<SocketSendData> create once here*/
@@ -79,6 +81,23 @@ namespace FluffyMultiplayer
       void processVoice();
       void processText();
 
+
+      void safePushToList(std::queue<FluffyMultiplayer::SocketSendData>& list);
+      void response(std::queue<FluffyMultiplayer::SocketSendData>& list, int code,
+                    FluffyMultiplayer::AnAddress receiver);
+
+      void response(std::queue<FluffyMultiplayer::SocketSendData>& list, int code,
+                    std::string data, FluffyMultiplayer::AnAddress receiver);
+
+
+      void response(std::queue<FluffyMultiplayer::SocketSendData>& list, int code,
+                    const std::vector<FluffyMultiplayer::Player>* receivers,
+                    const std::vector<FluffyMultiplayer::Player>* except);
+
+
+      void response(std::queue<FluffyMultiplayer::SocketSendData>& list, int code, std::string data,
+                    const std::vector<FluffyMultiplayer::Player>* receivers,
+                    const std::vector<FluffyMultiplayer::Player>* except);
 
       //connection
       bool isConnectionExists(const FluffyMultiplayer::AnAddress&) const;
