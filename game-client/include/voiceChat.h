@@ -15,7 +15,6 @@ namespace FluffyMultiplayer
   private:
     FluffyMultiplayer::Log log;
     bool voiceChatOff;
-    PaStream* speaker_stream;
     PaStream* microphone_stream;
     PaStream* speaker_stream;
 
@@ -29,7 +28,7 @@ namespace FluffyMultiplayer
   public:
     void init(bool mic)
     {
-      voiceChatOff= mic;
+      voiceChatOff = mic;
 
       //voice
       Pa_Initialize();
@@ -46,7 +45,8 @@ namespace FluffyMultiplayer
     {
       // Get the index of the default input device
           int defaultInputDevice = Pa_GetDefaultInputDevice();
-          if (defaultInputDevice == paNoDevice) {
+          if (defaultInputDevice == paNoDevice)
+          {
               std::cerr << "No default input device found." << std::endl;
               Pa_Terminate();
               return 1;
@@ -72,7 +72,8 @@ namespace FluffyMultiplayer
     void run()
     {
       PaError err = Pa_OpenStream(&microphone_stream, &inputParameters, nullptr, SAMPLE_RATE, FRAMES_PER_BUFFER, paNoFlag, send_voice, nullptr);
-      if (err != paNoError) {
+      if (err != paNoError)
+      {
           std::cerr << "Error opening PortAudio input stream: " << Pa_GetErrorText(err) << std::endl;
           Pa_Terminate();
           return 1;

@@ -15,6 +15,10 @@
 #define VOICE_CHAT_BUFFER_SIZE 1024
 #define TEXT_CHAT_BUFFER_SIZE 1024
 
+#define DEFAULT_PLAYER_NAME "?player?"
+#define DEFAULT_PLAYER_VOICE_ENABLE false
+
+
 #define APP_LOG_FILENAME "app.log"
 #define APP_PRINT_LOGS_LEVEL FluffyMultiplayer::LogType::All
 

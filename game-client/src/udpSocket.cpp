@@ -42,29 +42,6 @@ namespace FluffyMultiplayer
      data = std::to_string(code) + data + std::string(MS_DATA_DELIMITER) + std::string(MS_REQUEST_CLOSER);
   }
 
-  void UdpSocket::broadcast(FluffyMultiplayer::SocketSendData& currentItem)
-  {
-
-
-    // auto sendTo = [&] (std::string& data, FluffyMultiplayer::AnAddress& address) -> void
-    // {
-    //   udp::endpoint receiverEndpoint(address.ip, address.port);
-    //   socket.send_to(boost::asio::buffer(data), receiverEndpoint);
-    // };
-
-    for(int i=0; i<currentItem.receivers->size();i++)
-    {
-      if(currentItem.except != nullptr)
-        for(int j=0; j<currentItem.except->size();j++)
-          if(currentItem.receivers[i] == currentItem.except[j]) //skip this client
-            continue;
-          else
-            sendDirect(currentItem.data, (*currentItem.receivers)[i].address,true,0);
-      else //there is no exception send to all
-        sendDirect(currentItem.data, (*currentItem.receivers)[i].address,true,0);
-    }
-  }
-
   void UdpSocket::send(FluffyMultiplayer::SocketSendData& currentItem)
   {
     //if socket is disabled skip send
@@ -72,25 +49,17 @@ namespace FluffyMultiplayer
       return;
 
     //combine code with data and add some delimiter and closer at end of data
-    prepareData(currentItem.code, currentItem.data);
-
-
-    //check if receivers are only one sendDirect else send as broadcast
-    if(currentItem.receivers == nullptr)
-      sendDirect(currentItem.data,currentItem.receiver,true,0);
-    else
-      broadcast(currentItem);
+    sendDirect(currentItem.data,false,currentItem.code);
   }
+
   void UdpSocket::sendDirect(std::string& data,
-                const FluffyMultiplayer::AnAddress& receiver,
-                bool areDataPrepared, int code)
+                bool areDataPrepared, const int& code)
   {
     try
     {
       if(!areDataPrepared)
         prepareData(code,data);
 
-      udp::endpoint receiverEndpoint(receiver.ip, receiver.port);
       socket.send_to(boost::asio::buffer(data), receiverEndpoint);
     }
     catch (std::exception& e)
@@ -119,15 +88,24 @@ namespace FluffyMultiplayer
       receive_length = socket.receive_from(boost::asio::buffer(buffer,bufferSize), senderEndpoint);
 
 
-      //set data
-      for(int i=0; i<bufferSize; i++)
+      //check if sender is that server continue
+      if(senderEndpoint == receiverEndpoint)
+      {
+        //by ref to tell caller what are sender info
+        senderAddress = senderEndpoint;
+
+        //set data
+        for(int i=0; i<bufferSize; i++)
         data[i] = buffer[i];
 
 
-      //by ref to tell caller what are sender info
-      senderAddress = senderEndpoint;
-
-      return receive_length;
+        return receive_length;
+      }
+      else
+      {
+        return -1;
+      }
+      return -1;
     }
     catch (std::exception& e)
     {

@@ -34,8 +34,17 @@ namespace FluffyMultiplayer
     socketVoice->enable();
     socketText->enable();
 
-    app.setServer(app.popServerAddress());
-    return new FluffyMultiplayer::StateWaitForResponse("Connecting to the server\nplease wait..",req, this, new FluffyMultiplayer::StateConnectedToTheServer, MS_RESPONSE_CONNECTION_ACCEPTED);
+
+
+    //connect to text
+    req = std::to_string(REQUEST_CONNECT_TO_LOBBY);
+    return new FluffyMultiplayer::StateWaitForResponse
+    (
+      "Connecting to the server\nplease wait..",
+      req,
+      new FluffyMultiplayer::StateConnectedToTheServer,
+      MS_RESPONSE_CONNECTION_ACCEPTED
+    );
   }
 
 

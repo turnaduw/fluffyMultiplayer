@@ -72,38 +72,25 @@ namespace FluffyMultiplayer
       {
 
         //text socket receive
+        char receive_data[MC_RECEIVE_BUFFER_TEXT];
+        receive_length = socketText->receive(receive_data,senderEndpoint);
+        currentItem.sender.setFromEndpoint(senderEndpoint);
+
+        if(receive_length >=1)
         {
-          char receive_data[MC_RECEIVE_BUFFER_TEXT];
-          receive_length = socketText->receive(receive_data,senderEndpoint);
-          currentItem.sender.setFromEndpoint(senderEndpoint);
+          currentItem.data = std::string(receive_data,receive_length);
+          ds.decryptData(currentItem.data);
 
-          if(isConnectionBlocked(currentItem.sender))
-          {
-              // RESPONSE_ERROR_CONNECTION_BLOCKED
-          }
-          else
-          {
-            if(receive_length >=1)
-            {
-              currentItem.data = std::string(receive_data,receive_length);
-              ds.decryptData(currentItem.data);
+          //sperate c.code and data and remove code and closers from .data
+          prepareData(currentItem);
 
-              //sperate c.code and data and remove code and closers from .data
-              prepareData(currentItem);
+          log.print("received text from="+currentItem.sender.getAsString()+
+          "\tcode="+std::to_string(currentItem.code)+"\tdata="+
+          currentItem.data, FluffyMultiplayer::LogType::Information);
 
-              log.print("received text from="+currentItem.sender.getAsString()+
-                        "\tcode="+std::to_string(currentItem.code)+"\tdata="+
-                        currentItem.data, FluffyMultiplayer::LogType::Information);
-
-              // std::cout << "received from: " <<  senderEndpoint.address() << ":" << senderEndpoint.port() << " data = " << data << "]" << std::endl;
-              receivedTextDataList.push(currentItem);
-            }
-          }
+          // std::cout << "received from: " <<  senderEndpoint.address() << ":" << senderEndpoint.port() << " data = " << data << "]" << std::endl;
+          receivedTextDataList.push(currentItem);
         }
-
-
-
-
 
         //socket voice receive
         {

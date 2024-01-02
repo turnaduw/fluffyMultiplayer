@@ -3,7 +3,7 @@
 // all states include here and just call this file into all states, on this way can easly access to all states as we want.
 
 //request and response list mayneeds in anyState
-#include "../include/server-request-response-list.h"
+#include "../include/lobby-request-response-list.h"
 #include <iostream>
 
 #include "../include/states/stateBindPickPort.h"

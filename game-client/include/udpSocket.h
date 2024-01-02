@@ -23,14 +23,21 @@ namespace FluffyMultiplayer
       unsigned short port;
       FluffyMultiplayer::Log log;
       int bufferSize;
+      udp::endpoint receiverEndpoint;
 
     public:
-      UdpSocket(boost::asio::io_context& io_context, unsigned short default_port, int _bufferSize)
+      UdpSocket(boost::asio::io_context& io_context,
+                unsigned short default_port,
+                FluffyMultiplayer::AnAddress _receiver,
+                int _bufferSize)
           : socket(io_context, udp::endpoint(udp::v4(), default_port))
       {
         bufferSize = _bufferSize;
+        receiverEndpoint.ip(_receiver.ip);
+        receiverEndpoint.port(_receiver.port);
         socket.non_blocking(true);
         port = default_port;
+        statusSocket=false;
         log.init(SOCKET_LOG_FILENAME,SOCKET_PRINT_LOGS_LEVEL);
       }
       ~UdpSocket()
@@ -60,7 +67,6 @@ namespace FluffyMultiplayer
               int code);
 
       void send(FluffyMultiplayer::SocketSendData&);
-      void broadcast(FluffyMultiplayer::SocketSendData&);
       size_t receive(char* const data, udp::endpoint& senderAddress);
   };
 }

@@ -15,7 +15,7 @@ namespace FluffyMultiplayer
   class StateBindPickPort : public AppState
   {
   private:
-    bool isBusy;
+    bool voiceBusy,textBusy;
     int maxTry;
     unsigned short genrate_random_number(int, int);
     bool isPortBusy(unsigned short);
