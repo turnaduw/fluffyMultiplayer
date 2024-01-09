@@ -2,253 +2,23 @@
 
 namespace FluffyMultiplayer
 {
-  //login form
-  StateWaitForResponse::StateWaitForResponse(std::string _text,
-    FluffyMultiplayer::AppState* retry,
-    FluffyMultiplayer::LoginFormData _loginData,
-    std::vector<FluffyMultiplayer::AppState*> bannedstates,
-    FluffyMultiplayer::AppState* successstate,
-    std::vector<int> bannedCodes,int successCode)
-    {
-      registerData_ptr=nullptr;
-      lobbyData_ptr=nullptr;
-      createLobbyData_ptr=nullptr;
-      //hold passed data into varaible for when need to pass into another state.
-      loginData_ptr = new FluffyMultiplayer::LoginFormData;
-      loginData_ptr->_inputs = _loginData._inputs;
-      loginData_ptr->_errors = _loginData._errors;
-      loginData_ptr->_saveLoginStatus = _loginData._saveLoginStatus;
-      loginData_ptr->identity = _loginData.identity;
 
-      requestSent=false; //turn off flag, will help to run receiveDataQueue.push once
-      timeoutCounter=MC_REQUEST_TIMEOUT;
-
-      //retry button
-      state1 = retry;
-
-
-      //second button
-      state2 = bannedstates;
-      responseCodeAcceptor = bannedCodes;
-
-      //third button
-      state3 = successstate;
-      responseCodeAcceptor2 = successCode;
-
-      //split data from LoginFormData into a string req
-
-
-      //get computer host id
-      long hostId = gethostid();
-
-
-      // choose is it login or relogin
-      std::string temp;
-      if(_loginData._inputs[0].empty() && _loginData._inputs[1].empty())
-      {
-        temp =  std::to_string(MC_REQUEST_RELOGIN);
-        temp += std::to_string(hostId) + MC_REQUEST_DELIMITER; //hardwareId
-        temp += loginData_ptr->identity + MC_REQUEST_DELIMITER;
-        temp += MC_REQUEST_CLOSER;
-      }
-      else
-      {
-        temp =  std::to_string(MC_REQUEST_LOGIN) +  _loginData._inputs[0]+ MC_REQUEST_DELIMITER;
-        temp += _loginData._inputs[1] +MC_REQUEST_DELIMITER;
-        temp += std::to_string(hostId) + MC_REQUEST_DELIMITER; //hardwareId
-        temp += loginData_ptr->identity + MC_REQUEST_DELIMITER; //identity for first time is empty, this is used when trying to relogin
-        temp += MC_REQUEST_CLOSER;
-      }
-      requestData = temp;
-
-      std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
-      text = "Wait for response:\n"+ _text;
-      initSimpleText(fontPath, text);
-
-      timeouttxt.setFont(theFont);
-      timeouttxt.setString("timedout press enter to retry.");
-      buttonRetry.init("Retry", 200.0,200.0, sf::Color::Black,sf::Color::White, 60,30, 22);
-    }
-
-
-  //register Form
-  StateWaitForResponse::StateWaitForResponse(std::string _text,
-    FluffyMultiplayer::AppState* retry,
-    FluffyMultiplayer::RegisterFormData _registerFormData,
-    FluffyMultiplayer::AppState* successState,
-    int successCode)
-    {
-      loginData_ptr=nullptr;
-      createLobbyData_ptr=nullptr;
-      lobbyData_ptr=nullptr;
-      //hold passed data into varaible for when need to pass into another state.
-      registerData_ptr = new FluffyMultiplayer::RegisterFormData;
-      registerData_ptr->_inputs = _registerFormData._inputs;
-      registerData_ptr->_errors = _registerFormData._errors;
-
-      requestSent=false; //turn off flag, will help to run receiveDataQueue.push once
-      timeoutCounter=MC_REQUEST_TIMEOUT;
-
-      //retry button
-      state1 = retry;
-
-      //second button
-      state2.push_back(successState);
-      responseCodeAcceptor.push_back( successCode );
-
-      //third button
-      state3 = nullptr;
-
-
-
-      //split data from LoginFormData into a string req
-      //get computer host id
-      long hostId = gethostid();
-
-
-      std::string temp = std::to_string(MC_REQUEST_REGISTER) +  registerData_ptr->_inputs[2]+ MC_REQUEST_DELIMITER;
-      temp += registerData_ptr->_inputs[0] +MC_REQUEST_DELIMITER;
-      temp += registerData_ptr->_inputs[1] +MC_REQUEST_DELIMITER;
-      temp += std::to_string(hostId) + MC_REQUEST_DELIMITER; //hardwareId
-      temp += MC_REQUEST_CLOSER;
-      requestData = temp;
-
-
-      std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
-      text = "Wait for response:\n"+ _text;
-      initSimpleText(fontPath, text);
-
-      timeouttxt.setFont(theFont);
-      timeouttxt.setString("timedout press enter to retry.");
-      buttonRetry.init("Retry", 200.0,200.0, sf::Color::Black,sf::Color::White, 60,30, 22);
-    }
-
-
-    //get lobby info by lobby id
-    StateWaitForResponse::StateWaitForResponse(std::string _text,
-      FluffyMultiplayer::AppState* retry,
-      FluffyMultiplayer::LobbyData _lobbyInfo,
-      FluffyMultiplayer::AppState* notfoundState,
-      int notfoundCode,
-      FluffyMultiplayer::AppState* successState,
-      int successCode)
-      {
-        registerData_ptr=nullptr;
-        createLobbyData_ptr=nullptr;
-        loginData_ptr=nullptr;
-        //hold passed data into varaible for when need to pass into another state.
-        lobbyData_ptr = new FluffyMultiplayer::LobbyData;
-        lobbyData_ptr->id = _lobbyInfo.id;
-        lobbyData_ptr->isLocked = _lobbyInfo.isLocked;
-        lobbyData_ptr->isVoiceChatForbidden = _lobbyInfo.isVoiceChatForbidden;
-        lobbyData_ptr->isTextChatForbidden = _lobbyInfo.isTextChatForbidden;
-        lobbyData_ptr->isSpecterForbidden = _lobbyInfo.isSpecterForbidden;
-        lobbyData_ptr->lobbyStatusInGame = _lobbyInfo.lobbyStatusInGame;
-        lobbyData_ptr->showLobbyInList = _lobbyInfo.showLobbyInList;
-        lobbyData_ptr->maxPlayers = _lobbyInfo.maxPlayers;
-        lobbyData_ptr->currentPlayers = _lobbyInfo.currentPlayers;
-        lobbyData_ptr->gameMode = _lobbyInfo.gameMode;
-        lobbyData_ptr->address = _lobbyInfo.address;
-
-        requestSent=false; //turn off flag, will help to run receiveDataQueue.push once
-        timeoutCounter=MC_REQUEST_TIMEOUT;
-
-        //retry button
-        state1 = retry;
-
-        //second button
-        state2.push_back(notfoundState);
-        responseCodeAcceptor.push_back(notfoundCode);
-
-        //third button
-        state3 = successState;
-        responseCodeAcceptor2 = successCode;
-
-        //split data from LoginFormData into a string req
-        std::string temp = std::to_string(MC_REQUEST_GET_LOBBY_INFO);
-        temp += std::to_string(lobbyData_ptr->id) + MC_REQUEST_DELIMITER;
-        temp += MC_REQUEST_CLOSER;
-        requestData = temp;
-
-
-        std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
-        text = "Wait for response:\n"+ _text;
-        initSimpleText(fontPath, text);
-
-        timeouttxt.setFont(theFont);
-        timeouttxt.setString("timedout press enter to retry.");
-        buttonRetry.init("Retry", 200.0,200.0, sf::Color::Black,sf::Color::White, 60,30, 22);
-      }
-
-
-    //create lobby form
-    StateWaitForResponse::StateWaitForResponse(std::string _text,
-      FluffyMultiplayer::AppState* retry,
-      FluffyMultiplayer::CreateLobbyFormData _lobby,
-      FluffyMultiplayer::AppState* accountlimited,
-      int accountlimitedCode,
-      FluffyMultiplayer::AppState* successState,
-      int successCode)
-      {
-        registerData_ptr=nullptr;
-        lobbyData_ptr=nullptr;
-        loginData_ptr=nullptr;
-
-        //hold passed data into varaible for when need to pass into another state.
-        createLobbyData_ptr = new FluffyMultiplayer::CreateLobbyFormData;
-        createLobbyData_ptr->clientIdentity= _lobby.clientIdentity;
-        createLobbyData_ptr->gameMode = _lobby.gameMode;
-        createLobbyData_ptr->maxPlayers = _lobby.maxPlayers;
-        createLobbyData_ptr->isTextChatAllowed = _lobby.isTextChatAllowed;
-        createLobbyData_ptr->isVoiceChatAllowed = _lobby.isVoiceChatAllowed;
-        createLobbyData_ptr->isSpecterAllowed = _lobby.isSpecterAllowed;
-        createLobbyData_ptr->password = _lobby.password;
-        createLobbyData_ptr->globalErrors = _lobby.globalErrors;
-
-        requestSent=false; //turn off flag, will help to run receiveDataQueue.push once
-        timeoutCounter=MC_REQUEST_TIMEOUT;
-
-        //retry button
-        state1 = retry;
-
-        //second button
-        state2.push_back(accountlimited);
-        responseCodeAcceptor.push_back( accountlimitedCode );
-
-        //third button
-        state3 = successState;
-        responseCodeAcceptor2 = successCode;
-
-        //create request
-        std::string temp = std::to_string(MC_REQUEST_CREATE_LOBBY);
-        temp += createLobbyData_ptr->clientIdentity + MC_REQUEST_DELIMITER;
-        temp += std::to_string(createLobbyData_ptr->gameMode) + MC_REQUEST_DELIMITER;
-        temp += std::to_string(createLobbyData_ptr->maxPlayers) + MC_REQUEST_DELIMITER;
-        temp += std::to_string(createLobbyData_ptr->isTextChatAllowed) + MC_REQUEST_DELIMITER;
-        temp += std::to_string(createLobbyData_ptr->isVoiceChatAllowed) + MC_REQUEST_DELIMITER;
-        temp += std::to_string(createLobbyData_ptr->isSpecterAllowed) + MC_REQUEST_DELIMITER;
-        temp += createLobbyData_ptr->password + MC_REQUEST_DELIMITER;
-        temp += MC_REQUEST_CLOSER;
-        requestData = temp;
-
-
-        std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
-        text = "Wait for response:\n"+ _text;
-        initSimpleText(fontPath, text);
-
-        timeouttxt.setFont(theFont);
-        timeouttxt.setString("timedout press enter to retry.");
-        buttonRetry.init("Retry", 200.0,200.0, sf::Color::Black,sf::Color::White, 60,30, 22);
-      }
-
-
-
-  //other
-  StateWaitForResponse::StateWaitForResponse(std::string _text,
+  //single response
+  StateWaitForResponse::StateWaitForResponse(bool bySocketText, std::string _text,
                        const std::string& request,
                        FluffyMultiplayer::AppState* retryState,
                        FluffyMultiplayer::AppState* acceptedState,
                        int responseCodeAccepts)
+  {
+
+  }
+
+  //multi response
+  StateWaitForResponse::StateWaitForResponse(bool bySocketText, std::string _text,
+                       const std::string& request,
+                       FluffyMultiplayer::AppState* retryState,
+                       std::vector<FluffyMultiplayer::AppState*> acceptedState,
+                       std::vector<int> responseCodeAccepts)
   {
     loginData_ptr=nullptr;
     registerData_ptr = nullptr;
@@ -272,27 +42,6 @@ namespace FluffyMultiplayer
     timeouttxt.setString("timedout press enter to retry.");
     buttonRetry.init("Retry", 200.0,200.0, sf::Color::Black,sf::Color::White, 60,30, 22);
   }
-
-  StateWaitForResponse::StateWaitForResponse(std::string _text,
-                      const std::string& request,
-                      FluffyMultiplayer::AppState* retryState,
-                      FluffyMultiplayer::AppState* acceptedState,
-                      FluffyMultiplayer::AppState* acceptedState2,
-                      int responseCodeAccepts,int responseCodeAccepts2)
-  {
-    StateWaitForResponse(text,request,retryState,acceptedState,responseCodeAccepts);
-    responseCodeAcceptor2 = responseCodeAccepts2;
-    state3 = acceptedState2;
-
-    std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
-    text = "Wait for response:\n"+ _text;
-    initSimpleText(fontPath, text);
-
-    timeouttxt.setFont(theFont);
-    timeouttxt.setString("timedout press enter to retry.");
-    buttonRetry.init("Retry", 200.0,200.0, sf::Color::Black,sf::Color::White, 60,30, 22);
-  }
-
 
   StateWaitForResponse::~StateWaitForResponse()
   {
@@ -395,29 +144,6 @@ namespace FluffyMultiplayer
       return code;
     }
     return -1;
-  }
-
-
-  std::string StateWaitForResponse::getIdentityFromResponsedData(const std::string& _data,std::string delimiter,std::string closer)
-  {
-    return _data.substr(MC_DATA_START_AT_INDEX, _data.length() - 6);
-  }
-
-  std::string StateWaitForResponse::getServerAddressFromResponseData(const std::string& _data,std::string delimiter,std::string closer)
-  {
-    std::string re = _data.substr(MC_DATA_START_AT_INDEX, _data.length() - 6);
-    std::cout << "getServerAddressFromResponseData() = " << re << std::endl;
-    return re;
-  }
-
-  std::string StateWaitForResponse::getLobbyFromResponseData(const std::string& _data,std::string delimiter,std::string closer)
-  {
-    //remove 3 delimtier and closer chars
-    receivedData = receivedData.substr(0, receivedData.length()-3);
-
-    //remove responseCode
-    receivedData = receivedData.substr(MC_DATA_START_AT_INDEX, receivedData.length()-1);
-    return receivedData;
   }
 
   void StateWaitForResponse::render(sf::RenderWindow& window)

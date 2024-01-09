@@ -4,100 +4,90 @@ namespace FluffyMultiplayer
 {
   void App::sendData()
   {
-      FluffyMultiplayer::DataSecurity dSecurity;
-      std::string data;
-      while(true)
+    FluffyMultiplayer::SocketSendData currentItem;
+    while(true)
+    {
+      try
       {
-        if(getSendDataStatus() && sendDataQueue.size()>=1)
+        //text data
+        if(sendTextDataList.size()>=1) //on that socket self will check socketStatus before send
         {
-          FluffyMultiplayer::AnAddress server = getServerAddress();
-          data = sendDataQueue.front();
-          dSecurity.encryptData(data);
-          socket.send(data, server.ip, server.port);
-          sendDataQueue.pop();
-          std::cout << "data sent = " << data << " to " << server.ip << ":" << server.port << " size() = " << sendDataQueue.size() << std::endl;
+          currentItem = sendTextDataList.front();
+          ds.encryptData(currentItem.data);
+
+          socketText->send(currentItem);
+
+          //remove proceessed element
+          sendTextDataList.pop();
         }
       }
+      catch (std::exception& e)
+      {
+          std::string errorMsg = e.what();
+          log.print("from App::sendData catched exception: "+errorMsg, FluffyMultiplayer::LogType::Warning);
+          continue;
+      }
+    }
   }
+
+
+
 
   void App::receiveData()
   {
-    FluffyMultiplayer::DataSecurity dSecurity;
-    std::string data;
+    FluffyMultiplayer::SocketReceiveData currentItem;
+    udp::endpoint senderEndpoint;
+    size_t receive_length;
+
     while (true)
     {
       try
       {
-        if(getReceiveDataStatus())
+        //text socket receive
+        char receive_data[TEXT_CHAT_BUFFER_SIZE];
+        receive_length = socketText->receive(receive_data,senderEndpoint);
+        currentItem.sender.setFromEndpoint(senderEndpoint);
+
+        if(isConnectionBlocked(currentItem.sender))
         {
-          FluffyMultiplayer::AnAddress server = getServerAddress();
-          char receive_data[MC_RECEIVE_BUFFER];
-          udp::endpoint senderEndpoint;
-          size_t receive_length = socket.receive(receive_data,senderEndpoint);
+          // RESPONSE_ERROR_CONNECTION_BLOCKED
+        }
+        else
+        {
           if(receive_length >=1)
           {
-            //if this dont call maybe sometimes thread starts and another section change ip n port in that time and time ip,port still wrong make program wrong
-            server = getServerAddress();
-          }
-          if(receive_length >=1 &&
-            senderEndpoint.address() == server.ip &&
-            senderEndpoint.port() == server.port)
-            {
-              data = std::string(receive_data,receive_length);
-              std::cout << "received from: " <<  senderEndpoint.address() << ":" << senderEndpoint.port() << " data = " << data << "]" << std::endl;
-              dSecurity.decryptData(data);
-              receivedDataQueue.push(data);
-            }
+            currentItem.data = std::string(receive_data,receive_length);
+            ds.decryptData(currentItem.data);
+
+            //sperate c.code and data and remove code and closers from .data
+            prepareData(currentItem);
+
+            log.print("received text from="+currentItem.sender.getAsString()+
+            "\tcode="+std::to_string(currentItem.code)+"\tdata="+
+            currentItem.data, FluffyMultiplayer::LogType::Information);
+
+            // std::cout << "received from: " <<  senderEndpoint.address() << ":" << senderEndpoint.port() << " data = " << data << "]" << std::endl;
+            receivedTextDataList.push(currentItem);
           }
         }
-        catch (std::exception& e)
-        {
-            std::string errorMsg = e.what();
-            if (errorMsg.find("receive_from: Resource temporarily unavailable") != std::string::npos)
-            {
-                continue;
-            }
-            else
-            {
-                throw;
-            }
-        }
+      }
+      catch (std::exception& e)
+      {
+          std::string errorMsg = e.what();
+          if (errorMsg.find("receive_from: Resource temporarily unavailable") != std::string::npos)
+          {
+              continue;
+          }
+          else
+          {
+            log.print("from App::receiveData catched exception: "+errorMsg, FluffyMultiplayer::LogType::Warning);
+            continue;
+            // throw;
+          }
+      }
+    }
   }
 
-  }
-
-
-  void App::addDataToSendQueue(const std::string& req)
-  {
-      sendDataQueue.push(req);
-  }
-
-
-  std::string App::getReceivedDataQueue()
-  {
-    std::string data = receivedDataQueue.front();
-    receivedDataQueue.pop();
-    return data;
-  }
-
-  void App::openGame(FluffyMultiplayer::AnAddress address)
-  {
-    std::cout << "open game\n target server address is= " << address.ip << ":" << address.port << "\tidentity=" << getIdentity() << std::endl;
-
-    //open new terminal and pass args innit
-    std::string gclient = "gnome-terminal -- " +
-            std::string(GAME_CLIENT_APPLICATION_PATH) +
-            std::string(GAME_CLIENT_APPLICATION_NAME) +
-            " " +
-            address.ip.to_string() +
-            " " +
-            std::to_string(address.port) +
-            " " +
-            getIdentity();
-
-    //convert stirnt to const char* then pass into system
-    std::system(gclient.c_str());
-  }
 
   void App::init(FluffyMultiplayer::AnAddress _server, std::string _identity)
   {
@@ -112,9 +102,8 @@ namespace FluffyMultiplayer
 
 
     //init sockets
-    socketVoice = new FluffyMultiplayer::UdpSocket(ioContextVoice, DEFAULT_TEXT_PORT, TEXT_CHAT_BUFFER_SIZE);
-    socketText = new FluffyMultiplayer::UdpSocket(ioContextText, DEFAULT_VOICE_PORT, VOICE_CHAT_BUFFER_SIZE);
-
+    socketVoice = new FluffyMultiplayer::UdpSocket(ioContextVoice, DEFAULT_TEXT_PORT,FluffyMultiplayer::AnAddress{lobby.address.ip, lobby.address.port}, TEXT_CHAT_BUFFER_SIZE);
+    socketText = new FluffyMultiplayer::UdpSocket(ioContextText, DEFAULT_VOICE_PORT,FluffyMultiplayer::AnAddress{lobby.address.ip, lobby.voicePort}, VOICE_CHAT_BUFFER_SIZE);
 
     //init voice chat
     voiceChat.init();
@@ -136,18 +125,6 @@ namespace FluffyMultiplayer
   {
     log.print("app has been safely closed.", FluffyMultiplayer::LogType::Information);
     appWindow.close();
-  }
-
-  int App::getServerListCount() const
-  {
-    return serverList.size()-1;
-  }
-
-  FluffyMultiplayer::AnAddress App::popServerAddress()
-  {
-    FluffyMultiplayer::AnAddress temp = serverList.front();
-    serverList.pop();
-    return temp;
   }
 
   void App::run()
@@ -206,101 +183,6 @@ namespace FluffyMultiplayer
        appWindow.display();
     }
 
-  }
-
-  void App::clearIdentity()
-  {
-      try
-      {
-
-        //try to remove identity file
-        const char* filename = CLIENT_LOCAL_APP_CONFIG_FILE;
-
-        if (std::remove(filename) != 0)
-        {
-            std::cout << "while clearIdentity failed to delete file " CLIENT_LOCAL_APP_CONFIG_FILE << std::endl;
-
-
-            //delete failed go fill identity with empty value
-            std::string filename = CLIENT_LOCAL_APP_CONFIG_FILE;
-            std::ofstream theFile(filename);
-            theFile << "";
-            theFile.close();
-        }
-        else
-        {
-            std::cout << CLIENT_LOCAL_APP_CONFIG_FILE " file successfully deleted." << std::endl;
-        }
-
-        setIdentity("");
-        std::cout << "success to clean identity" << std::endl;
-      }
-      catch (std::exception& e)
-      {
-        std::cout << "failed to clean identity" << std::endl;
-      }
-  }
-  void App::setIdentity(std::string str)
-  {
-    identity=str;
-  }
-  std::string App::getIdentity() const
-  {
-    return identity;
-  }
-
-
-  FluffyMultiplayer::AnAddress App::getServerAddress() const
-  {
-    return serverAddress;
-  }
-
-  void App::setServer(FluffyMultiplayer::AnAddress address)
-  {
-    //check address
-
-    //set
-    serverAddress.ip = address.ip;
-    serverAddress.port = address.port;
-  }
-
-  void App::addServer(FluffyMultiplayer::AnAddress address)
-  {
-    //check address
-
-    //add
-    serverList.push(address);
-  }
-
-  void App::setAppPort(unsigned short port)
-  {
-      appPort = port;
-      socket.changePort(appPort);
-  }
-
-  unsigned short App::getAppPort() const
-  {
-    return appPort;
-  }
-
-  bool App::getReceiveDataStatus() const
-  {
-    return receiveDataStatus;
-  }
-
-  bool App::getSendDataStatus() const
-  {
-    return sendDataStatus;
-  }
-
-  void App::setReceiveDataStatus(bool status)
-  {
-    receiveDataStatus = status;
-  }
-
-  void App::setSendDataStatus(bool status)
-  {
-    sendDataStatus = status;
   }
 
 }

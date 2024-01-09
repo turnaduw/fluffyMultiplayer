@@ -61,14 +61,25 @@ namespace FluffyMultiplayer
                     std::queue<std::string>& sendDataQueue)
 
   {
-    do
+
+    //limit tries
+    //try to pick port randomly and bind into sockets
+    while(maxTry<=MC_STATE_BIND_PICK_PORT_TRY_COUNT)
     {
       maxTry++;
-      app.setAppPort(genrate_random_number(3000,64000));
-      isBusy = isPortBusy(app.getAppPort());
-      if(isBusy==false)
+
+      //set port for text socket
+      app.socketText->setPort(genrate_random_number(3000,64000));
+      textBusy = isPortBusy(app.socketText->getAppPort());
+
+      //set port for voice socket
+      app.socketVoice->setPort(genrate_random_number(3000,64000));
+      voiceBusy = isPortBusy(app.socketVoice->getAppPort());
+      if(voiceBusy==false && textBusy==false)
         return new FluffyMultiplayer::StateConnectingToServer;
-    } while(maxTry<=MC_STATE_BIND_PICK_PORT_TRY_COUNT);
+
+    }
+
     return new FluffyMultiplayer::StateFailed("Bind or Pick port for client.",this, new FluffyMultiplayer::StateEnd,nullptr);
   }
 

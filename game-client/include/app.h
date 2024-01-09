@@ -62,15 +62,19 @@ namespace FluffyMultiplayer
 
       //network and data froms
       boost::asio::io_context ioContextVoice;
-      FluffyMultiplayer::UdpSocket* socketVoice;
 
       boost::asio::io_context ioContextText;
-      FluffyMultiplayer::UdpSocket* socketText;
 
       void sendData();
       void receiveData();
 
     public:
+
+      //is public because be accessable by StateBindPickPort
+      FluffyMultiplayer::UdpSocket* socketVoice;
+      FluffyMultiplayer::UdpSocket* socketText;
+
+
       boost::thread receive_thread;
       boost::thread send_thread;
 
