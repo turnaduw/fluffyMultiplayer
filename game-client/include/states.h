@@ -7,12 +7,12 @@
 #include <iostream>
 
 #include "../include/states/stateBindPickPort.h"
-#include "../include/states/stateConnectingToServer.h"
-#include "../include/states/stateWaitForResponse.h"
-#include "../include/states/stateConnectedToTheServer.h"
-#include "../include/states/stateEnd.h"
-#include "../include/states/stateMainPage.h"
-#include "../include/states/stateJoinLobby.h"
-#include "../include/states/stateFailed.h"
+// #include "../include/states/stateConnectingToServer.h"
+// #include "../include/states/stateWaitForResponse.h"
+// #include "../include/states/stateConnectedToTheServer.h"
+// #include "../include/states/stateEnd.h"
+// #include "../include/states/stateMainPage.h"
+// #include "../include/states/stateJoinLobby.h"
+// #include "../include/states/stateFailed.h"
 
 #endif

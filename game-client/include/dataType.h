@@ -1,6 +1,11 @@
 #ifndef H_MAIN_CLIENT_DATA_TYPE
 #define H_MAIN_CLIENT_DATA_TYPE
+
+#include "config.h"
 #include <boost/asio.hpp>
+
+using boost::asio::ip::udp;
+
 
 namespace FluffyMultiplayer
 {
@@ -13,6 +18,18 @@ namespace FluffyMultiplayer
     {
       ip = boost::asio::ip::address::from_string(str);
       port = _port;
+    }
+
+    AnAddress(boost::asio::ip::address _ip ,unsigned short _port)
+    {
+      ip = _ip;
+      port = _port;
+    }
+
+    AnAddress()
+    {
+      ip = boost::asio::ip::address::from_string("127.0.0.1");
+      port = 6321;
     }
 
     bool operator ==(const FluffyMultiplayer::AnAddress& a) const
@@ -134,6 +151,11 @@ namespace FluffyMultiplayer
               std::to_string(isSpecterForbidden) + MS_DATA_DELIMITER +
               std::to_string(isLocked) + MS_DATA_DELIMITER + //is lcoked
               std::to_string(ownerId) + MS_DATA_DELIMITER;
+     }
+
+     LobbyData()
+     {
+
      }
   };
 

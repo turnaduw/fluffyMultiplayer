@@ -1,5 +1,7 @@
 #include "../include/app.h"
 
+#include "../include/states.h"
+
 namespace FluffyMultiplayer
 {
   void App::sendData()
@@ -30,8 +32,36 @@ namespace FluffyMultiplayer
     }
   }
 
+  bool App::isSenderIsServer(FluffyMultiplayer::AnAddress sender)
+  {
+    if
+      (
+        sender == lobby->address //check for text port
+        ||
+        (sender.ip == lobby->address.ip && sender.port == lobby->address.port) //check for voice port
+      )
+    {
+      return true;
+    }
+    return false;
+  }
 
 
+  void App::prepareData(FluffyMultiplayer::SocketReceiveData& currentItem)
+  {
+
+    //get code
+    //these MS_DATA_CODE_INDEX_X are from config.h
+    char codes [3] = {currentItem.data[MS_DATA_CODE_INDEX_A], currentItem.data[MS_DATA_CODE_INDEX_B], currentItem.data[MS_DATA_CODE_INDEX_C]};
+    const char* temp = codes;
+    currentItem.code = std::atoi(temp);
+
+
+    std::string delimiter = MS_DATA_DELIMITER;
+    std::string closer = MS_REQUEST_CLOSER;
+    //remove code and end (delimiter and closer)
+    currentItem.data = currentItem.data.substr(3,currentItem.data.length()-(delimiter.length()+closer.length()));
+  }
 
   void App::receiveData()
   {
@@ -48,9 +78,9 @@ namespace FluffyMultiplayer
         receive_length = socketText->receive(receive_data,senderEndpoint);
         currentItem.sender.setFromEndpoint(senderEndpoint);
 
-        if(isConnectionBlocked(currentItem.sender))
+        if(!isSenderIsServer(currentItem.sender))
         {
-          // RESPONSE_ERROR_CONNECTION_BLOCKED
+          //invalid sender..
         }
         else
         {
@@ -91,7 +121,7 @@ namespace FluffyMultiplayer
 
   void App::init(FluffyMultiplayer::AnAddress _server, std::string _identity)
   {
-    lobby.address = _server;
+    lobby->address = _server;
     identity = _identity;
 
     appIsRunning=true;
@@ -102,11 +132,11 @@ namespace FluffyMultiplayer
 
 
     //init sockets
-    socketVoice = new FluffyMultiplayer::UdpSocket(ioContextVoice, DEFAULT_TEXT_PORT,FluffyMultiplayer::AnAddress{lobby.address.ip, lobby.address.port}, TEXT_CHAT_BUFFER_SIZE);
-    socketText = new FluffyMultiplayer::UdpSocket(ioContextText, DEFAULT_VOICE_PORT,FluffyMultiplayer::AnAddress{lobby.address.ip, lobby.voicePort}, VOICE_CHAT_BUFFER_SIZE);
+    socketVoice = new FluffyMultiplayer::UdpSocket(ioContextVoice, DEFAULT_TEXT_PORT,FluffyMultiplayer::AnAddress{lobby->address.ip, lobby->address.port}, TEXT_CHAT_BUFFER_SIZE);
+    socketText = new FluffyMultiplayer::UdpSocket(ioContextText, DEFAULT_VOICE_PORT,FluffyMultiplayer::AnAddress{lobby->address.ip, lobby->voicePort}, VOICE_CHAT_BUFFER_SIZE);
 
     //init voice chat
-    voiceChat.init();
+    // voiceChat.init(DEFAULT_PLAYER_VOICE_ENABLE);
 
 
     //init threads
@@ -114,8 +144,8 @@ namespace FluffyMultiplayer
     send_thread = boost::thread(&FluffyMultiplayer::App::sendData, this);
 
     //init state
-    currentState = new FluffyMultiplayer::StateConnectingToServer;
-    currentGameMode = nullptr;
+    currentState = new FluffyMultiplayer::StateBindPickPort;
+    // currentGameMode = nullptr;
 
     //init window
     appWindow.setFramerateLimit(WINDOW_MAX_FPS);
@@ -162,17 +192,23 @@ namespace FluffyMultiplayer
 
            //state events
            currentState = currentState->eventHandle((*this),event);
+           // currentGameMode = currentGameMode->eventHandle((*this),event);
        }
 
        // Clear the whole window before rendering a new frame
        appWindow.clear(WINDOW_BACKGROUND_COLOR);
 
-       currentState = currentState->update((*this),receivedDataQueue,sendDataQueue);
+       currentState = currentState->update((*this));
+       // if(currentGameMode!=nullptr)
+        // currentGameMode = currentGameMode->update((*this));
 
-       // Draw some graphical entities
+
+       // Draw some graphical entities (z:0)
        currentState->render(appWindow);
+       // if(currentGameMode!=nullptr) //draw gameMode grpahical entities (z:1)
+        // currentGameMode->render(appWindow);
 
-       //draw notifications
+       //draw notifications (z:2)
        if(notificationQueue.size()>=1)
        {
          notificationBox.init(notificationQueue.front(), appWindow.getSize());

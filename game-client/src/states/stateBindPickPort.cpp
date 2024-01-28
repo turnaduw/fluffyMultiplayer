@@ -5,7 +5,8 @@ namespace FluffyMultiplayer
   StateBindPickPort::StateBindPickPort()
   {
     maxTry=0;
-    isBusy=false;
+    voiceBusy = false;
+    textBusy = false;
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
     initSimpleText(fontPath, "pick and binding port\nplease wait...");
   }
@@ -56,10 +57,7 @@ namespace FluffyMultiplayer
     }
   }
 
-  FluffyMultiplayer::AppState* StateBindPickPort::update(FluffyMultiplayer::App& app,
-                    std::queue<std::string>& receiveDataQueue,
-                    std::queue<std::string>& sendDataQueue)
-
+  FluffyMultiplayer::AppState* StateBindPickPort::update(FluffyMultiplayer::App& app)
   {
 
     //limit tries
@@ -70,17 +68,24 @@ namespace FluffyMultiplayer
 
       //set port for text socket
       app.socketText->setPort(genrate_random_number(3000,64000));
-      textBusy = isPortBusy(app.socketText->getAppPort());
+      textBusy = isPortBusy(app.socketText->getPort());
 
       //set port for voice socket
       app.socketVoice->setPort(genrate_random_number(3000,64000));
-      voiceBusy = isPortBusy(app.socketVoice->getAppPort());
+      voiceBusy = isPortBusy(app.socketVoice->getPort());
       if(voiceBusy==false && textBusy==false)
-        return new FluffyMultiplayer::StateConnectingToServer;
+      {
+        //enable status for receive and send
+        app.socketVoice->enable();
+        app.socketText->enable();
 
+        return new FluffyMultiplayer::StateConnectingToServer;
+      }
     }
 
-    return new FluffyMultiplayer::StateFailed("Bind or Pick port for client.",this, new FluffyMultiplayer::StateEnd,nullptr);
+    return new FluffyMultiplayer::StateFailed("Bind or Pick port for client.",
+                    new FluffyMultiplayer::StateBindPickPort,
+                    new FluffyMultiplayer::StateEnd,nullptr);
   }
 
 

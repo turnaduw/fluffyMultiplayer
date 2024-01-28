@@ -7,7 +7,7 @@
 #define WINDOW_WIDTH 1824
 #define WINDOW_HEIGHT 1080
 #define WINDOW_TITLE "Fluffy Multiplayer App"
-#define WINDOW_STYLE sf::Style::FullScreen
+#define WINDOW_STYLE sf::Style::Fullscreen
 #define WINDOW_MAX_FPS 60
 
 #define DEFAULT_TEXT_PORT 4657
@@ -64,6 +64,15 @@
 #define MC_SERVER_DEFAULT_IP "127.0.0.1"
 #define MC_SERVER_DEFAULT_PORT 8888
 #define MC_SERVER_IP_NOT_ALLOWED_LIST {"0.0.0.0"}
+
+#define MC_DEFAULT_PORT 64001
+
+#define MS_RECEIVED_DATA_MINIMUM_LENGTH 1
+#define MS_DATA_DELIMITER ",&"
+#define MS_REQUEST_CLOSER "~"
+#define MS_DATA_CODE_INDEX_A 0
+#define MS_DATA_CODE_INDEX_B 1
+#define MS_DATA_CODE_INDEX_C 2
 
 #define MC_REQUEST_TIMEOUT 100
 #define MC_STATE_BIND_PICK_PORT_TRY_COUNT 10

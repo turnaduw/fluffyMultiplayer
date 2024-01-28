@@ -13,14 +13,15 @@
 using boost::asio::ip::udp;
 
 #include "config.h"
+
 #include "dataType.h"
 #include "udpSocket.h"
 #include "dataSecurity.h"
 #include "log.h"
-#include "gameMode.h"
+// #include "gameMode.h"
 
 #include "appState.h"
-#include "states.h"
+#include "voiceChat.h"
 
 
 //clear identity
@@ -34,9 +35,11 @@ using boost::asio::ip::udp;
 //notification system
 #include "./uiComponents/notificationBox.h"
 
+
 namespace FluffyMultiplayer
 {
   class AppState;
+  // class GameMode;
   class App
   {
     private:
@@ -47,19 +50,19 @@ namespace FluffyMultiplayer
       FluffyMultiplayer::DataSecurity ds;
 
       std::string identity;
-      FluffyMultiplayer::LobbyData lobby;
+      FluffyMultiplayer::LobbyData* lobby;
       FluffyMultiplayer::AppState* currentState;
-      FluffyMultiplayer::GameMode* currentGameMode;
+      // FluffyMultiplayer::GameMode* currentGameMode;
 
       //voice chat
-      FluffyMultiplayer::VoiceChat voiceChat;
+      // FluffyMultiplayer::VoiceChat voiceChat; //voice chat off/on is flag included inside class VoieChat
 
       //data list from or to network
       std::queue<FluffyMultiplayer::SocketReceiveData> receivedTextDataList;
       std::queue<FluffyMultiplayer::SocketReceiveData> receivedVoiceDataList;
+
       std::queue<FluffyMultiplayer::SocketSendData> sendVoiceDataList;
       std::queue<FluffyMultiplayer::SocketSendData> sendTextDataList;
-
       //network and data froms
       boost::asio::io_context ioContextVoice;
 
@@ -96,6 +99,14 @@ namespace FluffyMultiplayer
         receive_thread.join();
         send_thread.join();
       }
+
+      bool addSendVoice(int code, std::string data);
+      bool addSendVoice(int code);
+      bool addSendText(int code, std::string data);
+      bool addSendText(int code);
+
+      bool isSenderIsServer(FluffyMultiplayer::AnAddress sender);
+      void prepareData(FluffyMultiplayer::SocketReceiveData&);
 
       void init(FluffyMultiplayer::AnAddress _server, std::string _identity);
       void run();
