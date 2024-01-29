@@ -52,8 +52,8 @@ namespace FluffyMultiplayer
     sendDirect(currentItem.data,false,currentItem.code);
   }
 
-  void UdpSocket::sendDirect(std::string& data,
-                bool areDataPrepared, const int& code)
+  void UdpSocket::sendDirect(std::string data,
+                bool areDataPrepared, int code)
   {
     try
     {

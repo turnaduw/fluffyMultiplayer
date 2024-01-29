@@ -6,7 +6,7 @@ namespace FluffyMultiplayer
   {
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
     initSimpleText(fontPath, "Sending connection request to the server\nplease wait..");
-    req = std::to_string(MC_REQUEST_CONNECT) + MC_REQUEST_CLOSER;
+    request_sent=false;
   }
 
   StateConnectingToServer::~StateConnectingToServer()
@@ -20,30 +20,26 @@ namespace FluffyMultiplayer
   }
 
 
-  FluffyMultiplayer::AppState* StateConnectingToServer::update(FluffyMultiplayer::App& app,
-                    std::queue<std::string>& receiveDataQueue,
-                    std::queue<std::string>& sendDataQueue)
-
+  FluffyMultiplayer::AppState* StateConnectingToServer::update(FluffyMultiplayer::App& app)
   {
-    if(app.getServerListCount()<=0)
+    if(!request_sent)
     {
-      return new FluffyMultiplayer::StateFailed("all servers tested, could not connect.",new FluffyMultiplayer::StateReadServerList, new FluffyMultiplayer::StateEnd,nullptr);
+        app.addSendText(REQUEST_CONNECT_TO_LOBBY);
+        request_sent=true;
     }
 
-    //enable status for receive and send
-    socketVoice->enable();
-    socketText->enable();
-
-
-
-    //connect to text
-    req = std::to_string(REQUEST_CONNECT_TO_LOBBY);
     return new FluffyMultiplayer::StateWaitForResponse
     (
       "Connecting to the server\nplease wait..",
-      req,
-      new FluffyMultiplayer::StateConnectedToTheServer,
-      MS_RESPONSE_CONNECTION_ACCEPTED
+      this,
+      std::vector<FluffyMultiplayer::AppState*>
+          {
+            new FluffyMultiplayer::StateConnectedToTheServer
+          },
+      std::vector<int>
+        {
+          RESPONSE_CONNECTION_ACCEPTED //success
+        }
     );
   }
 
@@ -51,6 +47,7 @@ namespace FluffyMultiplayer
   FluffyMultiplayer::AppState* StateConnectingToServer::eventHandle(FluffyMultiplayer::App& app,
                             sf::Event& event)
   {
+    ////////////********************* exception just for test while server is no trunnign later remove this.
     switch(event.type)
     {
       //keyboard
@@ -58,7 +55,7 @@ namespace FluffyMultiplayer
         {
           if(event.key.code == sf::Keyboard::Enter || event.key.code == sf::Keyboard::Return)
           {
-              // return new FluffyMultiplayer::StateLoginForm;
+              return new FluffyMultiplayer::StateConnectedToTheServer;
           }
         }
         break;

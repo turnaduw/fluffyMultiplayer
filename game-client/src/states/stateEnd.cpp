@@ -23,9 +23,7 @@ namespace FluffyMultiplayer
   }
 
 
-  FluffyMultiplayer::AppState* StateEnd::update(FluffyMultiplayer::App& app,
-                    std::queue<std::string>& receiveDataQueue,
-                    std::queue<std::string>& sendDataQueue)
+  FluffyMultiplayer::AppState* StateEnd::update(FluffyMultiplayer::App& app)
 
   {
     return this;

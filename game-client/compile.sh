@@ -12,6 +12,7 @@ do
           echo -e "\n\e[32m[END]\e[39m compile $compileMode finished at: `date`"
           ;;
     2)
+          clear
           #compile whole program for gdb
           echo -e "\n\e[31m[START]\e[39m compile $compileMode started at: `date`"
           g++ -g $compileMain
@@ -19,11 +20,11 @@ do
           echo -e "\n\e[32m[END]\e[39m compile $compileMode finished at: `date`"
           ;;
     3)
-          ./mc.run
+          ./gc.run
           break
           ;;
     4)
-          gdb ./mc.run
+          gdb ./gc.run
           break
           ;;
     *)

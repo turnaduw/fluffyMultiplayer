@@ -19,12 +19,10 @@ namespace FluffyMultiplayer
   }
 
 
-  FluffyMultiplayer::AppState* StateConnectedToTheServer::update(FluffyMultiplayer::App& app,
-                    std::queue<std::string>& receiveDataQueue,
-                    std::queue<std::string>& sendDataQueue)
+  FluffyMultiplayer::AppState* StateConnectedToTheServer::update(FluffyMultiplayer::App& app)
 
   {
-    return new FluffyMultiplayer::StateRelogin;
+    return new FluffyMultiplayer::StateJoinLobby;
   }
 
 

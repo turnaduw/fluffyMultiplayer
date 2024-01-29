@@ -37,9 +37,7 @@ namespace FluffyMultiplayer
   public:
     virtual void render(sf::RenderWindow&)=0;
 
-    virtual FluffyMultiplayer::AppState* update(FluffyMultiplayer::App&,
-                      std::queue<std::string>&,
-                      std::queue<std::string>&)=0;
+    virtual FluffyMultiplayer::AppState* update(FluffyMultiplayer::App&)=0;
 
     virtual FluffyMultiplayer::AppState* eventHandle(FluffyMultiplayer::App&,
                                         sf::Event&)=0;

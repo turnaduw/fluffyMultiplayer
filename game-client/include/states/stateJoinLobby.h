@@ -2,7 +2,9 @@
 #define H_STATE_JOIN_LOBBY
 
 #include "../appState.h"
+#include "../uiComponents/textInput.h"
 #include "../uiComponents/button.h"
+#include "../uiComponents/checkBox.h"
 
 namespace FluffyMultiplayer
 {
@@ -12,29 +14,30 @@ namespace FluffyMultiplayer
   class StateJoinLobby : public AppState
   {
   private:
-    FluffyMultiplayer::Button backButton;
-    FluffyMultiplayer::Button closeButton;
+    std::string entered_password;
+
+    //focus
+    FluffyMultiplayer::TextInput* inputFocus;
+
+    //text inputs
+    FluffyMultiplayer::TextInput passwordInput;
+
+    FluffyMultiplayer::AppState* formFinishedResult(FluffyMultiplayer::App& app);
+
+    //buttons
+    FluffyMultiplayer::Button buttonSubmit;
+    FluffyMultiplayer::Button buttonCancel;
+
     //mouse event handel variable to delecre once, not per loop delcre
     sf::Vector2f mousePosition;
 
-
-    FluffyMultiplayer::AnAddress gameServerAddress;
-    FluffyMultiplayer::AnAddress convertStringToAddress(std::string);
-    int findIndexOfDelimiter(const std::string& str, std::string c);
-    int convertToInt(const std::string& str);
-    bool isGameLaunched;
-
+    void init();
   public:
-    StateJoinLobby(FluffyMultiplayer::AnAddress);
-    StateJoinLobby(std::string);
     StateJoinLobby();
     ~StateJoinLobby();
 
-
     void render(sf::RenderWindow&);
-    FluffyMultiplayer::AppState* update(FluffyMultiplayer::App&,
-                      std::queue<std::string>&,
-                      std::queue<std::string>&);
+    FluffyMultiplayer::AppState* update(FluffyMultiplayer::App&);
     FluffyMultiplayer::AppState* eventHandle(FluffyMultiplayer::App&,
                               sf::Event&);
   };

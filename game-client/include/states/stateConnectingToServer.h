@@ -17,14 +17,12 @@ namespace FluffyMultiplayer
   class StateConnectingToServer : public AppState
   {
   private:
-    std::string req;
+    bool request_sent;
   public:
     StateConnectingToServer();
     ~StateConnectingToServer();
     void render(sf::RenderWindow&);
-    FluffyMultiplayer::AppState* update(FluffyMultiplayer::App&,
-                      std::queue<std::string>&,
-                      std::queue<std::string>&);
+    FluffyMultiplayer::AppState* update(FluffyMultiplayer::App&);
     FluffyMultiplayer::AppState* eventHandle(FluffyMultiplayer::App&,
                               sf::Event&);
   };

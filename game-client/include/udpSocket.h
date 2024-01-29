@@ -33,7 +33,7 @@ namespace FluffyMultiplayer
           : socket(io_context, udp::endpoint(udp::v4(), default_port))
       {
         bufferSize = _bufferSize;
-        receiverEndpoint.ip(_receiver.ip);
+        receiverEndpoint.address(_receiver.ip);
         receiverEndpoint.port(_receiver.port);
         socket.non_blocking(true);
         port = default_port;
@@ -61,8 +61,7 @@ namespace FluffyMultiplayer
       void prepareData(const int&, std::string&);
 
 
-      void sendDirect(std::string& data,
-              const FluffyMultiplayer::AnAddress& receiver,
+      void sendDirect(std::string data,
               bool areDataPrepared,
               int code);
 

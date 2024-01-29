@@ -24,7 +24,7 @@ namespace FluffyMultiplayer
     std::array<FluffyMultiplayer::Button,3> buttons;
     //mouse event handel variable to delecre once, not per loop delcre
     sf::Vector2f mousePosition;
-    
+
   public:
     StateFailed(std::string, FluffyMultiplayer::AppState* ok,std::string*);
 
@@ -37,9 +37,7 @@ namespace FluffyMultiplayer
 
     ~StateFailed();
     void render(sf::RenderWindow&);
-    FluffyMultiplayer::AppState* update(FluffyMultiplayer::App&,
-                      std::queue<std::string>&,
-                      std::queue<std::string>&);
+    FluffyMultiplayer::AppState* update(FluffyMultiplayer::App&);
     FluffyMultiplayer::AppState* eventHandle(FluffyMultiplayer::App&,
                               sf::Event&);
   };

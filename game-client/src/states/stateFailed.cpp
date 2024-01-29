@@ -32,7 +32,8 @@ namespace FluffyMultiplayer
 
   StateFailed::StateFailed(std::string _text,FluffyMultiplayer::AppState* s1,
                            FluffyMultiplayer::AppState* s2,
-                           FluffyMultiplayer::AppState* s3,std::string* request=nullptr)
+                           FluffyMultiplayer::AppState* s3,
+                           std::string* request=nullptr)
   {
     StateFailed(_text,s1,s2,request);
     outputStateCount=3;
@@ -77,10 +78,7 @@ namespace FluffyMultiplayer
   }
 
 
-  FluffyMultiplayer::AppState* StateFailed::update(FluffyMultiplayer::App& app,
-                    std::queue<std::string>& receiveDataQueue,
-                    std::queue<std::string>& sendDataQueue)
-
+  FluffyMultiplayer::AppState* StateFailed::update(FluffyMultiplayer::App& app)
   {
     return this;
   }
