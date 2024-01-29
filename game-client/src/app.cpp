@@ -165,21 +165,27 @@ namespace FluffyMultiplayer
 
   void App::init(FluffyMultiplayer::AnAddress _server, std::string _identity)
   {
+
+    //init log
+    log.init(APP_LOG_FILENAME,APP_PRINT_LOGS_LEVEL);
+
+    log.print("app init.", FluffyMultiplayer::LogType::Information);
     lobby = new FluffyMultiplayer::LobbyData;
 
     lobby->address.set(_server);
     identity = _identity;
 
+    log.print("app lobby address=."+lobby->address.getAsString(), FluffyMultiplayer::LogType::Information);
+    log.print("app identity=."+identity, FluffyMultiplayer::LogType::Information);
+
+
     appIsRunning=true;
     gameIsRunning=false;
 
-    //init log
-    log.init(APP_LOG_FILENAME,APP_PRINT_LOGS_LEVEL);
-
 
     //init sockets
-    socketVoice = new FluffyMultiplayer::UdpSocket(ioContextVoice, DEFAULT_TEXT_PORT,FluffyMultiplayer::AnAddress{lobby->address.ip, lobby->address.port}, TEXT_CHAT_BUFFER_SIZE);
-    socketText = new FluffyMultiplayer::UdpSocket(ioContextText, DEFAULT_VOICE_PORT,FluffyMultiplayer::AnAddress{lobby->address.ip, lobby->voicePort}, VOICE_CHAT_BUFFER_SIZE);
+    socketVoice = new FluffyMultiplayer::UdpSocket(ioContextVoice, DEFAULT_TEXT_PORT,FluffyMultiplayer::AnAddress{lobby->address.ip, lobby->voicePort}, TEXT_CHAT_BUFFER_SIZE);
+    socketText = new FluffyMultiplayer::UdpSocket(ioContextText, DEFAULT_VOICE_PORT,FluffyMultiplayer::AnAddress{lobby->address.ip, lobby->address.port}, VOICE_CHAT_BUFFER_SIZE);
 
     //init voice chat
     // voiceChat.init(DEFAULT_PLAYER_VOICE_ENABLE);
@@ -205,7 +211,7 @@ namespace FluffyMultiplayer
 
   void App::run()
   {
-
+    log.print("app run.", FluffyMultiplayer::LogType::Information);
     while (appWindow.isOpen())
     {
        // Event processing

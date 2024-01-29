@@ -3,7 +3,7 @@
 
 int main(int argc, char** argv)
 {
-  FluffyMultiplayer::AnAddress serverAddress = {"127.0.0.1",6666};
+  FluffyMultiplayer::AnAddress serverAddress = {"127.0.0.1",7777};
   std::string identity = "LQLDH5qSBsqtQp1DHULePGNBFwfdTMiUqlF6WRYTX5lVX8UsfjrtH4XgWDCk";
   try
   {

@@ -5,10 +5,12 @@ namespace FluffyMultiplayer
   void UdpSocket::enable()
   {
     statusSocket=true;
+    log.print("socket enabled.",FluffyMultiplayer::LogType::Information);
   }
   void UdpSocket::disable()
   {
-    statusSocket=true;
+    statusSocket=false;
+    log.print("socket disabled.",FluffyMultiplayer::LogType::Information);
   }
   bool UdpSocket::getStatus() const
   {
@@ -24,6 +26,7 @@ namespace FluffyMultiplayer
       udp::endpoint newEndpoint(udp::v4(), newPort);
       socket.open(newEndpoint.protocol());
       socket.bind(newEndpoint);
+      log.print("socket port set at:"+std::to_string(newPort), FluffyMultiplayer::LogType::Information);
     }
     catch (std::exception& e)
     {
@@ -61,6 +64,8 @@ namespace FluffyMultiplayer
         prepareData(code,data);
 
       socket.send_to(boost::asio::buffer(data), receiverEndpoint);
+      log.print("socket data sent data:"+data+" target:"+receiverEndpoint.address().to_string() + ":"+std::to_string(receiverEndpoint.port()), FluffyMultiplayer::LogType::Information);
+
     }
     catch (std::exception& e)
     {
@@ -74,10 +79,10 @@ namespace FluffyMultiplayer
   {
     try
     {
-      char buffer[bufferSize];
       if(!statusSocket)
         return 0;
 
+      char buffer[bufferSize];
       //make buffer empty
       for(int i=0; i<bufferSize; i++)
         buffer[i] = '\0';
@@ -96,9 +101,9 @@ namespace FluffyMultiplayer
 
         //set data
         for(int i=0; i<bufferSize; i++)
-        data[i] = buffer[i];
+          data[i] = buffer[i];
 
-
+        log.print("socket received data, data-length:"+std::to_string(receive_length), FluffyMultiplayer::LogType::Information);
         return receive_length;
       }
       else

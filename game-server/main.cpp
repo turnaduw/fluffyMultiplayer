@@ -21,7 +21,7 @@ int main(int argc, char** argv)
 
   FluffyMultiplayer::LobbyData lobby
   {
-    1,10,0,2,0,0,0,0,"password",8898,9989,0
+    1,10,0,2,0,0,0,0,"password",DEFAULT_PORT_TEXT,DEFAULT_PORT_VOICE,0
   };
 
   FluffyMultiplayer::App app;

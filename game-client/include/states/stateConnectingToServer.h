@@ -16,8 +16,6 @@ namespace FluffyMultiplayer
 
   class StateConnectingToServer : public AppState
   {
-  private:
-    bool request_sent;
   public:
     StateConnectingToServer();
     ~StateConnectingToServer();

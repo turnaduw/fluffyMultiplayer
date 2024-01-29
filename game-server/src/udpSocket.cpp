@@ -92,11 +92,12 @@ namespace FluffyMultiplayer
 
       udp::endpoint receiverEndpoint(receiver.ip, receiver.port);
       socket.send_to(boost::asio::buffer(data), receiverEndpoint);
+      log.print("from UdpSocket::sendDirect successfully sent. "+data, FluffyMultiplayer::LogType::Success);
     }
     catch (std::exception& e)
     {
-        std::string errorMsg = e.what();
-        log.print("from UdpSocket::sendDirect catched exception: "+errorMsg, FluffyMultiplayer::LogType::Warning);
+        // std::string errorMsg = e.what();
+        // log.print("from UdpSocket::sendDirect catched exception: "+errorMsg, FluffyMultiplayer::LogType::Warning);
     }
   }
 
@@ -120,12 +121,13 @@ namespace FluffyMultiplayer
       // Set the sender address
       senderAddress = senderEndpoint;
 
+      log.print("from UdpSocket::receive successfully received. len="+receive_length, FluffyMultiplayer::LogType::Success);
       return receive_length;
     }
     catch (std::exception& e)
     {
-      std::string errorMsg = e.what();
-      log.print("from UdpSocket::receive catched exception: " + errorMsg, FluffyMultiplayer::LogType::Warning);
+      // std::string errorMsg = e.what();
+      // log.print("from UdpSocket::receive catched exception: " + errorMsg, FluffyMultiplayer::LogType::Warning);
     }
     return 0;
   }

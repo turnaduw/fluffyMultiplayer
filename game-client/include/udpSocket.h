@@ -32,13 +32,14 @@ namespace FluffyMultiplayer
                 int _bufferSize)
           : socket(io_context, udp::endpoint(udp::v4(), default_port))
       {
+        log.init(SOCKET_LOG_FILENAME,SOCKET_PRINT_LOGS_LEVEL);
         bufferSize = _bufferSize;
         receiverEndpoint.address(_receiver.ip);
         receiverEndpoint.port(_receiver.port);
+        log.print("socket receiverEndpoint="+receiverEndpoint.address().to_string()+ ":"+std::to_string(receiverEndpoint.port()),FluffyMultiplayer::LogType::Information);
         socket.non_blocking(true);
         port = default_port;
         statusSocket=false;
-        log.init(SOCKET_LOG_FILENAME,SOCKET_PRINT_LOGS_LEVEL);
       }
       ~UdpSocket()
       {

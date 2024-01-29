@@ -71,7 +71,7 @@ namespace FluffyMultiplayer
       textBusy = isPortBusy(app.socketText->getPort());
 
       //set port for voice socket
-      app.socketVoice->setPort(genrate_random_number(3000,64000));
+      app.socketVoice->setPort(genrate_random_number(3000,64000)+1);
       voiceBusy = isPortBusy(app.socketVoice->getPort());
       if(voiceBusy==false && textBusy==false)
       {

@@ -6,7 +6,6 @@ namespace FluffyMultiplayer
   {
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
     initSimpleText(fontPath, "Sending connection request to the server\nplease wait..");
-    request_sent=false;
   }
 
   StateConnectingToServer::~StateConnectingToServer()
@@ -22,11 +21,7 @@ namespace FluffyMultiplayer
 
   FluffyMultiplayer::AppState* StateConnectingToServer::update(FluffyMultiplayer::App& app)
   {
-    if(!request_sent)
-    {
-        app.addSendText(REQUEST_CONNECT_TO_LOBBY);
-        request_sent=true;
-    }
+    app.addSendText(REQUEST_CONNECT_TO_LOBBY);
 
     return new FluffyMultiplayer::StateWaitForResponse
     (

@@ -23,7 +23,7 @@
 #define APP_PRINT_LOGS_LEVEL FluffyMultiplayer::LogType::All
 
 #define SOCKET_LOG_FILENAME "socket.log"
-#define SOCKET_PRINT_LOGS_LEVEL FluffyMultiplayer::LogType::Error
+#define SOCKET_PRINT_LOGS_LEVEL FluffyMultiplayer::LogType::All
 
 #define WINDOW_BACKGROUND_COLOR sf::Color(40,42,48)
 #define FORM_HIDE_CHARECTER '*'
