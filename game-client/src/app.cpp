@@ -32,6 +32,50 @@ namespace FluffyMultiplayer
     }
   }
 
+
+  bool App::addSendVoice(int code, std::string data)
+  {
+    sendVoiceDataList.push
+    (
+        {code,data}
+    );
+    return true;
+  }
+  bool App::addSendVoice(int code)
+  {
+    sendVoiceDataList.push
+    (
+        {code,APP_EMPTY_DATA_SEND}
+    );
+    return true;
+  }
+  bool App::addSendText(int code, std::string data)
+  {
+    sendTextDataList.push
+    (
+      {code,data}
+    );
+    return true;
+  }
+  bool App::addSendText(int code)
+  {
+    sendTextDataList.push
+    (
+      {code,APP_EMPTY_DATA_SEND}
+    );
+    return true;
+  }
+
+  void App::setIdentity(std::string _identity)
+  {
+    identity= _identity;
+  }
+  std::string App::getIdentity() const
+  {
+    return identity;
+  }
+
+
   bool App::isSenderIsServer(FluffyMultiplayer::AnAddress sender)
   {
     if
@@ -121,7 +165,9 @@ namespace FluffyMultiplayer
 
   void App::init(FluffyMultiplayer::AnAddress _server, std::string _identity)
   {
-    lobby->address = _server;
+    lobby = new FluffyMultiplayer::LobbyData;
+
+    lobby->address.set(_server);
     identity = _identity;
 
     appIsRunning=true;

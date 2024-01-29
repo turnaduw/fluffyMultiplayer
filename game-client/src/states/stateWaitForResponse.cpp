@@ -1,342 +1,210 @@
-// #include "../../include/states.h"
-//
-// namespace FluffyMultiplayer
-// {
-//
-//   //single response
-//   StateWaitForResponse::StateWaitForResponse(bool bySocketText, std::string _text,
-//                        const std::string& request,
-//                        FluffyMultiplayer::AppState* retryState,
-//                        FluffyMultiplayer::AppState* acceptedState,
-//                        int responseCodeAccepts)
-//   {
-//
-//     if(bySocketText)
-//     {
-//
-//     }
-//     else
-//     {
-//
-//     }
-//   }
-//
-//   //multi response
-//   StateWaitForResponse::StateWaitForResponse(bool bySocketText, std::string _text,
-//                        const std::string& request,
-//                        FluffyMultiplayer::AppState* retryState,
-//                        std::vector<FluffyMultiplayer::AppState*> acceptedState,
-//                        std::vector<int> responseCodeAccepts)
-//   {
-//     loginData_ptr=nullptr;
-//     registerData_ptr = nullptr;
-//     lobbyData_ptr=nullptr;
-//     createLobbyData_ptr=nullptr;
-//
-//     requestSent=false;
-//     timeoutCounter=MC_REQUEST_TIMEOUT;
-//     state1 = retryState;
-//     state2.push_back(acceptedState);
-//     state3 = nullptr;
-//     responseCodeAcceptor.push_back( responseCodeAccepts );
-//     requestData = request;
-//
-//
-//     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
-//     text = "Wait for response:\n"+ _text;
-//     initSimpleText(fontPath, text);
-//
-//     timeouttxt.setFont(theFont);
-//     timeouttxt.setString("timedout press enter to retry.");
-//     buttonRetry.init("Retry", 200.0,200.0, sf::Color::Black,sf::Color::White, 60,30, 22);
-//   }
-//
-//   StateWaitForResponse::~StateWaitForResponse()
-//   {
-//
-//   }
-//
-//   std::string StateWaitForResponse::getResponseCodeMessage(const int& code)
-//   {
-//     switch (code)
-//     {
-//       //success ---------------------------------------------------------------
-//       case MS_RESPONSE_CONNECTION_ACCEPTED: return "connected to the server.";
-//       case MS_RESPONSE_DISCONNECTED: return "disconnected from the server.";
-//       case MS_RESPONSE_SUCCESS_LOGIN: return "signed in successfully.";
-//       case MS_RESPONSE_SUCCESS_REGISTER: return "signed up successfully.";
-//       case MS_RESPONSE_SUCCESS_LOBBY_CREATED: return "lobby created successfully.";
-//       case MS_RESPONSE_SUCCESS_GET_LOBBY_LIST: return "lobby list received successfully.";
-//       case MS_RESPONSE_SUCCESS_GET_LOBBY_INFO: return "lobby info received successfully.";
-//       case MS_RESPONSE_SUCCESS_LATEST_VERSION: return "latest version received successfully";
-//
-//
-//       //error ---------------------------------------------------------------
-//       case MS_ERROR_CONNECTION_EXISTS: return "failed to connect, connection exists\nthis means this ip and port you're using\nis connected to the server via\nanother device\nrestart your modem/nhow to solve? 1.retry\n2.restart your network";
-//       // case MS_ERROR_CONNECTION_REJECTED_USING_VPN: return "";
-//       case MS_ERROR_CONNECTION_REJECTED: return "failed to connect, connection refused.\nlater try again.";
-//       case MS_ERROR_CONNECTION_NOT_EXISTS: return "you're not connected to server. your requset has been rejected.\nre-open application.";
-//       case MS_ERROR_FAILED_TO_LOGIN_INCORRECT: return "faield to sign-in, incorrect username or password.";
-//       case MS_ERROR_FAILED_TO_LOGIN_NOT_EXISTS: return "failed to sign-in, .";
-//       case MS_ERROR_FAILED_TO_LOGIN_BANNED: return "failed to sign-in, account is banned.";
-//       case MS_ERROR_FAILED_TO_LOGIN_BAD_DATA_SYNTAX: return "failed to sign-in, bad data syntax, try again later.";
-//       case MS_ERROR_FAILED_TO_REGISTER_USERNAME_EXISTS: return "faield to sign-up, username exists choose another one.";
-//       case MS_ERROR_FAILED_TO_REGISTER_EMIAL_EXISTS: return "failed to sign-up, email exists choose another one.";
-//       case MS_ERROR_FAILED_TO_REGISTER_EASY_PASSWORD: return "failed to sign-up, easy password\nuse CapCase and SmallCase charecter\nand number\nand !@#%.. charecters in your password.";
-//       case MS_ERROR_FAILED_TO_REGISTER_BAD_DATA_SYNTAX: return "failed to sign-up, bad data syntax, try again later.";
-//       case MS_ERROR_FAILED_TO_LOBBY_CREATION_INVALID_IDENTITY: return "failed to create lobby, invalid identity please re-login or try again later.";
-//       case MS_ERROR_FAILED_TO_LOBBY_CREATION_CANT_OWN_TWO_LOBBY: return "faield to create lobby, you have lobby exists\nyou can own only one lobby at same time";
-//       case MS_ERROR_FAILED_TO_LOBBY_CREATION_FORBIDDEN_FOR_YOU: return "failed to create lobby, you dont have permission to create lobby.\nyour account has been limited due to reasons.";
-//       case MS_ERROR_FAILED_TO_LOBBY_CREATION_BAD_DATA_SYNTAX: return "failed to create lobby, bad data syntax, try again later.";
-//       case MS_ERROR_FAILED_TO_GET_LOBBY_LIST_NO_LOBBY_AVAIABLE: return "failed to get lobby list, \nat this time there is no lobby aviable.";
-//       case MS_ERROR_FAILED_TO_GET_LOBBY_INFO_LOBBY_NOT_FOUND: return "failed to get lobby info by id, lobby not found.";
-//       case MS_ERROR_FAILED_TO_GET_LOBBY_INFO_BAD_DATA_SYNTAX: return "faield to get lobby info by id, bad data syntax,\ntry again later.";
-//       case MS_ERROR_FAILED_TO_RELOGIN_IDENTITY_INVALID_OR_NOT_EXISTS: return "failed to re-login, invalid identity or not exists.";
-//       case MS_ERROR_FAILED_TO_RELOGIN_IDENTITY_EXPIRED: return "failed to re-login, that old session has been expired\nplease login again.";
-//       //internal error --------------------------------------------------------
-//       case MS_ERROR_FAILED_TO_INSERT_CLIENT_IDENTITY: return "failed to sign-up, server internal error(please try again later).";
-//       case MS_ERROR_FAILED_TO_REGISTER_CLIENT: return "failed to sign-up, server internal error(please try again later).";
-//       case MS_ERROR_FAILED_TO_CREATE_LOBBY: return "failed to create lobby, server internal error(please try again later).";
-//       case MS_ERROR_FAILED_TO_GET_LOBBY_LIST: return "failed to get lobby list, server internal error(please try again later).";
-//       case MS_ERROR_FAILED_TO_GET_LOBBY_INFO: return "failed to get lobby by id, server internal error(please try again later).";
-//       case MS_ERROR_FAILED_TO_LOGIN_CLIENT: return "failed to sign-in, server internal error(please try again later).";
-//       case MS_ERROR_FAILED_TO_RELOGIN: return "failed to re-login, server internal error(please try again later).";
-//
-//
-//
-//       //---------------------------------------------------------------
-//       default: return "unknown error code [1].";
-//     }
-//     return "unkonwn error code [2].";
-//   }
-//
-//   int StateWaitForResponse::checkResponseCode(const std::string& _data, std::queue<FluffyMultiplayer::NotificationData>& notificationQueue)
-//   {
-//     std::string tempStr = _data.substr(MC_RESPONSE_POSITION_MIN_INDEX,MC_RESPONSE_POSITION_MAX_INDEX);
-//     const char* temp = tempStr.c_str();
-//     int code = std::atoi(temp);
-//     std::cout << "checkResponseCode=" << code << ";~;" << std::endl;
-//     if(code>=MC_MINUMUM_RESPONSE_CODE)
-//     {
-//
-//       if(MC_SHOW_ERROR_NOTIFICATIONS &&
-//             code >= MC_ERROR_RESPONSE_CODE_MIN &&
-//             code <= MC_ERROR_RESPONSE_CODE_MAX)
-//       {
-//         notificationQueue.push
-//         (
-//           FluffyMultiplayer::NotificationData
-//           {
-//             code,"error",getResponseCodeMessage(code),
-//             FluffyMultiplayer::NotificationType::error,
-//             FluffyMultiplayer::NotificationPosition::center
-//           }
-//         );
-//       }
-//
-//       if(MC_SHOW_SUCCESS_NOTIFICATIONS &&
-//             code >= MC_SUCCESS_RESPONSE_CODE_MIN &&
-//             code <= MC_SUCCESS_RESPONSE_CODE_MAX)
-//       {
-//         notificationQueue.push
-//         (
-//           FluffyMultiplayer::NotificationData
-//           {
-//             code,"success",getResponseCodeMessage(code),
-//             FluffyMultiplayer::NotificationType::success,
-//             FluffyMultiplayer::NotificationPosition::bottomRight
-//           }
-//         );
-//       }
-//
-//       return code;
-//     }
-//     return -1;
-//   }
-//
-//   void StateWaitForResponse::render(sf::RenderWindow& window)
-//   {
-//     if(timeoutCounter<=0)
-//     {
-//       window.draw(timeouttxt);
-//       buttonRetry.render(window);
-//     }
-//     else
-//     {
-//       window.draw(theText);
-//     }
-//   }
-//
-//
-//   FluffyMultiplayer::AppState* StateWaitForResponse::update(FluffyMultiplayer::App& app,
-//                     std::queue<std::string>& receiveDataQueue,
-//                     std::queue<std::string>& sendDataQueue)
-//
-//   {
-//     if(requestSent==false)
-//     {
-//       sendDataQueue.push(requestData);
-//       requestSent=true;
-//     }
-//
-//     //do counter minus to make timeout zero and left this state.
-//     if(timeoutCounter>0)
-//     {
-//       timeoutCounter--;
-//       theText.setString(text+"\nTimeout=("+std::to_string(timeoutCounter)+")");
-//
-//       //check for received data.
-//       if(receiveDataQueue.size()>=1)
-//       {
-//         receivedData = receiveDataQueue.front();
-//         receiveDataQueue.pop();
-//         int resultRC = checkResponseCode(receivedData,app.notificationQueue);
-//
-//         for(int i = 0; i < responseCodeAcceptor.size(); i++)
-//         {
-//             if(resultRC == responseCodeAcceptor[i])
-//             {
-//               if(registerData_ptr!=nullptr)
-//               {
-//                 registerData_ptr->identity = getIdentityFromResponsedData(receivedData,MC_RESPONSE_DELIMITER,MC_RESPONSE_CLOSER);
-//                 app.setIdentity(registerData_ptr->identity); //save identity for app
-//               }
-//               else if(responseCodeAcceptor[i] == MS_RESPONSE_SUCCESS_GET_LOBBY_LIST) //means lobby list received
-//               {
-//                 //remove closer and addiotional deliimter from data
-//                 receivedData = receivedData.substr(0, receivedData.length()-3);
-//
-//                 //pass received data (lobbies) into MainPage to show as lobbyList
-//                 return new FluffyMultiplayer::StateMainPage(receivedData);
-//               }
-//               return state2[i]; //accepted (first state passed) successfully
-//             }
-//             else if(resultRC == responseCodeAcceptor2 && state3!=nullptr)
-//             {
-//               if(loginData_ptr!=nullptr)
-//               {
-//                   loginData_ptr->identity = getIdentityFromResponsedData(receivedData,MC_RESPONSE_DELIMITER,MC_RESPONSE_CLOSER);
-//                   app.setIdentity(loginData_ptr->identity); //save identity for app
-//               }
-//
-//                 if(createLobbyData_ptr!=nullptr)
-//                 {
-//                   createLobbyData_ptr->address = getServerAddressFromResponseData(receivedData,MC_RESPONSE_DELIMITER,MC_RESPONSE_CLOSER);
-//                   return new FluffyMultiplayer::StateJoinLobby(createLobbyData_ptr->address);
-//                 }
-//                 return state3; //second state passed successfully
-//               }
-//
-//               /*
-//               get lobby info by entered lobby id:
-//               we have to pass lobbyData into StateShowLobbyDetails, can not pass same
-//               empty from StateMainPage so make state3 that is success to nullptr to
-//               create a new situation to do this down condition
-//               */
-//               else if(resultRC == responseCodeAcceptor2 && state3==nullptr && lobbyData_ptr!=nullptr)
-//               {
-//                 return new FluffyMultiplayer::StateShowLobbyDetails(getLobbyFromResponseData(receivedData,MC_RESPONSE_DELIMITER,MC_RESPONSE_CLOSER));
-//               }
-//
-//               else
-//               {
-//                 //login form
-//                 if(state1==nullptr && loginData_ptr!=nullptr && timeoutCounter<=0)
-//                 {
-//                   switch (resultRC)
-//                   {
-//                     case MS_ERROR_FAILED_TO_LOGIN_INCORRECT:
-//                     case MS_ERROR_FAILED_TO_LOGIN_NOT_EXISTS:
-//                     case MS_ERROR_FAILED_TO_LOGIN_BAD_DATA_SYNTAX:
-//                     default:
-//                     /*
-//                     dont know these failed resposne code belongs to where?
-//                     username or password?
-//                     so this part wrote on index _error[0],  for later changes
-//                     */
-//                     loginData_ptr->_errors[0] = resultRC;
-//                   }
-//
-//                   return new FluffyMultiplayer::StateLoginForm(*loginData_ptr);
-//                 }
-//
-//                 //register form
-//                 else if(state3==nullptr && registerData_ptr!=nullptr && timeoutCounter<=0)
-//                 {
-//                   switch (resultRC)
-//                   {
-//                     case MS_ERROR_FAILED_TO_REGISTER_USERNAME_EXISTS: registerData_ptr->_errors[0]=resultRC;break;
-//                     case MS_ERROR_FAILED_TO_REGISTER_EMIAL_EXISTS: registerData_ptr->_errors[1]=resultRC;break;
-//                     case MS_ERROR_FAILED_TO_REGISTER_EASY_PASSWORD: registerData_ptr->_errors[2]=resultRC;break;
-//                     case MS_ERROR_FAILED_TO_REGISTER_BAD_DATA_SYNTAX:
-//                     default:
-//                     /*
-//                     dont know other failed resposne code belongs to where?
-//                     username or email or password?
-//                     so this part wrote on index _error[0],  for later changes
-//                     */
-//                     registerData_ptr->_errors[0]=resultRC;break;
-//                   }
-//                   return new FluffyMultiplayer::StateRegisterForm(*registerData_ptr);
-//                 }
-//
-//                 //create lobby form
-//                 else if(state3!=nullptr && createLobbyData_ptr!=nullptr && timeoutCounter<=0)
-//                 {
-//                   switch (resultRC)
-//                   {
-//                     case MS_ERROR_FAILED_TO_LOBBY_CREATION_INVALID_IDENTITY:
-//                     case MS_ERROR_FAILED_TO_LOBBY_CREATION_CANT_OWN_TWO_LOBBY:
-//                     case MS_ERROR_FAILED_TO_LOBBY_CREATION_BAD_DATA_SYNTAX:
-//                     case MS_ERROR_FAILED_TO_CREATE_LOBBY:
-//                     default:
-//                     createLobbyData_ptr->globalErrors = resultRC;
-//                   }
-//                   return new FluffyMultiplayer::StateCreateLobbyForm(*createLobbyData_ptr);
-//                 }
-//
-//
-//                 //-------------------------
-//               }
-//         } //for loop
-//       }
-//     }
-//     return this; //keep this state
-//   }
-//
-//
-//   FluffyMultiplayer::AppState* StateWaitForResponse::eventHandle(FluffyMultiplayer::App& app,
-//                             sf::Event& event)
-//   {
-//     //mouse realtime
-//     if(event.type == sf::Event::MouseButtonPressed)
-//     {
-//         mousePosition = app.appWindow.mapPixelToCoords(sf::Mouse::getPosition(app.appWindow));
-//
-//         if(buttonRetry.getButtonBound().contains(mousePosition))
-//         {
-//           if(state1!=nullptr)
-//             return state1;
-//         }
-//     }
-//
-//     switch(event.type)
-//     {
-//       //keyboard
-//       case sf::Event::KeyPressed:
-//         {
-//           if(event.key.code == sf::Keyboard::Enter || event.key.code == sf::Keyboard::Return)
-//           {
-//               if(timeoutCounter<=0)
-//               {
-//                 if(state1!=nullptr)
-//                   return state1;
-//               }
-//
-//           }
-//         }
-//         break;
-//     }
-//     return this;
-//   }
-// }
+#include "../../include/states.h"
+
+namespace FluffyMultiplayer
+{
+  StateWaitForResponse::StateWaitForResponse(std::string _text,
+                      FluffyMultiplayer::AppState* _retryState,
+                      std::vector<FluffyMultiplayer::AppState*> _states,
+                      std::vector<int> _responseCodes)
+  {
+    timeoutCounter=MC_REQUEST_TIMEOUT;
+    retryState=_retryState;
+    states = _states;
+    responseCodes = _responseCodes;
+
+    std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
+    text = "Wait for response:\n"+ _text;
+    initSimpleText(fontPath, text);
+
+    timeouttxt.setFont(theFont);
+    timeouttxt.setString("timedout press enter to retry.");
+    buttonRetry.init("Retry", 200.0,200.0, sf::Color::Black,sf::Color::White, 60,30, 22);
+  }
+
+
+  StateWaitForResponse::~StateWaitForResponse()
+  {
+
+  }
+
+  std::string StateWaitForResponse::getResponseCodeMessage(const int& code)
+  {
+    switch (code)
+    {
+      // ------------------------- responses, range: 201 -> 500
+      case RESPONSE_CONNECTION_ACCEPTED: return "connection accepted"; //to sender (connection accepted not mean joint lobby)
+      case RESPONSE_PLAYER_RECONNECTED_INTO_LOBBY: return "player reconnected into lobby"; //to all
+      case RESPONSE_PLAYER_DISCONNECTED: return "player disconnected";//to all
+      case RESPONSE_PLAYER_JOINT_INTO_LOBBY: return "player joint into lobby";//to all (correct password)
+      case RESPONSE_YOU_ARE_JOINT_INTO_LOBBY: return "you are joint into lobby";
+      case RESPONSE_PLAYER_KICKED_FROM_LOBBY: return "player kicked from lobby"; //to all
+      case RESPONSE_PLAYER_BANNED_FROM_LOBBY: return "player banned from lobby"; //to all
+      case RESPONSE_GAME_STOPPED: return "game stopped"; //to all
+      case RESPONSE_GAME_STARTED: return "game started"; //to all
+      case RESPONSE_PLAYER_VOICE_CHAT_ENABLED: return "voice chat enabled"; // to all
+      case RESPONSE_PLAYER_VOICE_CHAT_DISABLED: return "voice chat disabled"; // to all
+      case RESPONSE_PLAYER_SENT_VOICE_MESSAGE: return "voice message sent/received"; // to all
+      case RESPONSE_PLAYER_SENT_TEXT_MESSAGE: return "text message sent/received";  // to all
+      case RESPONSE_PLAYER_CONNECTION_LOST: return "player connection lost"; // to all
+      case RESPONSE_LOBBY_DELETED: return "lobby has been deleted"; //to all
+      case RESPONSE_LOBBY_SETTINGS_UPDATED: return "lobby settings updated"; //to all
+      case RESPONSE_LOBBY_SETTINGS_IS: return "lobby setting received from server";
+      case RESPONSE_LOBBY_OWNER_CHANGED: return "lobby owner changed"; //to all
+
+      case RESPONSE_UNKNOWN_REQUEST_GAME_PAUSED_OR_NOT_STARTED: return "game is paused or not started";
+      case RESPONSE_UNKNOWN_REQUEST_GAME_IS_NOT_STARTED: return "game is not started";
+
+      // = = = errors 301 (to sender)
+      case RESPONSE_ERROR_CONNECTION_EXISTS: return "connection exists";
+      case RESPONSE_ERROR_CONNECTION_BLOCKED: return "connection blocked";//maybe because of spam
+      case RESPONSE_ERROR_CONNECTION_REJECTED: return "connection rejected";
+      case RESPONSE_ERROR_CONNECTION_NOT_EXISTS: return "connection not exists";
+      // case RESPONSE_ERROR_CONNECTION_USING_VPN_FORBIDDEN: return "using vpn is forbidden";
+      case RESPONSE_ERROR_RECONNECT_INVALID_IDENTITY: return "failed to reconnect invalid identity";
+      case RESPONSE_ERROR_DISCONNECT_YOU_ARE_NOT_CONNECTED: return "you are not connected";
+      case RESPONSE_ERROR_JOIN_LOBBY_PASSWORD_INCORRECT: return "incorrect lobby password";
+      case RESPONSE_ERROR_JOIN_LOBBY_INVALID_IDENTITY: return "invalid identity"; //identity not found
+      case RESPONSE_ERROR_JOIN_LOBBY_YOU_ARE_BANNED: return "you are banned";
+      case RESPONSE_ERROR_JOIN_LOBBY_YOU_ARE_ALREADY_JOINT: return "you are already in lobby";
+      case RESPONSE_ERROR_GET_LOBBY_SETTINGS_NO_PERMISSION: return "no permission to get lobby settings";
+      case RESPONSE_ERROR_UPDATE_LOBBY_SETTINGS_NO_PERMISSION: return "no permission to update lobby settings";
+      case RESPONSE_ERROR_START_GAME_NO_PERMISSION: return "no permission to start game";
+      case RESPONSE_ERROR_START_GAME_ALREADY_RUN: return "game is running";
+      case RESPONSE_ERROR_STOP_GAME_NO_PERMISSION: return "no permission to stop game";
+      case RESPONSE_ERROR_STOP_GAME_NOT_STARTED: return "game is not running";
+      case RESPONSE_ERROR_DELETE_LOBBY_NO_PERMISSION: return "no permission to delete lobby";
+      case RESPONSE_ERROR_KICK_PLAYER_NO_PERMISSION: return "no permission to kick player";
+      case RESPONSE_ERROR_KICK_PLAYER_INVALID_TARGET: return "target not found to kick from lobby";
+      case RESPONSE_ERROR_BAN_PLAYER_NO_PERMISSION: return "no permission to ban player from lobby";
+      case RESPONSE_ERROR_BAN_PLAYER_INVALID_TARGET: return "target not found to ban from lobby";
+      case RESPONSE_ERROR_TRANSFER_OWNERSHIP_NO_PERMISSION: return "no permission to change lobby ownership";
+      case RESPONSE_ERROR_TRANSFER_OWNERSHIP_INVALID_TARGET: return "target not found to give him ownership";
+      case RESPONSE_ERROR_SEND_TEXT_CHAT_DISABLED: return "text chat is disabled on this lobby";
+      case RESPONSE_ERROR_SEND_VOICE_CHAT_DISABLED: return "voice chat is disabled on this lobby";
+      case RESPONSE_ERROR_INVALID_DATA_SYNTAX: return "invalid data syntax";
+      case RESPONSE_ERROR_YOUR_GAME_CLIENT_VERSION_IS_OUT_OF_DATE: return "your game client version is out of date";
+
+      // = = = internal errors 401 (to sender)
+      case RESPONSE_INTERNAL_ERROR_FAILED_TO_CONNECT: return "internal error...";
+      case RESPONSE_INTERNAL_ERROR_FAILED_TO_DISCONNECT: return "internal error...";
+      case RESPONSE_INTERNAL_ERROR_FAILED_TO_RECONNECT: return "internal error...";
+      case RESPONSE_INTERNAL_ERROR_FAILED_TO_JOIN_INTO_LOBBY: return "internal error...";
+      case RESPONSE_INTERNAL_ERROR_FAILED_TO_GET_LOBBY_SETTINGS: return "internal error...";
+      case RESPONSE_INTERNAL_ERROR_FAILED_TO_UPDATE_LOBBY_SETTINGS: return "internal error...";
+      case RESPONSE_INTERNAL_ERROR_FAILED_TO_START_GAME: return "internal error...";
+      case RESPONSE_INTERNAL_ERROR_FAILED_TO_STOP_GAME: return "internal error...";
+      case RESPONSE_INTERNAL_ERROR_FAILED_TO_DELETE_LOBBY: return "internal error...";
+      case RESPONSE_INTERNAL_ERROR_FAILED_TO_KICK_PLAYER: return "internal error...";
+      case RESPONSE_INTERNAL_ERROR_FAILED_TO_BAN_PLAYER: return "internal error...";
+      case RESPONSE_INTERNAL_ERROR_FAILED_TO_TRANSFER_LOBBY_OWNERSHIP: return "internal error...";
+      case RESPONSE_INTERNAL_ERROR_FAILED_TO_TEXT_CHAT: return "internal error...";
+      case RESPONSE_INTERNAL_ERROR_FAILED_TO_VOICE_CHAT: return "internal error...";
+      case RESPONSE_INTERNAL_ERROR_FAILED_TO_ENABLE_VOICE_CHAT: return "internal error...";
+      case RESPONSE_INTERNAL_ERROR_FAILED_TO_DISABLE_VOICE_CHAT: return "internal error...";
+      //---------------------------------------------------------------
+      default: return "unknown error code [1].";
+    }
+    return "unkonwn error code [2].";
+  }
+
+  void StateWaitForResponse::render(sf::RenderWindow& window)
+  {
+    if(timeoutCounter<=0)
+    {
+      window.draw(timeouttxt);
+      buttonRetry.render(window);
+    }
+    else
+    {
+      window.draw(theText);
+    }
+  }
+
+
+  FluffyMultiplayer::AppState* StateWaitForResponse::update(FluffyMultiplayer::App& app)
+  {
+    //do counter minus to make timeout zero and left this state.
+    if(timeoutCounter>0)
+    {
+      timeoutCounter--;
+      theText.setString(text+"\nTimeout=("+std::to_string(timeoutCounter)+")");
+
+      //check for received data.
+      if(app.receivedTextDataList.size()>=1)
+      {
+          receivedData = app.receivedTextDataList.front();
+          app.receivedTextDataList.pop();
+
+          for(int i = 0; i < responseCodes.size(); i++)
+              if(receivedData.code == responseCodes[i])
+                return states[i];
+
+
+          //PUSH INTO Notification BOX. THOSE RESPONSE DONT HAVE ACTION LIKE RETRY OR .. JUST WANT TO SHOW TO CLIENT WILL PUSH AS Notification
+          if(receivedData.code>=MC_MINUMUM_RESPONSE_CODE)
+          {
+            if(MC_SHOW_ERROR_NOTIFICATIONS &&
+                  receivedData.code >= MC_ERROR_RESPONSE_CODE_MIN &&
+                  receivedData.code <= MC_ERROR_RESPONSE_CODE_MAX)
+            {
+              app.notificationQueue.push
+              (
+                FluffyMultiplayer::NotificationData
+                {
+                  receivedData.code,"error",getResponseCodeMessage(receivedData.code),
+                  FluffyMultiplayer::NotificationType::error,
+                  FluffyMultiplayer::NotificationPosition::center
+                }
+              );
+            }
+
+            if(MC_SHOW_SUCCESS_NOTIFICATIONS &&
+                  receivedData.code >= MC_SUCCESS_RESPONSE_CODE_MIN &&
+                  receivedData.code <= MC_SUCCESS_RESPONSE_CODE_MAX)
+            {
+              app.notificationQueue.push
+              (
+                FluffyMultiplayer::NotificationData
+                {
+                  receivedData.code,"success",getResponseCodeMessage(receivedData.code),
+                  FluffyMultiplayer::NotificationType::success,
+                  FluffyMultiplayer::NotificationPosition::bottomRight
+                }
+              );
+            }
+          }
+
+      }
+    }
+    return this; //keep this state
+  }
+
+
+  FluffyMultiplayer::AppState* StateWaitForResponse::eventHandle(FluffyMultiplayer::App& app,
+                            sf::Event& event)
+  {
+    //mouse realtime
+    if(event.type == sf::Event::MouseButtonPressed)
+    {
+        mousePosition = app.appWindow.mapPixelToCoords(sf::Mouse::getPosition(app.appWindow));
+
+        if(buttonRetry.getButtonBound().contains(mousePosition))
+          return retryState;
+    }
+
+    switch(event.type)
+    {
+        //keyboard
+        case sf::Event::KeyPressed:
+        {
+          if(event.key.code == sf::Keyboard::Enter || event.key.code == sf::Keyboard::Return)
+          {
+              if(timeoutCounter<=0)
+                return retryState;
+          }
+        }
+        break;
+    }
+    return this;
+  }
+}

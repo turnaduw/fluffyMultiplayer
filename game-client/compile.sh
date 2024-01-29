@@ -20,11 +20,11 @@ do
           echo -e "\n\e[32m[END]\e[39m compile $compileMode finished at: `date`"
           ;;
     3)
-          ./mc.run
+          ./gc.run
           break
           ;;
     4)
-          gdb ./mc.run
+          gdb ./gc.run
           break
           ;;
     *)

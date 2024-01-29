@@ -14,23 +14,19 @@ namespace FluffyMultiplayer
     boost::asio::ip::address ip;
     unsigned short port;
 
-    AnAddress(std::string str,unsigned short _port)
-    {
-      ip = boost::asio::ip::address::from_string(str);
-      port = _port;
-    }
+
+    AnAddress(const std::string& str, unsigned short _port)
+        : ip(boost::asio::ip::address::from_string(str)), port(_port)
+    {}
+
 
     AnAddress(boost::asio::ip::address _ip ,unsigned short _port)
-    {
-      ip = _ip;
-      port = _port;
-    }
+        : ip(_ip), port(_port)
+    {}
 
     AnAddress()
-    {
-      ip = boost::asio::ip::address::from_string("127.0.0.1");
-      port = 6321;
-    }
+        : ip(boost::asio::ip::address::from_string("127.0.0.1")), port(6321)
+    {}
 
     bool operator ==(const FluffyMultiplayer::AnAddress& a) const
     {
@@ -38,12 +34,19 @@ namespace FluffyMultiplayer
         return true;
       return false;
     }
-    std::string getAsString()
+
+    void set(const FluffyMultiplayer::AnAddress& a)
+    {
+      ip = a.ip;
+      port = a.port;
+    }
+
+    std::string getAsString() const
     {
       return ip.to_string() + ":" + std::to_string(port);
     }
 
-    void setFromEndpoint(udp::endpoint& e)
+    void setFromEndpoint(const boost::asio::ip::udp::endpoint& e)
     {
       ip = e.address();
       port = e.port();

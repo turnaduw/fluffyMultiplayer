@@ -57,12 +57,7 @@ namespace FluffyMultiplayer
       //voice chat
       // FluffyMultiplayer::VoiceChat voiceChat; //voice chat off/on is flag included inside class VoieChat
 
-      //data list from or to network
-      std::queue<FluffyMultiplayer::SocketReceiveData> receivedTextDataList;
-      std::queue<FluffyMultiplayer::SocketReceiveData> receivedVoiceDataList;
 
-      std::queue<FluffyMultiplayer::SocketSendData> sendVoiceDataList;
-      std::queue<FluffyMultiplayer::SocketSendData> sendTextDataList;
       //network and data froms
       boost::asio::io_context ioContextVoice;
 
@@ -72,6 +67,13 @@ namespace FluffyMultiplayer
       void receiveData();
 
     public:
+
+      //data list from or to network
+      std::queue<FluffyMultiplayer::SocketReceiveData> receivedTextDataList;
+      std::queue<FluffyMultiplayer::SocketReceiveData> receivedVoiceDataList;
+      std::queue<FluffyMultiplayer::SocketSendData> sendVoiceDataList;
+      std::queue<FluffyMultiplayer::SocketSendData> sendTextDataList;
+
 
       //is public because be accessable by StateBindPickPort
       FluffyMultiplayer::UdpSocket* socketVoice;
