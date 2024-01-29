@@ -11,6 +11,9 @@ using boost::asio::ip::udp;
 #include <string>
 #include <queue>
 
+#include <cstring>  // Include the <cstring> header for memset
+
+
 namespace FluffyMultiplayer
 {
   class UdpSocket

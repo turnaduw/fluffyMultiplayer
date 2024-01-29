@@ -101,40 +101,35 @@ namespace FluffyMultiplayer
   }
 
 
+
   size_t UdpSocket::receive(char * const data, udp::endpoint& senderAddress)
   {
     try
     {
-      char buffer[bufferSize];
-      if(!statusSocket)
+      if (!statusSocket)
         return 0;
 
-      //make buffer empty
-      for(int i=0; i<bufferSize; i++)
-        buffer[i] = '\0';
+      char buffer[bufferSize];
+      std::memset(buffer, 0, bufferSize);  // Initialize buffer with null characters using memset
 
+      size_t receive_length = socket.receive_from(boost::asio::buffer(buffer, bufferSize), senderEndpoint);
 
-      //will return to tell caller how much has length
-      char temp[bufferSize];
-      receive_length = socket.receive_from(boost::asio::buffer(buffer,bufferSize), senderEndpoint);
+      // Copy received data to the output buffer
+      std::copy_n(buffer, receive_length, data);
 
-
-      //set data
-      for(int i=0; i<bufferSize; i++)
-        data[i] = buffer[i];
-
-
-      //by ref to tell caller what are sender info
+      // Set the sender address
       senderAddress = senderEndpoint;
 
       return receive_length;
     }
     catch (std::exception& e)
     {
-        std::string errorMsg = e.what();
-        log.print("from UdpSocket::receive catched exception: "+errorMsg, FluffyMultiplayer::LogType::Warning);
+      std::string errorMsg = e.what();
+      log.print("from UdpSocket::receive catched exception: " + errorMsg, FluffyMultiplayer::LogType::Warning);
     }
     return 0;
   }
+
+
 
 }
