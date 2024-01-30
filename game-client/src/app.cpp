@@ -125,6 +125,7 @@ namespace FluffyMultiplayer
         if(!isSenderIsServer(currentItem.sender))
         {
           //invalid sender..
+          log.print("received sender is invalid.", FluffyMultiplayer::LogType::Information);
         }
         else
         {

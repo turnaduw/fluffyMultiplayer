@@ -63,6 +63,7 @@ namespace FluffyMultiplayer
     std::string closer = MS_REQUEST_CLOSER;
     //remove code and end (delimiter and closer)
     currentItem.data = currentItem.data.substr(3,currentItem.data.length()-(delimiter.length()+closer.length()));
+    log.print("prepareData code="+std::to_string(currentItem.code)+" data="+currentItem.data, FluffyMultiplayer::LogType::Information);
   }
 
   void App::receiveData()
@@ -86,15 +87,24 @@ namespace FluffyMultiplayer
           currentItem.data = std::string(receive_data,receive_length);
           ds.decryptData(currentItem.data);
 
+          if(ds.isSQLCodeIncluded(currentItem.data))
+            ds.removeSQLCodeFromData(currentItem.data);
+
+
           //sperate c.code and data and remove code and closers from .data
           prepareData(currentItem);
 
-          log.print("received text from="+currentItem.sender.getAsString()+
-          "\tcode="+std::to_string(currentItem.code)+"\tdata="+
-          currentItem.data, FluffyMultiplayer::LogType::Information);
+          if(currentItem.code>=MC_MINUMUM_RESPONSE_CODE)
+          {
+            log.print("received text from="+currentItem.sender.getAsString()+
+                  "\tcode="+std::to_string(currentItem.code)+"\tdata="+currentItem.data,
+                  FluffyMultiplayer::LogType::Information);
 
-          // std::cout << "received from: " <<  senderEndpoint.address() << ":" << senderEndpoint.port() << " data = " << data << "]" << std::endl;
-          receivedTextDataList.push(currentItem);
+            // std::cout << "received from: " <<  senderEndpoint.address() << ":" << senderEndpoint.port() << " data = " << data << "]" << std::endl;
+            receivedTextDataList.push(currentItem);
+            log.print("receivedTextDataList.size after push="+std::to_string(receivedTextDataList.size()), FluffyMultiplayer::LogType::Information);
+            processText();
+          }
         }
 
         //socket voice receive
@@ -124,7 +134,7 @@ namespace FluffyMultiplayer
                           currentItem.data, FluffyMultiplayer::LogType::Information);
 
                 // std::cout << "received from: " <<  senderEndpoint.address() << ":" << senderEndpoint.port() << " data = " << data << "]" << std::endl;
-                receivedVoiceDataList.push(currentItem);
+                // receivedVoiceDataList.push(currentItem);
               }
             }
           }
@@ -264,6 +274,7 @@ namespace FluffyMultiplayer
 
   std::vector<std::string> App::dataSeparator(const std::string& data, std::string delimiter, int startIndex=0)
   {
+    log.print("dataSeparator.data="+data,FluffyMultiplayer::LogType::Information);
     std::vector<std::string> result;
     std::string str = data.substr(startIndex,data.length()-1);
 
@@ -360,15 +371,20 @@ namespace FluffyMultiplayer
 
   void App::processText()
   {
+    std::cout << "processText called\n";
     FluffyMultiplayer::SocketReceiveData currentItem;
+    log.print("[text] receivedTextDataList.size()="+std::to_string(receivedTextDataList.size()), FluffyMultiplayer::LogType::Information);
+
 
     for(int i=0; i<receivedTextDataList.size(); i++)
     {
+      // log.print("[text] current item = code="+std::to_string(currentItem.code) +"\tdata=" + currentItem.data, FluffyMultiplayer::LogType::Information);
       currentItem = receivedTextDataList.front();
 
       //check connection blocked
       if(isConnectionBlocked(currentItem.sender))
       {
+        // log.print("[text] connection is blocked.",FluffyMultiplayer::LogType::Information);
         // response(sendTextDataList, RESPONSE_ERROR_CONNECTION_BLOCKED,currentItem.sender); //maybe later return blocked time to client
       }
       else if(!isConnectionExists(currentItem.sender))
@@ -417,18 +433,15 @@ namespace FluffyMultiplayer
       }
       else
       {
-          //ok except two down casese other cases needs data to be seperate and decrypted
-          if(currentItem.data.length()>MS_RECEIVED_DATA_MINIMUM_LENGTH)
-            ds.decryptData(currentItem.data);
-
-          if(ds.isSQLCodeIncluded(currentItem.data))
-            ds.removeSQLCodeFromData(currentItem.data);
-
-
           /*note: in threadReceive (that function receiveData) will remove
             request code and those end delimiter and closers
             also on sendData (also thread) will add closer and delimtier at end of data if exists*/
           std::vector<std::string>cData = dataSeparator(currentItem.data, MS_DATA_DELIMITER);
+          log.print("[text process] cData:", FluffyMultiplayer::LogType::Information);
+          for(int i=0; i<cData.size(); i++)
+          {
+            log.print("[text process] cData["+std::to_string(i)+"]:"+cData[i], FluffyMultiplayer::LogType::Information);
+          }
 
 
           //connection is ok and process all requests except connect to lobby
@@ -436,6 +449,7 @@ namespace FluffyMultiplayer
           {
             case REQUEST_CONNECT_TO_LOBBY:
             {
+              log.print("[text] REQUEST_CONNECT_TO_LOBBY", FluffyMultiplayer::LogType::Information);
               response(sendTextDataList, RESPONSE_ERROR_CONNECTION_EXISTS,currentItem.sender);
             }break;
 
@@ -489,7 +503,8 @@ namespace FluffyMultiplayer
             {
                 if(cData[1] == lobbyData.password)
                 {
-                  if(ds.isIdentityValid(currentItem.data))
+                  log.print("password passed.",FluffyMultiplayer::LogType::Information);
+                  if(ds.isIdentityValid(cData[0]))
                   {
                     //get client info by identity
                     db.queryStr="SELECT clientId FROM fm_client_login WHERE identity='";
@@ -498,7 +513,7 @@ namespace FluffyMultiplayer
                     if(cId>=1) //is client exsits?
                     {
                       //check for ban by id
-                      if(isIdBannedFromLobby(tempPlayer.id))
+                      if(isIdBannedFromLobby(cId))
                       {
                         response(sendTextDataList, RESPONSE_ERROR_JOIN_LOBBY_YOU_ARE_BANNED,currentItem.sender);
                       }
@@ -1008,10 +1023,10 @@ namespace FluffyMultiplayer
   void App::process()
   {
     //process text requests
-    processText();
+    // processText();
 
     //process voice requests
-    processVoice();
+    // processVoice();
   }
 
 

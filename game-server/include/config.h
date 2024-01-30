@@ -16,6 +16,8 @@
 #define DATABASE_LOG_FILENAME "dbFluffy.log"
 #define DATABASE_PRINT_LOGS_LEVEL FluffyMultiplayer::LogType::Error
 
+
+#define MC_MINUMUM_RESPONSE_CODE 100
 #define SOCKET_LOG_FILENAME "socket.log"
 #define SOCKET_PRINT_LOGS_LEVEL FluffyMultiplayer::LogType::All
 
