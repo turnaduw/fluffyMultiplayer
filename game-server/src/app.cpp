@@ -522,7 +522,7 @@ namespace FluffyMultiplayer
                         //try to add client into lobby.
                         db.queryStr="INSERT OR REPLACE INTO fm_client_in_lobby (clientId,lobbyId) VALUES('";
                         db.queryStr+= std::to_string(cId) + "', '";
-                        db.queryStr+= std::to_string(lobbyData.id) + "';";
+                        db.queryStr+= std::to_string(lobbyData.id) + "');";
                         if(db.query_to_db())
                         {
                           //increase currentplayers
