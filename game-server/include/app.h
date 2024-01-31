@@ -33,8 +33,6 @@ namespace FluffyMultiplayer
       std::vector<FluffyMultiplayer::AnAddress> connectedPlayers;
       std::vector<FluffyMultiplayer::BanList> bannedPlayers;
       std::vector<FluffyMultiplayer::AnAddress> blockedAddresses; //for spam
-      std::vector<FluffyMultiplayer::Player> inLobbyPlayers;
-      std::vector<FluffyMultiplayer::Player> lobbySpecters;
 
       FluffyMultiplayer::LobbyData lobbyData;
       FluffyMultiplayer::GameMode* currentGameMode;
@@ -46,10 +44,10 @@ namespace FluffyMultiplayer
       FluffyMultiplayer::UdpSocket* socketVoice;
       boost::asio::io_context io_context_text;
       boost::asio::io_context io_context_voice;
-      std::queue<FluffyMultiplayer::SocketReceiveData> receivedTextDataList;
+
       std::queue<FluffyMultiplayer::SocketReceiveData> receivedVoiceDataList;
       std::queue<FluffyMultiplayer::SocketSendData> sendVoiceDataList;
-      std::queue<FluffyMultiplayer::SocketSendData> sendTextDataList;
+
       boost::mutex socketMutex;
 
 
@@ -71,6 +69,14 @@ namespace FluffyMultiplayer
     public:
       boost::thread threadSend;
       boost::thread threadReceive;
+
+
+      //define these in public to be accessable from gameModes
+      std::vector<FluffyMultiplayer::Player> inLobbyPlayers;
+      std::vector<FluffyMultiplayer::Player> lobbySpecters;
+      std::queue<FluffyMultiplayer::SocketReceiveData> receivedTextDataList;
+      std::queue<FluffyMultiplayer::SocketSendData> sendTextDataList;
+
 
       App();
       ~App();
@@ -98,6 +104,7 @@ namespace FluffyMultiplayer
       void response(std::queue<FluffyMultiplayer::SocketSendData>& list, int code, std::string data,
                     const std::vector<FluffyMultiplayer::Player>* receivers,
                     const std::vector<FluffyMultiplayer::Player>* except);
+
 
       //connection
       bool isConnectionExists(const FluffyMultiplayer::AnAddress&) const;

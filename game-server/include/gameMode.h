@@ -1,30 +1,22 @@
 #ifndef H_GAMEMODE_CLASS
 #define H_GAMEMODE_CLASS
 
-#include <string>
-#include <queue>
+#include "app.h"
 #include "dataType.h"
-#include "config.h"
-#include "gameState.h"
-#include "log.h"
-#include "dataBase.h"
-#include "dataSecurity.h"
-
 
 namespace FluffyMultiplayer
 {
+  class App;
   class GameMode
   {
     protected:
       int gameModeId;
-      GameState* gs;
 
     public:
-      virtual FluffyMultiplayer::GameMode* process(FluffyMultiplayer::SocketReceiveData& currentItem,
-                                                   std::queue<FluffyMultiplayer::SocketSendData>& sendTextDataList,
-                                                   FluffyMultiplayer::Log& log,
-                                                   FluffyMultiplayer::DataBase& db,
-                                                   FluffyMultiplayer::DataSecurity& ds) = 0;
+      virtual FluffyMultiplayer::GameMode* process(FluffyMultiplayer::App& app,
+                            const FluffyMultiplayer::SocketReceiveData& currentItem,
+                            const std::vector<std::string>& cData //to avoid re-process data just pass seperated data into gameMode
+                            ) = 0;
   };
 }
 

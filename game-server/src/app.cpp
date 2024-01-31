@@ -926,7 +926,7 @@ namespace FluffyMultiplayer
                 if(currentGameMode!=nullptr)
                 {
                   log.print("unknown request code lets passing it to gamemode", FluffyMultiplayer::LogType::Information);
-                  currentGameMode = currentGameMode->process(currentItem,sendTextDataList,log,db,ds);
+                  currentGameMode = currentGameMode->process((*this),currentItem,cData);
                   //response to client will push by currentGameMode->process
                 }
                 else
