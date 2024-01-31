@@ -1,4 +1,6 @@
 #include "../include/app.h"
+#include "../include/gameMode.h"
+#include "../include/gameModes/gameMode-mensch.h"
 
 namespace FluffyMultiplayer
 {
@@ -234,7 +236,7 @@ namespace FluffyMultiplayer
     switch (lobbyData.gameMode)
     {
       case 1:
-        currentGameMode = new FluffyMultiplayer::GameModeMensch; break;
+        currentGameMode = new FluffyMultiplayer::GameModeMensch((*this)); break;
       default:
         currentGameMode = nullptr; break;
     }

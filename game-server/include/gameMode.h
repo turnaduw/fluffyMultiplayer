@@ -1,12 +1,11 @@
 #ifndef H_GAMEMODE_CLASS
 #define H_GAMEMODE_CLASS
 
-#include "app.h"
 #include "dataType.h"
 
 namespace FluffyMultiplayer
 {
-  class App;
+  class App; // Forward declaration
   class GameMode
   {
     protected:

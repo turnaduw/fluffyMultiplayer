@@ -7,7 +7,6 @@
 #include <boost/thread.hpp>
 #include <vector>
 
-#include "gameMode.h"
 #include "dataType.h"
 #include "udpSocket.h"
 #include "dataSecurity.h"
@@ -15,13 +14,14 @@
 #include "dataBase.h"
 #include "log.h"
 
-#include "gameModes.h"
 
 
 #include "lobby-request-response-list.h"
 
 namespace FluffyMultiplayer
 {
+  class GameModeMensch; // Forward declaration
+  class GameMode; // Forward declaration
   class App
   {
     private:

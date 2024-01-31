@@ -2,15 +2,20 @@
 #define GAMEMODE_MENSCH
 
 #include "../gameMode.h"
+#include "../app.h"
+#include "../dataType.h"
 
 //random number
 #include <cstdlib>
 #include <ctime>
 #include <array>
 #include <queue>
+#include <iostream>
 
 
 #define MENSCH_PLAYERS_COUNT 4
+#define MENSCH_PIECE_PER_PLAYER 4
+#define MENSCH_ROOM_PER_PLAYER 10
 #define DEAD_POSITION 0
 #define BOARD_EMPTY_VALUE 0
 #define MINIMUM_VALID_BOARD_POS 1
@@ -64,6 +69,9 @@
 
 namespace FluffyMultiplayer
 {
+  class App; // Forward declaration
+  class GameMode; // Forward declaration
+
   struct GM_MENSCH_PIECE
   {
       int id;
@@ -74,7 +82,7 @@ namespace FluffyMultiplayer
   {
     int deadPos;
     int spawnPos;
-    std::array<int,FluffyMultiplayer::MENSCH_PLAYERS_COUNT-1> homePos;
+    std::array<int,MENSCH_PLAYERS_COUNT> homePos;
   };
 
   enum GM_MENSCH_PIECE_TYPE { TypeA=0,TypeB,TypeC,TypeD };
@@ -83,14 +91,12 @@ namespace FluffyMultiplayer
   {
       int id;
       FluffyMultiplayer::GM_MENSCH_PIECE_TYPE type;
-      std::array<FluffyMultiplayer::GM_MENSCH_PIECE,
-              FluffyMultiplayer::MENSCH_PLAYERS_COUNT-1> piece;
+      std::array<FluffyMultiplayer::GM_MENSCH_PIECE,MENSCH_PLAYERS_COUNT-1> piece;
       FluffyMultiplayer::AnAddress address;
 
       void set(int _id,
             FluffyMultiplayer::GM_MENSCH_PIECE_TYPE _type,
-            std::array<FluffyMultiplayer::GM_MENSCH_PIECE,
-                    FluffyMultiplayer::MENSCH_PLAYERS_COUNT-1> _piece)
+            std::array<FluffyMultiplayer::GM_MENSCH_PIECE, MENSCH_PLAYERS_COUNT-1> _piece)
       {
         id=_id;
         type=_type;
@@ -110,23 +116,23 @@ namespace FluffyMultiplayer
   class GameModeMensch : public GameMode
   {
     private:
-      std::array<FluffyMultiplayer::GM_MENSCH_PIECE_MAP,MENSCH_PLAYERS_COUNT-1> roads;
+      std::array<FluffyMultiplayer::GM_MENSCH_PIECE_MAP,MENSCH_PLAYERS_COUNT> roads;
 
       int turn; //hold player's id
       int diceValue; //hold roled value untill that player move piece
 
       std::array<FluffyMultiplayer::GM_MENSCH_PLAYER,
-              FluffyMultiplayer::MENSCH_PLAYERS_COUNT-1> players;
+              MENSCH_PLAYERS_COUNT-1> players;
 
       std::array<int,
-                (MENSCH_PLAYERS_COUNT*10)+(MENSCH_PLAYERS_COUNT*4)> board;
+                (MENSCH_PLAYERS_COUNT*MENSCH_ROOM_PER_PLAYER)+(MENSCH_PLAYERS_COUNT*MENSCH_PIECE_PER_PLAYER)> board;
        /*
         MENSCH_PLAYERS_COUNT*10 for each player has 10x node,
         MENSCH_PLAYERS_COUNT*4 for each player has 4x home
       */
 
 
-      int rollDice(nt min=1, int max=6)
+      int rollDice(int min=1, int max=6)
       {
         std::srand(static_cast<unsigned int>(std::time(nullptr)));
         int randomNumber = std::rand() % (max - min + 1) + min;
@@ -168,10 +174,10 @@ namespace FluffyMultiplayer
 
       int getIdbyAddress(const FluffyMultiplayer::AnAddress& sender)
       {
-        for(int p=0; players.size()-1; p++)
+        for(int p=0; p<players.size()-1; p++)
         {
-          if(p.address == sender)
-            return p.id;
+          if(players[p].address == sender)
+            return players[p].id;
         }
         return -1;
       }
@@ -201,11 +207,11 @@ namespace FluffyMultiplayer
       void broadCast(FluffyMultiplayer::App& app,
                 int code, std::string data,bool alsoToSpecters=false)
       {
-        app.response(app.sendTextDataList, code, data, (&app.inLobbyPlayers),nullptr);
+        app.response(app.sendTextDataList, code, data, &app.inLobbyPlayers,nullptr);
 
         if(alsoToSpecters)
         {
-          app.response(app.sendTextDataList, code, data, (&app.lobbySpecters),nullptr);
+          app.response(app.sendTextDataList, code, data, &app.lobbySpecters,nullptr);
         }
       }
 
@@ -224,7 +230,7 @@ namespace FluffyMultiplayer
         {
           for(int j=0; j<MENSCH_PLAYERS_COUNT-1; j++)
           {
-            if(players[i].piece[j] == id)
+            if(players[i].piece[j].id == id)
               return i;
           }
         }
@@ -236,7 +242,7 @@ namespace FluffyMultiplayer
         int owner = getOwnerByPieceId(id);
         for(int i=0; i<MENSCH_PLAYERS_COUNT-1; i++)
         {
-          if(players[owner].piece[i]==id)
+          if(players[owner].piece[i].id == id)
             players[owner].piece[i].position = DEAD_POSITION;
         }
       }
@@ -251,6 +257,7 @@ namespace FluffyMultiplayer
           if(isGameFinished())
           {
             //game is finished can not request to dice or movePiece..
+            return nullptr;
           }
           else
           {
@@ -349,19 +356,20 @@ namespace FluffyMultiplayer
         {
           //invalid user address...
         }
-
+        return this;
       }
 
-      GameModeMensch()
+      GameModeMensch(FluffyMultiplayer::App& app)
       {
         gameModeId=0;
         turn=0;
         diceValue=0;
 
+        int totalPieceId=0;
         //add players into game
         for(int i=0; i<MENSCH_PLAYERS_COUNT-1; i++)
         {
-          players[i].set(inLobbyPlayers[i].id, i, inLobbyPlayers[i].address);
+          players[i].set(app.inLobbyPlayers[i].id, static_cast<FluffyMultiplayer::GM_MENSCH_PIECE_TYPE>(i), app.inLobbyPlayers[i].address);
 
           //init pieces
           for(int k=0; k<MENSCH_PLAYERS_COUNT-1;k++)
@@ -370,12 +378,13 @@ namespace FluffyMultiplayer
             if(totalPieceId< MENSCH_PLAYERS_COUNT*MENSCH_PLAYERS_COUNT) //total < max pieces
             {
               players[i].piece[k].id = k;
+              totalPieceId++;
             }
           }
         }
 
         //fill gameBoard with zeroes
-        for(int i=0; i<(MENSCH_PLAYERS_COUNT*10)+(MENSCH_PLAYERS_COUNT*4); i++)
+        for(int i=0; i<(MENSCH_PLAYERS_COUNT*MENSCH_ROOM_PER_PLAYER)+(MENSCH_PLAYERS_COUNT*MENSCH_PIECE_PER_PLAYER); i++)
         {
           board[i] = BOARD_EMPTY_VALUE;
         }
@@ -384,10 +393,11 @@ namespace FluffyMultiplayer
 
         //set roads, dead position set becuase maybe in future we need place 4x for each player as dead points
         //index,        dead,              spawn,                                        {homes}
-        roads[0] = {DEAD_POSITION,    SPAWN_TYPE_A_INDEX,   {HOME_TYPE_A_INDEX1,HOME_TYPE_A_INDEX2,HOME_TYPE_A_INDEX3,HOME_TYPE_A_INDEX4}}; //typeA
-        roads[1] = {DEAD_POSITION,    SPAWN_TYPE_B_INDEX,   {HOME_TYPE_B_INDEX1,HOME_TYPE_B_INDEX2,HOME_TYPE_B_INDEX3,HOME_TYPE_B_INDEX4}}; //typeB
-        roads[2] = {DEAD_POSITION,    SPAWN_TYPE_C_INDEX,   {HOME_TYPE_C_INDEX1,HOME_TYPE_C_INDEX2,HOME_TYPE_C_INDEX3,HOME_TYPE_C_INDEX4}}; //typeC
-        roads[3] = {DEAD_POSITION,    SPAWN_TYPE_D_INDEX,   {HOME_TYPE_D_INDEX1,HOME_TYPE_D_INDEX2,HOME_TYPE_D_INDEX3,HOME_TYPE_D_INDEX4}}; //typeD
+        roads[0] = GM_MENSCH_PIECE_MAP{DEAD_POSITION, SPAWN_TYPE_A_INDEX, {HOME_TYPE_A_INDEX1, HOME_TYPE_A_INDEX2, HOME_TYPE_A_INDEX3, HOME_TYPE_A_INDEX4}}; //typeA
+        roads[1] = GM_MENSCH_PIECE_MAP{DEAD_POSITION, SPAWN_TYPE_B_INDEX, {HOME_TYPE_B_INDEX1, HOME_TYPE_B_INDEX2, HOME_TYPE_B_INDEX3, HOME_TYPE_B_INDEX4}}; //typeB
+        roads[2] = GM_MENSCH_PIECE_MAP{DEAD_POSITION, SPAWN_TYPE_C_INDEX, {HOME_TYPE_C_INDEX1, HOME_TYPE_C_INDEX2, HOME_TYPE_C_INDEX3, HOME_TYPE_C_INDEX4}}; //typeC
+        roads[3] = GM_MENSCH_PIECE_MAP{DEAD_POSITION, SPAWN_TYPE_D_INDEX, {HOME_TYPE_D_INDEX1, HOME_TYPE_D_INDEX2, HOME_TYPE_D_INDEX3, HOME_TYPE_D_INDEX4}}; //typeD
+
       }
 
       ~GameModeMensch()
