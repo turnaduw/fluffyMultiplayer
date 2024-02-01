@@ -320,6 +320,9 @@ namespace FluffyMultiplayer
                           board[newpos] = pieceId;
                         }
 
+                        //reset diceValue
+                        diceValue=0;
+
                         //broadcast result
                         broadCast(app,PLAYER_MOVED_PIECE,"pieceId .. moved +X",true);
                       }
@@ -361,8 +364,10 @@ namespace FluffyMultiplayer
 
       GameModeMensch(FluffyMultiplayer::App& app)
       {
-        gameModeId=0;
-        turn=0;
+        std::cout << "gameMode Mensch constructor.\n";
+
+        gameModeId=1;
+        turn=-1;
         diceValue=0;
 
         int totalPieceId=0;
@@ -398,6 +403,11 @@ namespace FluffyMultiplayer
         roads[2] = GM_MENSCH_PIECE_MAP{DEAD_POSITION, SPAWN_TYPE_C_INDEX, {HOME_TYPE_C_INDEX1, HOME_TYPE_C_INDEX2, HOME_TYPE_C_INDEX3, HOME_TYPE_C_INDEX4}}; //typeC
         roads[3] = GM_MENSCH_PIECE_MAP{DEAD_POSITION, SPAWN_TYPE_D_INDEX, {HOME_TYPE_D_INDEX1, HOME_TYPE_D_INDEX2, HOME_TYPE_D_INDEX3, HOME_TYPE_D_INDEX4}}; //typeD
 
+
+        //turn
+        nextTurn();
+        //broadcast turn:
+        broadCast(app,TURN_FOR,"now turn is for player with id ..",true);
       }
 
       ~GameModeMensch()

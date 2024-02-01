@@ -115,14 +115,21 @@ namespace FluffyMultiplayer
 
       size_t receive_length = socket.receive_from(boost::asio::buffer(buffer, bufferSize), senderEndpoint);
 
-      // Copy received data to the output buffer
-      std::copy_n(buffer, receive_length, data);
+      if(receive_length > bufferSize)
+      {
+        log.print("fron udpSocket::receive received_lenght is more than buffer size.",FluffyMultiplayer::LogType::Warning);
+      }
+      else
+      {
+        // Copy received data to the output buffer
+        std::copy_n(buffer, receive_length, data);
 
-      // Set the sender address
-      senderAddress = senderEndpoint;
+        // Set the sender address
+        senderAddress = senderEndpoint;
 
-      log.print("from UdpSocket::receive successfully received. len="+receive_length, FluffyMultiplayer::LogType::Success);
-      return receive_length;
+        log.print("from UdpSocket::receive successfully received. len="+receive_length, FluffyMultiplayer::LogType::Success);
+        return receive_length;
+      }
     }
     catch (std::exception& e)
     {
