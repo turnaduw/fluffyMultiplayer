@@ -4,6 +4,7 @@ namespace FluffyMultiplayer
 {
   StateMainPage::StateMainPage(FluffyMultiplayer::App& app)
   {
+    app.currentGameMode = new FluffyMultiplayer::GM_MENSCH;
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
     std::string txttemp = "lobbyId:"+std::to_string(app.lobby->id);
     initSimpleText(fontPath, txttemp);
@@ -60,8 +61,30 @@ namespace FluffyMultiplayer
   FluffyMultiplayer::AppState* StateMainPage::update(FluffyMultiplayer::App& app)
   {
     //read from received data..
+    FluffyMultiplayer::SocketReceiveData currentItem;
+    if(app.receivedTextDataList.size()>1)
+      for(int i=0; i<app.receivedTextDataList.size(); i++)
+      {
+        currentItem = app.receivedTextDataList.front();
+        switch(currentItem.code)
+        {
+          case RESPONSE_YOU_ARE_JOINT_INTO_LOBBY:
+          {
+            app.log.print("joint into lobby.", FluffyMultiplayer::LogType::Information);
+          }break;
 
-    //apply commands from server into client
+          default:
+          {
+            //apply commands from server into client game
+            if(app.currentGameMode!=nullptr)
+              app.currentGameMode->update(app.sendTextDataList,currentItem);
+          }
+        }
+
+
+        //remove proccess item
+         app.receivedTextDataList.pop();
+      }
 
 
     return this;

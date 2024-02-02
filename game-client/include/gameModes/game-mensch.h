@@ -1,10 +1,13 @@
 #ifndef H_GAMEMODE_MENSCH_CLASS
 #define H_GAMEMODE_MENSCH_CLASS
 
-#include "../gameMode.h"
 #include <array>
-#include "../uiComponents/pictureButton.h"
+#include "../gameMode.h"
 #include "../config.h"
+#include "../uiComponents/text.h"
+#include "../uiComponents/pictureButton.h"
+#include "../uiComponents/icon.h"
+
 
 #define MENSCH_PLAYERS_COUNT 4
 #define MENSCH_PIECE_PER_PLAYER 4
@@ -89,7 +92,8 @@ namespace FluffyMultiplayer
       FluffyMultiplayer::MenschPlayer emptyRoom;
       FluffyMultiplayer::Icon backgroundGameMode;
 
-      FluffyMultiplayer::GameMode* update(FluffyMultiplayer::App& app)
+      FluffyMultiplayer::GameMode* update(std::queue<FluffyMultiplayer::SocketSendData>& sendList,
+                                                  FluffyMultiplayer::SocketReceiveData& currentItem)
       {
         return this;
       }
@@ -107,22 +111,22 @@ namespace FluffyMultiplayer
         players[3].init(4,"peter",false,sf::Color::Blue);
       }
 
-      void render(sf::RenderWindow* window)
+      void render(sf::RenderWindow& window)
       {
-        backgroundGameMode.render((*window));
+        backgroundGameMode.render(window);
 
         //render pieces
         for(int i=0; i<MENSCH_PLAYERS_COUNT; i++)
         {
           for(int j=0; j<MENSCH_PIECE_PER_PLAYER; j++)
           {
-            players[i].pieces[j].pb.render((*window));
+            players[i].pieces[j].pb.render(window);
           }
         }
-        exampleText.render((*window));
+        exampleText.render(window);
       }
 
-      FluffyMultiplayer::GameMode* eventHandle(FluffyMultiplayer::App& app, sf::Event& event)
+      FluffyMultiplayer::GameMode* eventHandle(sf::RenderWindow& window, sf::Event& event)
       {
         return this;
       }

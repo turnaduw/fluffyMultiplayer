@@ -15,16 +15,12 @@
 #include <cstdlib>
 #include <ctime>
 
-
-#include "../gameMode.h"
 #include "../gameModes.h"
 
 namespace FluffyMultiplayer
 {
   class App; // Forward declaration of App class
   class AppState; // Forward declaration of AppState class
-  class GameMode; // Forward declaration of AppState class
-
   class StateMainPage : public AppState
   {
   private:

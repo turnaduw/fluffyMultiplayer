@@ -22,7 +22,7 @@ using boost::asio::ip::udp;
 
 #include "appState.h"
 #include "voiceChat.h"
-
+#include "gameMode.h"
 
 //clear identity
 #include <fstream>
@@ -45,7 +45,6 @@ namespace FluffyMultiplayer
       bool gameIsRunning; //a flag stop or start game
       bool appIsRunning; //a flag close or continue app
 
-      FluffyMultiplayer::Log log;
       FluffyMultiplayer::DataSecurity ds;
 
       std::string identity;
@@ -53,6 +52,8 @@ namespace FluffyMultiplayer
 
       //voice chat
       // FluffyMultiplayer::VoiceChat voiceChat; //voice chat off/on is flag included inside class VoieChat
+      std::queue<FluffyMultiplayer::SocketReceiveData> receivedVoiceDataList;
+      std::queue<FluffyMultiplayer::SocketSendData> sendVoiceDataList;
 
 
       //network and data froms
@@ -64,11 +65,11 @@ namespace FluffyMultiplayer
       void receiveData();
 
     public:
+      FluffyMultiplayer::Log log;
+      FluffyMultiplayer::GameMode* currentGameMode;
 
       //data list from or to network
       std::queue<FluffyMultiplayer::SocketReceiveData> receivedTextDataList;
-      std::queue<FluffyMultiplayer::SocketReceiveData> receivedVoiceDataList;
-      std::queue<FluffyMultiplayer::SocketSendData> sendVoiceDataList;
       std::queue<FluffyMultiplayer::SocketSendData> sendTextDataList;
 
 
