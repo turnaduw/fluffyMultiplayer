@@ -18,7 +18,7 @@ using boost::asio::ip::udp;
 #include "udpSocket.h"
 #include "dataSecurity.h"
 #include "log.h"
-// #include "gameMode.h"
+
 
 #include "appState.h"
 #include "voiceChat.h"
@@ -39,7 +39,6 @@ using boost::asio::ip::udp;
 namespace FluffyMultiplayer
 {
   class AppState;
-  // class GameMode;
   class App
   {
     private:
@@ -50,9 +49,7 @@ namespace FluffyMultiplayer
       FluffyMultiplayer::DataSecurity ds;
 
       std::string identity;
-      FluffyMultiplayer::LobbyData* lobby;
       FluffyMultiplayer::AppState* currentState;
-      // FluffyMultiplayer::GameMode* currentGameMode;
 
       //voice chat
       // FluffyMultiplayer::VoiceChat voiceChat; //voice chat off/on is flag included inside class VoieChat
@@ -78,6 +75,9 @@ namespace FluffyMultiplayer
       //is public because be accessable by StateBindPickPort
       FluffyMultiplayer::UdpSocket* socketVoice;
       FluffyMultiplayer::UdpSocket* socketText;
+
+      //to be accessable from StateMainPage
+      FluffyMultiplayer::LobbyData* lobby;
 
 
       boost::thread receive_thread;

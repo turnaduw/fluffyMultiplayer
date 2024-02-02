@@ -117,6 +117,21 @@ namespace FluffyMultiplayer
         // init();
       }
 
+      void operator=(FluffyMultiplayer::PictureButton other)
+      {
+        pictureButtonButtonTexturePath = other.pictureButtonButtonTexturePath;
+
+        backgroundColor = other.backgroundColor;
+
+        //button text
+        fontPath = other.fontPath;
+        pictureButtonString = other.pictureButtonString;
+        forgroundColor = other.forgroundColor;
+
+        isClicked = other.isClicked;
+        pictureButtonPosition = other.pictureButtonPosition;
+      }
+
       ~PictureButton()
       {
 

@@ -2,9 +2,10 @@
 #define H_STATE_MAIN_PAGE
 
 #include "../appState.h"
-#include "../uiComponents/textInput.h"
-#include "../uiComponents/button.h"
-#include "../uiComponents/pictureButton.h"
+
+#include "../uiComponents/playerList.h"
+#include "../uiComponents/text.h"
+
 #include "../config.h"
 #include <array>
 #include <vector>
@@ -14,15 +15,33 @@
 #include <cstdlib>
 #include <ctime>
 
+
+#include "../gameMode.h"
+#include "../gameModes.h"
+
 namespace FluffyMultiplayer
 {
   class App; // Forward declaration of App class
   class AppState; // Forward declaration of AppState class
+  class GameMode; // Forward declaration of AppState class
 
   class StateMainPage : public AppState
   {
+  private:
+    //userinterface
+    std::array<FluffyMultiplayer::PlayerList,MAX_PLAYERS_IN_LOBBY> playerList;
+    FluffyMultiplayer::Text testk;
+    FluffyMultiplayer::PlayerList playerlisttest;
+    FluffyMultiplayer::PlayerList* playerlistest2;
+    FluffyMultiplayer::GameMode* currentGameMode;
+
+
+    //mouse event handel variable to delecre once, not per loop delcre
+    sf::Vector2f mousePosition;
+
+
   public:
-    StateMainPage();
+    StateMainPage(FluffyMultiplayer::App&);
     ~StateMainPage();
     void render(sf::RenderWindow&);
     FluffyMultiplayer::AppState* update(FluffyMultiplayer::App&);

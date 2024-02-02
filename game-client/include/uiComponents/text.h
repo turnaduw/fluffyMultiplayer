@@ -13,10 +13,12 @@ namespace FluffyMultiplayer
     protected:
       sf::Font textFont;
       sf::Text textText;
-
+      float x,y;
     public:
-      void setTextPosition(float x, float y)
+      void setTextPosition(float _x, float _y)
       {
+        x = _x;
+        y = _y;
         textText.setPosition(x,y);
       }
 
@@ -30,16 +32,18 @@ namespace FluffyMultiplayer
         textText.setCharacterSize(size);
       }
 
-      void initText(std::string str,float x, float y)
+      void initText(std::string str,float _x, float _y)
       {
+        x = _x;
+        y = _y;
         componentLoadAndSetFont(textText,textFont);
         setText(str);
         setTextPosition(x,y);
       }
 
-      Text(std::string str,float x, float y)
+      Text(std::string str,float _x, float _y)
       {
-        initText(str,x,y);
+        initText(str,_x,_y);
       }
 
       Text()
@@ -50,6 +54,13 @@ namespace FluffyMultiplayer
       ~Text()
       {
 
+      }
+
+      void operator=(FluffyMultiplayer::Text other)
+      {
+          textText = other.textText;
+          x = other.x;
+          y = other.y;
       }
 
       virtual void render(sf::RenderWindow& window)

@@ -198,7 +198,6 @@ namespace FluffyMultiplayer
 
     //init state
     currentState = new FluffyMultiplayer::StateBindPickPort;
-    // currentGameMode = nullptr;
 
     //init window
     appWindow.setFramerateLimit(WINDOW_MAX_FPS);
@@ -245,21 +244,15 @@ namespace FluffyMultiplayer
 
            //state events
            currentState = currentState->eventHandle((*this),event);
-           // currentGameMode = currentGameMode->eventHandle((*this),event);
        }
 
        // Clear the whole window before rendering a new frame
        appWindow.clear(WINDOW_BACKGROUND_COLOR);
 
        currentState = currentState->update((*this));
-       // if(currentGameMode!=nullptr)
-        // currentGameMode = currentGameMode->update((*this));
-
 
        // Draw some graphical entities (z:0)
        currentState->render(appWindow);
-       // if(currentGameMode!=nullptr) //draw gameMode grpahical entities (z:1)
-        // currentGameMode->render(appWindow);
 
        //draw notifications (z:2)
        if(notificationQueue.size()>=1)

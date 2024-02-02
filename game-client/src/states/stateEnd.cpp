@@ -44,7 +44,7 @@ namespace FluffyMultiplayer
         }
         else if(buttonCancel.getButtonBound().contains(mousePosition))
         {
-          return new FluffyMultiplayer::StateMainPage;
+          return new FluffyMultiplayer::StateMainPage(app);
         }
     }
     return this;

@@ -50,7 +50,7 @@ namespace FluffyMultiplayer
       this,
       std::vector<FluffyMultiplayer::AppState*>
           {
-            new FluffyMultiplayer::StateMainPage,
+            new FluffyMultiplayer::StateMainPage(app),
             new FluffyMultiplayer::StateFailed("incorrect password.\n",this,nullptr),
             new FluffyMultiplayer::StateFailed("invalid identity.\n",this,nullptr)
           },
