@@ -33,8 +33,8 @@ namespace FluffyMultiplayer
     FluffyMultiplayer::Text testk;
     FluffyMultiplayer::PlayerList playerlisttest;
     FluffyMultiplayer::PlayerList* playerlistest2;
-    FluffyMultiplayer::GameMode* currentGameMode;
-
+    FluffyMultiplayer::PictureButton testPictureButton;
+    // FluffyMultiplayer::GameMode* currentGameMode;
 
     //mouse event handel variable to delecre once, not per loop delcre
     sf::Vector2f mousePosition;

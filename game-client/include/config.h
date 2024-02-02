@@ -112,6 +112,8 @@
 #define ICON_SEND "iconSend.png"
 #define ICON_KICK "iconKick.png"
 #define ICON_BAN "iconBan.png"
+#define ICON_PIECE "iconPiece.png"
+#define ICON_BACKGROUND_GAMEMODE_MENSCH "mensch-bg.png"
 
 
 //player list component

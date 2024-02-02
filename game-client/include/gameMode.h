@@ -6,19 +6,24 @@
 #include "dataType.h"
 #include "config.h"
 #include "log.h"
-#include "dataSecurity.h"
-#include "app.h"
 
 namespace FluffyMultiplayer
 {
-  class App;
   class GameMode
   {
     protected:
       int gameModeId;
+      // currentGameMode=nullptr;
 
+      // if(currentGameMode!=nullptr) //draw gameMode grpahical entities (z:1)
+        // currentGameMode->render(window);
+      // if(currentGameMode!=nullptr)
+       // currentGameMode = currentGameMode->update(app);
+      // currentGameMode = currentGameMode->eventHandle(app,event);
     public:
-      virtual FluffyMultiplayer::GameMode* update(FluffyMultiplayer::App&);
+      virtual FluffyMultiplayer::GameMode* update(FluffyMultiplayer::Log& log,
+                                                  std::queue<FluffyMultiplayer::SocketSendData>& sendList,
+                                                  FluffyMultiplayer::SocketReceiveData& currentItem);
       virtual void render(sf::RenderWindow&)=0;
       virtual FluffyMultiplayer::GameMode* eventHandle(FluffyMultiplayer::App&,
                                           sf::Event&)=0;

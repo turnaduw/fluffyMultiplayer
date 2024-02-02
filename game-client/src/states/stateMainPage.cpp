@@ -8,8 +8,8 @@ namespace FluffyMultiplayer
     std::string txttemp = "lobbyId:"+std::to_string(app.lobby->id);
     initSimpleText(fontPath, txttemp);
     setSimpleTextPosition(150.0, 5.0);
-
-    // currentGameMode=nullptr;
+    testPictureButton.init("piece",ICON_PIECE,300.0,150.0,sf::Color::Black,sf::Color::White,10);
+    std::vector<FluffyMultiplayer::PictureButton> pi;
 
     testk.initText("TESTESTESTK",200.0,100.0);
     playerlisttest.init(5,"TESTA",200.0,200.0);
@@ -51,9 +51,10 @@ namespace FluffyMultiplayer
     testk.render(window);
     playerlisttest.render(window);
     playerlistest2->render(window);
+
+    testPictureButton.render2(&window);
     //game..
-    // if(currentGameMode!=nullptr) //draw gameMode grpahical entities (z:1)
-      // currentGameMode->render(window);
+
   }
 
   FluffyMultiplayer::AppState* StateMainPage::update(FluffyMultiplayer::App& app)
@@ -63,11 +64,6 @@ namespace FluffyMultiplayer
     //apply commands from server into client
 
 
-    // if(currentGameMode!=nullptr)
-     // currentGameMode = currentGameMode->update(app);
-
-
-
     return this;
   }
 
@@ -75,7 +71,6 @@ namespace FluffyMultiplayer
   FluffyMultiplayer::AppState* StateMainPage::eventHandle(FluffyMultiplayer::App& app,
                             sf::Event& event)
   {
-    // currentGameMode = currentGameMode->eventHandle(app,event);
     return this;
   }
 }

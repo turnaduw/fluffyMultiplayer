@@ -95,6 +95,11 @@ namespace FluffyMultiplayer
         window.draw(pictureButtonText);
         window.draw(pictureButtonButtonSprite);
       }
+      void render2(sf::RenderWindow* window)
+      {
+        window->draw(pictureButtonText);
+        window->draw(pictureButtonButtonSprite);
+      }
 
       PictureButton(std::string txt, std::string txture, float posx, float posy,
               sf::Color bgcolor, sf::Color fgcolor)
