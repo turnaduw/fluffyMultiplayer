@@ -42,6 +42,10 @@ namespace FluffyMultiplayer
       {
         pictureButtonPosition.x = x;
         pictureButtonPosition.y = y;
+
+        //apply position.
+        pictureButtonButtonSprite.move(pictureButtonPosition);
+        pictureButtonButtonBound = pictureButtonButtonSprite.getGlobalBounds();
       }
 
       sf::FloatRect getButtonBound() const
@@ -122,7 +126,7 @@ namespace FluffyMultiplayer
 
       PictureButton()
       {
-        // init();
+        init();
       }
 
       void operator=(FluffyMultiplayer::PictureButton other)

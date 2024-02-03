@@ -137,7 +137,11 @@ namespace FluffyMultiplayer
 
           for(int i = 0; i < responseCodes.size(); i++)
               if(receivedData.code == responseCodes[i])
+              {
+                if(!app.inLobby && receivedData.code == RESPONSE_YOU_ARE_JOINT_INTO_LOBBY) //to avoid render gameMode when not joint in lobby
+                  app.inLobby=true;
                 return states[i];
+              }
 
 
           //PUSH INTO Notification BOX. THOSE RESPONSE DONT HAVE ACTION LIKE RETRY OR .. JUST WANT TO SHOW TO CLIENT WILL PUSH AS Notification

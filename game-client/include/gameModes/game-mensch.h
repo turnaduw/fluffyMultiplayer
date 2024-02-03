@@ -108,6 +108,7 @@ namespace FluffyMultiplayer
     {
       position.x = x;
       position.y = y;
+      pb.setPosition(x,y);
     }
   };
 
@@ -135,6 +136,7 @@ namespace FluffyMultiplayer
     {
       position.x = x;
       position.y = y;
+      pb.setPosition(x,y);
     }
 
     void setColor(sf::Color _color)
@@ -158,19 +160,31 @@ namespace FluffyMultiplayer
     sf::Vector2f position;
     std::vector<std::string> texturesPath;
 
+    MenschDice(float x,float y)
+    {
+      value=0;
+      position.x = DFEAULT_DICE_X;
+      position.y = DEFAULT_DICE_Y;
+      texturesPath = DICE_TEXTURES;
+      // pb.init("dice",texturesPath[value],position.x,position.y);
+      pb.init("dice","gmMensch-dice2.png",position.x,position.y);
+    }
+
     MenschDice()
     {
       value=0;
       position.x = DFEAULT_DICE_X;
       position.y = DEFAULT_DICE_Y;
       texturesPath = DICE_TEXTURES;
-      pb.init("dice",texturesPath[value],position.x,position.y);
+      // pb.init("dice",texturesPath[value],position.x,position.y);
+      pb.init("dice","gmMensch-dice2.png",position.x,position.y);
     }
 
     void setPosition(float x, float y)
     {
       position.x = x;
       position.y = y;
+      pb.setPosition(x,y);
     }
 
     void set(int number)
@@ -222,10 +236,10 @@ namespace FluffyMultiplayer
       FluffyMultiplayer::MenschDice dice;
       int turn; //hold player id's turn
       std::array<FluffyMultiplayer::MapCircle,MENSCH_MAP_COUNT> menschMap;
-
+      FluffyMultiplayer::MapCircle testmap;
       FluffyMultiplayer::SocketSendData sendTemp;
 
-      FluffyMultiplayer::Icon backgroundGameMode;
+      // FluffyMultiplayer::Icon backgroundGameMode;
 
       FluffyMultiplayer::LobbyData* lobby;
 
@@ -283,12 +297,12 @@ namespace FluffyMultiplayer
                   (window.getSize().y/2)-100);
 
 
-        dice.setPosition((window.getSize().x/2),(window.getSize().y/2));
+        dice.setPosition((window.getSize().x/5),(window.getSize().y/2));
 
         //background
-        backgroundGameMode.initIcon(ICON_BACKGROUND_GAMEMODE_MENSCH,
-              ((window.getSize().x/2)-GM_MENSCH_BG_SIZE_X/2)+GM_MENSCH_BACKGROUND_PADDING_X,
-              ((window.getSize().y/2)-GM_MENSCH_BG_SIZE_Y/2)+GM_MENSCH_BACKGROUND_PADDING_Y);
+        // backgroundGameMode.initIcon(ICON_BACKGROUND_GAMEMODE_MENSCH,
+        //       ((window.getSize().x/2)-GM_MENSCH_BG_SIZE_X/2)+GM_MENSCH_BACKGROUND_PADDING_X,
+        //       ((window.getSize().y/2)-GM_MENSCH_BG_SIZE_Y/2)+GM_MENSCH_BACKGROUND_PADDING_Y);
 
 
         //example
@@ -299,10 +313,10 @@ namespace FluffyMultiplayer
 
         //example: set pieces into center
         for(int i=0; i<MENSCH_PLAYERS_COUNT; i++)
-          for(int j=0; j<MENSCH_ROOM_PER_PLAYER; j++)
+          for(int j=0; j<MENSCH_PIECE_PER_PLAYER; j++)
           {
-            players[i].pieces[j].setPosition( (window.getSize().x/2)+i*50, (window.getSize().y/2)+j*50 );
-            std::cout << "player,piece : " << i << ","<< j << "\tx:" << players[i].pieces[j].position.x << "\ty:" << players[i].pieces[j].position.y << std::endl;
+            players[i].pieces[j].setPosition( (window.getSize().x/2)+i*65, (window.getSize().y/2)+j*65 );
+            // std::cout << "player,piece : " << i << ","<< j << "\tx:" << players[i].pieces[j].position.x << "\ty:" << players[i].pieces[j].position.y << std::endl;
           }
 
 
@@ -310,20 +324,64 @@ namespace FluffyMultiplayer
         //init map:
         std::array<sf::Vector2f,MENSCH_MAP_COUNT> mapPositions =
         {
-          sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0),
-          sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0),
-          sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0),
-          sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0),
-          sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0),
-          sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0),
-          sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0),
-          sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0),
-          sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0),
-          sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0),
-          sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0),
-          sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0),
-          sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0),
-          sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0), sf::Vector2f(0.0,0.0)
+          sf::Vector2f(888.0,840.0),
+          // sf::Vector2f(915.0,680.0),
+          // sf::Vector2f(918.0,742.0),
+          sf::Vector2f(891.0 ,783.0),
+          sf::Vector2f(892.0 ,721.0),
+          sf::Vector2f(892.0 ,661.0),
+          sf::Vector2f(891.0 ,600.0),
+          sf::Vector2f(832.0 ,597.0),
+          sf::Vector2f(769.0 ,597.0),
+          sf::Vector2f(707.0 ,595.0),
+          sf::Vector2f(646.0 ,594.0),
+          sf::Vector2f(644.0 ,534.0),
+          sf::Vector2f(705.0 ,536.0),
+          sf::Vector2f(768.0 ,534.0),
+          sf::Vector2f(828.0 ,533.0),
+          sf::Vector2f(892.0 ,534.0),
+          sf::Vector2f(646.0 ,474.0),
+          sf::Vector2f(706.0 ,470.0),
+          sf::Vector2f(766.0 ,469.0),
+          sf::Vector2f(826.0 ,469.0),
+          sf::Vector2f(888.0 ,470.0),
+          sf::Vector2f(889.0 ,407.0),
+          sf::Vector2f(889.0 ,344.0),
+          sf::Vector2f(889.0 ,285.0),
+          sf::Vector2f(886.0 ,223.0),
+          sf::Vector2f(950.0 ,221.0),
+          sf::Vector2f(956.0 ,283.0),
+          sf::Vector2f(955.0 ,346.0),
+          sf::Vector2f(953.0 ,406.0),
+          sf::Vector2f(952.0 ,473.0),
+          sf::Vector2f(1015.0 ,225.0),
+          sf::Vector2f(1016.0 ,283.0),
+          sf::Vector2f(1016.0 ,347.0),
+          sf::Vector2f(1017.0 ,412.0),
+          sf::Vector2f(1015.0 ,469.0),
+          sf::Vector2f(1073.0 ,470.0),
+          sf::Vector2f(1133.0 ,472.0),
+          sf::Vector2f(1201.0 ,472.0),
+          sf::Vector2f(1259.0 ,471.0),
+          sf::Vector2f(1265.0 ,534.0),
+          sf::Vector2f(1203.0 ,533.0),
+          sf::Vector2f(1143.0 ,537.0),
+          sf::Vector2f(1077.0 ,529.0),
+          sf::Vector2f(1014.0 ,531.0),
+          sf::Vector2f(1264.0 ,596.0),
+          sf::Vector2f(1201.0 ,596.0),
+          sf::Vector2f(1140.0 ,595.0),
+          sf::Vector2f(1079.0 ,595.0),
+          sf::Vector2f(1016.0 ,590.0),
+          sf::Vector2f(1018.0 ,655.0),
+          sf::Vector2f(1018.0 ,721.0),
+          sf::Vector2f(1015.0 ,779.0),
+          sf::Vector2f(1017.0 ,838.0),
+          sf::Vector2f(954.0 ,841.0),
+          sf::Vector2f(956.0 ,779.0),
+          sf::Vector2f(957.0 ,720.0),
+          sf::Vector2f(953.0 ,656.0),
+          sf::Vector2f(949.0 ,598.0)
         };
 
         std::array<FluffyMultiplayer::ColorCircles,MENSCH_PLAYERS_COUNT*5> mapColored =
@@ -359,6 +417,8 @@ namespace FluffyMultiplayer
           menschMap[i].setPosition(mapPositions[i].x, mapPositions[i].y);
         }
 
+        testmap.setPosition(100.0,50.0);
+        testmap.setColor(sf::Color::Black);
         //set color to map circles for home or spawn points
         for(int i=0; i<MENSCH_PLAYERS_COUNT*5; i++)
         {
@@ -368,11 +428,13 @@ namespace FluffyMultiplayer
 
       void render(sf::RenderWindow& window)
       {
-        backgroundGameMode.render(window);
-
+        // backgroundGameMode.render(window);
+        testmap.pb.render(window);
         //render map circles
         for(int i=0; i<MENSCH_MAP_COUNT; i++)
           menschMap[i].pb.render(window);
+
+        dice.pb.render(window);
 
 
         //render pieces
@@ -382,7 +444,6 @@ namespace FluffyMultiplayer
 
 
         turnLabel.render(window);
-        dice.pb.render(window);
       }
 
 
@@ -417,7 +478,7 @@ namespace FluffyMultiplayer
         if(event.type == sf::Event::MouseButtonPressed)
         {
             mousePosition = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-            std::cout << "mouse clicked posx:" << mousePosition.x << "\tposy:" << mousePosition.y << std::endl;
+            std::cout << "posx:" << mousePosition.x << "\tposy:" << mousePosition.y << std::endl;
 
 
             //check for dice
@@ -432,7 +493,7 @@ namespace FluffyMultiplayer
               {
                 for(int j=0; j<MENSCH_PIECE_PER_PLAYER; j++)
                 {
-                  else if(players[i].pieces[j].pb.getButtonBound().contains(mousePosition))
+                  if(players[i].pieces[j].pb.getButtonBound().contains(mousePosition))
                   {
                     std::cout << "clicked on piece, piece owner id= " << i << "\tpiece id=" << j << std::endl;
                     std::string clickResult =  "clicked on piece, details: piece owner id= " + std::to_string(i) + "\tpiece id=" + std::to_string(j);

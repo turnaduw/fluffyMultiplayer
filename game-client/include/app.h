@@ -67,6 +67,7 @@ namespace FluffyMultiplayer
       void receiveData();
 
     public:
+      bool inLobby;
       FluffyMultiplayer::Log log;
       FluffyMultiplayer::GameMode* currentGameMode;
 

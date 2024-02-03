@@ -4,6 +4,7 @@ namespace FluffyMultiplayer
 {
   StateMainPage::StateMainPage(FluffyMultiplayer::App& app)
   {
+    std::cout << "statemainPage constructor called=======================\n";
     app.currentGameMode = new FluffyMultiplayer::GM_MENSCH(app.appWindow,app.lobby);
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
     std::string txttemp = "lobbyId:"+std::to_string(app.lobby->id);
@@ -22,9 +23,6 @@ namespace FluffyMultiplayer
       startX+=eachXstep;
       startY+=eachYstep;
     }
-
-    playerList[0] = FluffyMultiplayer::PlayerList(1,tempNames[0],200.0,50.0);
-
   }
 
   StateMainPage::~StateMainPage()
@@ -37,10 +35,10 @@ namespace FluffyMultiplayer
     window.draw(theText);
 
     //player list
-    for(int i=0; i<MAX_PLAYERS_IN_LOBBY; i++)
-    {
-      playerList[i].render(window);
-    }
+    // for(int i=0; i<MAX_PLAYERS_IN_LOBBY; i++)
+    // {
+      // playerList[i].render(window);
+    // }
     //chat box
 
     //game..
@@ -64,6 +62,7 @@ namespace FluffyMultiplayer
 
           default:
           {
+            std::cout << "passing vlaue into gamemode ................\n";
             //apply commands from server into client game
             if(app.currentGameMode!=nullptr)
               app.currentGameMode->update(currentItem);

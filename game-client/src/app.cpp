@@ -171,6 +171,7 @@ namespace FluffyMultiplayer
   void App::init(FluffyMultiplayer::AnAddress _server, std::string _identity)
   {
 
+    inLobby=false; //a flag turn off to avoid to run gameMode->render after constructor StateMainPage called, turn on when received code == joint into lobby
     //init log
     log.init(APP_LOG_FILENAME,APP_PRINT_LOGS_LEVEL);
 
@@ -262,7 +263,7 @@ namespace FluffyMultiplayer
        // Draw some graphical entities (z:0)
        currentState->render(appWindow);
 
-       if(currentGameMode!=nullptr)
+       if(currentGameMode!=nullptr && inLobby)
         currentGameMode->render(appWindow);
 
        //draw notifications (z:2)
