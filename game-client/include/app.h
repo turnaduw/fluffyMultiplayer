@@ -50,11 +50,13 @@ namespace FluffyMultiplayer
       std::string identity;
       FluffyMultiplayer::AppState* currentState;
 
+
+      boost::mutex sendMutex;
+
       //voice chat
       // FluffyMultiplayer::VoiceChat voiceChat; //voice chat off/on is flag included inside class VoieChat
       std::queue<FluffyMultiplayer::SocketReceiveData> receivedVoiceDataList;
       std::queue<FluffyMultiplayer::SocketSendData> sendVoiceDataList;
-
 
       //network and data froms
       boost::asio::io_context ioContextVoice;
@@ -68,10 +70,6 @@ namespace FluffyMultiplayer
       FluffyMultiplayer::Log log;
       FluffyMultiplayer::GameMode* currentGameMode;
 
-      //data list from or to network
-      std::queue<FluffyMultiplayer::SocketReceiveData> receivedTextDataList;
-      std::queue<FluffyMultiplayer::SocketSendData> sendTextDataList;
-
 
       //is public because be accessable by StateBindPickPort
       FluffyMultiplayer::UdpSocket* socketVoice;
@@ -79,6 +77,9 @@ namespace FluffyMultiplayer
 
       //to be accessable from StateMainPage
       FluffyMultiplayer::LobbyData* lobby;
+
+      std::queue<FluffyMultiplayer::SocketReceiveData> receivedTextDataList;
+      std::queue<FluffyMultiplayer::SocketSendData> sendTextDataList;
 
 
       boost::thread receive_thread;

@@ -11,6 +11,10 @@ namespace FluffyMultiplayer
     {
       try
       {
+        //lock mutex for socket to avoid segment fault or data corruption.
+        boost::lock_guard<boost::mutex> lock(sendMutex);
+
+
         //text data
         if(sendTextDataList.size()>=1) //on that socket self will check socketStatus before send
         {
@@ -247,7 +251,7 @@ namespace FluffyMultiplayer
            currentState = currentState->eventHandle((*this),event);
 
            if(currentGameMode!=nullptr)
-            currentGameMode->eventHandle(appWindow,event);
+            currentGameMode->eventHandle(appWindow,event,sendTextDataList,sendMutex);
        }
 
        // Clear the whole window before rendering a new frame

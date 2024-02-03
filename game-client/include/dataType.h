@@ -118,12 +118,20 @@ namespace FluffyMultiplayer
   {
     int code;
     std::string data;
+    FluffyMultiplayer::AnAddress receiver; //if receivers == nulltpr then use this
 
-    //receiver is server
-    void set(int c, std::string d)
+    //one receiver
+    void set(int c, std::string d, const FluffyMultiplayer::AnAddress& r)
     {
       code = c;
       data = d;
+      receiver = r;
+    }
+    void set(int c, const FluffyMultiplayer::AnAddress& r)
+    {
+      code = c;
+      data = "";
+      receiver = r;
     }
   };
 

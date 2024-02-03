@@ -61,26 +61,29 @@ namespace FluffyMultiplayer
               sf::Color fgColor=BUTTON_DEFAULT_FORGROUND_COLOR,
               unsigned int txtSize=BUTTON_DEFAULT_FONT_SIZE)
       {
+        backgroundColor = bgColor;
+        forgroundColor = fgColor;
+        pictureButtonButtonTexturePath = txture;
+        pictureButtonString = btnText;
         isClicked = false;
 
         //must first set size then set position (because of origin calculation)
         setPosition<float>(posX,posY);
 
         //button init
-        pictureButtonButtonTexturePath = txture;
         componentLoadTexture(pictureButtonButtonTexture,pictureButtonButtonTexturePath);
 
-        // pictureButtonButtonSprite.setColor(backgroundColor);
+        pictureButtonButtonSprite.setColor(backgroundColor);
         pictureButtonButtonSprite.setTexture(pictureButtonButtonTexture);
 
 
         //button text init
-        pictureButtonString = btnText;
         fontPath = componentLoadAndSetFont(pictureButtonText,pictureButtonFont);
         pictureButtonText.setOutlineColor(forgroundColor);
         pictureButtonText.setString(pictureButtonString);
         pictureButtonText.setStyle(BUTTON_DEFAULT_STYLE);
         pictureButtonText.setCharacterSize(txtSize);
+        // pictureButtonText.setColor(fgColor);
 
         //make text center of button sprite
         pictureButtonButtonSprite.setPosition(pictureButtonPosition);
@@ -89,16 +92,16 @@ namespace FluffyMultiplayer
 
         pictureButtonButtonBound = pictureButtonButtonSprite.getGlobalBounds();
       }
+      void setBgColor(sf::Color _color)
+      {
+        backgroundColor = _color;
+        pictureButtonButtonSprite.setColor(backgroundColor);
+      }
 
       void render(sf::RenderWindow& window)
       {
         window.draw(pictureButtonText);
         window.draw(pictureButtonButtonSprite);
-      }
-      void render2(sf::RenderWindow* window)
-      {
-        window->draw(pictureButtonText);
-        window->draw(pictureButtonButtonSprite);
       }
 
       PictureButton(std::string txt, std::string txture, float posx, float posy,

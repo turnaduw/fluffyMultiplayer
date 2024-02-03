@@ -4,17 +4,11 @@ namespace FluffyMultiplayer
 {
   StateMainPage::StateMainPage(FluffyMultiplayer::App& app)
   {
-    app.currentGameMode = new FluffyMultiplayer::GM_MENSCH;
+    app.currentGameMode = new FluffyMultiplayer::GM_MENSCH(app.appWindow,app.lobby);
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
     std::string txttemp = "lobbyId:"+std::to_string(app.lobby->id);
     initSimpleText(fontPath, txttemp);
     setSimpleTextPosition(150.0, 5.0);
-    testPictureButton.init("piece",ICON_PIECE,300.0,150.0,sf::Color::Black,sf::Color::White,10);
-    std::vector<FluffyMultiplayer::PictureButton> pi;
-
-    testk.initText("TESTESTESTK",200.0,100.0);
-    playerlisttest.init(5,"TESTA",200.0,200.0);
-    playerlistest2 = new FluffyMultiplayer::PlayerList(6,"TESTB",200.0,300.0);
 
     //example
     float startX=200.0;
@@ -49,11 +43,6 @@ namespace FluffyMultiplayer
     }
     //chat box
 
-    testk.render(window);
-    playerlisttest.render(window);
-    playerlistest2->render(window);
-
-    testPictureButton.render2(&window);
     //game..
 
   }
@@ -77,7 +66,7 @@ namespace FluffyMultiplayer
           {
             //apply commands from server into client game
             if(app.currentGameMode!=nullptr)
-              app.currentGameMode->update(app.sendTextDataList,currentItem);
+              app.currentGameMode->update(currentItem);
           }
         }
 
