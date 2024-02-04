@@ -20,6 +20,10 @@
 #include <ctime>
 
 
+//random number
+#include <cstdlib>
+#include <ctime>
+
 #include <string>
 
 namespace FluffyMultiplayer
@@ -42,7 +46,7 @@ namespace FluffyMultiplayer
 
 
       //------------------------- authication
-
+      unsigned short generatePortForGameServer();
       int loginClient(const FluffyMultiplayer::LoginClientData&, std::string&);
       int reloginClient(const FluffyMultiplayer::LoginClientData&, std::string&);
 

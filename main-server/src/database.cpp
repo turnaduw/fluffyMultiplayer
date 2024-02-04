@@ -632,6 +632,15 @@ namespace FluffyMultiplayer
     return MS_ERROR_FAILED_TO_LOGIN_CLIENT;
   }
 
+  unsigned short FluffyDatabase::generatePortForGameServer()
+  {
+    int min=2500;
+    int max=64000;
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
+    int randomNumber = std::rand() % (max - min + 1) + min;
+    return static_cast<unsigned short>(randomNumber);
+  }
+
   int FluffyDatabase::createLobby(const FluffyMultiplayer::CreateLobbyData& lobbyInfo, std::string& outputServerIpPort)
   {
       try
@@ -649,10 +658,12 @@ namespace FluffyMultiplayer
              //those codes to ask a free server ip and port from API or anywhere else.
              //at this time there is no API or etc to select server so lets set default ip port
              std::string selected_server_ip = MS_CREATE_LOBBY_DEFAULT_SERVER_IP;
-             std::string selected_server_port = MS_CREATE_LOBBY_DEFAULT_SERVER_PORT;
+             // std::string selected_server_port = MS_CREATE_LOBBY_DEFAULT_SERVER_PORT;
+             std::string selected_server_port = std::to_string(generatePortForGameServer());
+             std::string selecter_server_voice_port = "9999";
              // ***************
 
-             std::string basic_query = "INSERT INTO fm_lobby (gameMode,maxPlayers,password,owner,textChatForbidden,voiceChatForbidden,specterForbidden,server_ip,server_port) VALUES('";
+             std::string basic_query = "INSERT INTO fm_lobby (gameMode,maxPlayers,password,owner,textChatForbidden,voiceChatForbidden,specterForbidden,server_ip,server_port,server_voice_port) VALUES('";
              basic_query += std::to_string(lobbyInfo.gameMode) + "', '" +
               std::to_string(lobbyInfo.maxPlayers) + "', '" +
               lobbyInfo.password  + "', '" +
@@ -661,7 +672,8 @@ namespace FluffyMultiplayer
               std::to_string(lobbyInfo.voiceChatForbidden) + "', '" +
               std::to_string(lobbyInfo.specterForbidden) + "', '" +
               selected_server_ip + "' ,'" +
-              selected_server_port + "');";
+              selected_server_port + "' ,'" +
+              selecter_server_voice_port + "');";
              if(query_to_db(basic_query))
              {
                //get create lobby id via owner id, add that owner id into lobby
@@ -678,7 +690,53 @@ namespace FluffyMultiplayer
                    return MS_ERROR_FAILED_TO_CREATE_LOBBY; //failed to get lobby ip and port
                  }
                  else
-                    return MS_RESPONSE_SUCCESS_LOBBY_CREATED;
+                {
+                  //get lobby id from owner id
+
+                  //get lobby id
+                  std::string bquery = "SELECT id FROM fm_lobby WHERE owner='";
+                  bquery += std::to_string(ownerId) + "';";
+                  std::string bresult = search_in_db(bquery,true);
+                  int blid = convertStringToInt(bresult);
+
+
+                  //launch lobby application (GameServer)
+                  //open new terminal and pass args innit
+                  std::string gserver = "gnome-terminal -- " +
+                          std::string(GAME_SERVER_APPLICATION_PATH) +
+                          std::string(GAME_SERVER_APPLICATION_NAME) +
+                          " " +
+                          std::to_string(blid)+
+                          " " +
+                          std::to_string(lobbyInfo.maxPlayers)+
+                          " " +
+                          std::to_string(lobbyInfo.gameMode)+
+                          " " +
+                          std::to_string(1)+ //current players
+                          " " +
+                          std::to_string(lobbyInfo.voiceChatForbidden)+
+                          " " +
+                          std::to_string(lobbyInfo.textChatForbidden)+
+                          " " +
+                          std::to_string(lobbyInfo.specterForbidden)+
+                          " " +
+                          std::to_string(0)+ //in game
+                          " " +
+                          lobbyInfo.password+
+                          " " +
+                          std::to_string(selected_server_port) + //text port
+                          " " +
+                          std::to_string(selecter_server_voice_port) +
+                          " " +
+                          std::to_string(ownerId);
+
+                  //convert stirnt to const char* then pass into system
+                  std::system(gserver.c_str());
+
+
+                  //return response
+                  return MS_RESPONSE_SUCCESS_LOBBY_CREATED;
+                }
                }
                else
                 return MS_ERROR_FAILED_TO_CREATE_LOBBY;//failed to add client into lobby
