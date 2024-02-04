@@ -113,6 +113,8 @@
 #define ICON_KICK "iconKick.png"
 #define ICON_BAN "iconBan.png"
 #define ICON_PIECE "iconPiece.png"
+#define ICON_PAUSE "iconPause.png"
+#define ICON_RESUME "iconResume.png"
 #define ICON_BACKGROUND_GAMEMODE_MENSCH "mensch-bg.png"
 
 
