@@ -5,6 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 #include <queue>
+#include <vector>
 #include "dataType.h"
 #include "config.h"
 #include "log.h"
@@ -27,7 +28,7 @@ namespace FluffyMultiplayer
       int gameModeId;
 
     public:
-      virtual FluffyMultiplayer::GameMode* update(FluffyMultiplayer::SocketReceiveData& currentItem)=0;
+      virtual FluffyMultiplayer::GameMode* update(int& currentItemCode, std::vector<std::string>& cData)=0;
       virtual void render(sf::RenderWindow& window)=0;
       virtual FluffyMultiplayer::GameMode* eventHandle(sf::RenderWindow& window,sf::Event& event,
                                         std::queue<FluffyMultiplayer::SocketSendData>& sendList,

@@ -16,8 +16,8 @@
 #define MC_PATH_TO_FONTS "./assets/fonts/"
 #define MC_DEFAULT_FONT "arial.ttf"
 
-#define GAME_CLIENT_APPLICATION_PATH "./"
-#define GAME_CLIENT_APPLICATION_NAME "game.run"
+#define GAME_CLIENT_APPLICATION_PATH "../game-client/"
+#define GAME_CLIENT_APPLICATION_NAME "gc.run"
 
 #define MC_SHOW_ERROR_NOTIFICATIONS true
 #define MC_SHOW_SUCCESS_NOTIFICATIONS false

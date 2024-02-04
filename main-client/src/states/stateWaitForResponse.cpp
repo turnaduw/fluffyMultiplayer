@@ -315,35 +315,35 @@ namespace FluffyMultiplayer
 
 
       //error ---------------------------------------------------------------
-      case MS_ERROR_CONNECTION_EXISTS: return "failed to connect, connection exists\nthis means this ip and port you're using\nis connected to the server via\nanother device\nrestart your modem/nhow to solve? 1.retry\n2.restart your network";
+      case MS_ERROR_CONNECTION_EXISTS: return "failed to connect,\n connection exists\nthis means this ip and port you're using\nis connected to the server via\nanother device\nrestart your modem/nhow to solve? 1.retry\n2.restart your network";
       // case MS_ERROR_CONNECTION_REJECTED_USING_VPN: return "";
-      case MS_ERROR_CONNECTION_REJECTED: return "failed to connect, connection refused.\nlater try again.";
-      case MS_ERROR_CONNECTION_NOT_EXISTS: return "you're not connected to server. your requset has been rejected.\nre-open application.";
-      case MS_ERROR_FAILED_TO_LOGIN_INCORRECT: return "faield to sign-in, incorrect username or password.";
+      case MS_ERROR_CONNECTION_REJECTED: return "failed to connect,\n connection refused.\nlater try again.";
+      case MS_ERROR_CONNECTION_NOT_EXISTS: return "you're not connected to server.\n your requset has been rejected.\nre-open application.";
+      case MS_ERROR_FAILED_TO_LOGIN_INCORRECT: return "faield to sign-in, \nincorrect username or password.";
       case MS_ERROR_FAILED_TO_LOGIN_NOT_EXISTS: return "failed to sign-in, .";
-      case MS_ERROR_FAILED_TO_LOGIN_BANNED: return "failed to sign-in, account is banned.";
-      case MS_ERROR_FAILED_TO_LOGIN_BAD_DATA_SYNTAX: return "failed to sign-in, bad data syntax, try again later.";
-      case MS_ERROR_FAILED_TO_REGISTER_USERNAME_EXISTS: return "faield to sign-up, username exists choose another one.";
-      case MS_ERROR_FAILED_TO_REGISTER_EMIAL_EXISTS: return "failed to sign-up, email exists choose another one.";
-      case MS_ERROR_FAILED_TO_REGISTER_EASY_PASSWORD: return "failed to sign-up, easy password\nuse CapCase and SmallCase charecter\nand number\nand !@#%.. charecters in your password.";
-      case MS_ERROR_FAILED_TO_REGISTER_BAD_DATA_SYNTAX: return "failed to sign-up, bad data syntax, try again later.";
-      case MS_ERROR_FAILED_TO_LOBBY_CREATION_INVALID_IDENTITY: return "failed to create lobby, invalid identity please re-login or try again later.";
-      case MS_ERROR_FAILED_TO_LOBBY_CREATION_CANT_OWN_TWO_LOBBY: return "faield to create lobby, you have lobby exists\nyou can own only one lobby at same time";
-      case MS_ERROR_FAILED_TO_LOBBY_CREATION_FORBIDDEN_FOR_YOU: return "failed to create lobby, you dont have permission to create lobby.\nyour account has been limited due to reasons.";
-      case MS_ERROR_FAILED_TO_LOBBY_CREATION_BAD_DATA_SYNTAX: return "failed to create lobby, bad data syntax, try again later.";
+      case MS_ERROR_FAILED_TO_LOGIN_BANNED: return "failed to sign-in,\n account is banned.";
+      case MS_ERROR_FAILED_TO_LOGIN_BAD_DATA_SYNTAX: return "failed to sign-in,\n bad data syntax, try again later.";
+      case MS_ERROR_FAILED_TO_REGISTER_USERNAME_EXISTS: return "faield to sign-up,\n username exists choose another one.";
+      case MS_ERROR_FAILED_TO_REGISTER_EMIAL_EXISTS: return "failed to sign-up,\n email exists choose another one.";
+      case MS_ERROR_FAILED_TO_REGISTER_EASY_PASSWORD: return "failed to sign-up,\n easy password\nuse CapCase and SmallCase charecter\nand number\nand !@#%.. charecters in your password.";
+      case MS_ERROR_FAILED_TO_REGISTER_BAD_DATA_SYNTAX: return "failed to sign-up,\n bad data syntax, try again later.";
+      case MS_ERROR_FAILED_TO_LOBBY_CREATION_INVALID_IDENTITY: return "failed to create lobby,\n invalid identity please re-login or\n try again later.";
+      case MS_ERROR_FAILED_TO_LOBBY_CREATION_CANT_OWN_TWO_LOBBY: return "faield to create lobby,\n you have lobby exists\nyou can own only one lobby at same time";
+      case MS_ERROR_FAILED_TO_LOBBY_CREATION_FORBIDDEN_FOR_YOU: return "failed to create lobby,\n you dont have permission to create lobby.\nyour account has been limited due to reasons.";
+      case MS_ERROR_FAILED_TO_LOBBY_CREATION_BAD_DATA_SYNTAX: return "failed to create lobby,\n bad data syntax, try again later.";
       case MS_ERROR_FAILED_TO_GET_LOBBY_LIST_NO_LOBBY_AVAIABLE: return "failed to get lobby list, \nat this time there is no lobby aviable.";
-      case MS_ERROR_FAILED_TO_GET_LOBBY_INFO_LOBBY_NOT_FOUND: return "failed to get lobby info by id, lobby not found.";
-      case MS_ERROR_FAILED_TO_GET_LOBBY_INFO_BAD_DATA_SYNTAX: return "faield to get lobby info by id, bad data syntax,\ntry again later.";
-      case MS_ERROR_FAILED_TO_RELOGIN_IDENTITY_INVALID_OR_NOT_EXISTS: return "failed to re-login, invalid identity or not exists.";
-      case MS_ERROR_FAILED_TO_RELOGIN_IDENTITY_EXPIRED: return "failed to re-login, that old session has been expired\nplease login again.";
+      case MS_ERROR_FAILED_TO_GET_LOBBY_INFO_LOBBY_NOT_FOUND: return "failed to get lobby info by id,\n lobby not found.";
+      case MS_ERROR_FAILED_TO_GET_LOBBY_INFO_BAD_DATA_SYNTAX: return "faield to get lobby info by id,\n bad data syntax,\ntry again later.";
+      case MS_ERROR_FAILED_TO_RELOGIN_IDENTITY_INVALID_OR_NOT_EXISTS: return "failed to re-login,\n invalid identity or not exists.";
+      case MS_ERROR_FAILED_TO_RELOGIN_IDENTITY_EXPIRED: return "failed to re-login,\n that old session has been expired\nplease login again.";
       //internal error --------------------------------------------------------
-      case MS_ERROR_FAILED_TO_INSERT_CLIENT_IDENTITY: return "failed to sign-up, server internal error(please try again later).";
-      case MS_ERROR_FAILED_TO_REGISTER_CLIENT: return "failed to sign-up, server internal error(please try again later).";
-      case MS_ERROR_FAILED_TO_CREATE_LOBBY: return "failed to create lobby, server internal error(please try again later).";
-      case MS_ERROR_FAILED_TO_GET_LOBBY_LIST: return "failed to get lobby list, server internal error(please try again later).";
-      case MS_ERROR_FAILED_TO_GET_LOBBY_INFO: return "failed to get lobby by id, server internal error(please try again later).";
-      case MS_ERROR_FAILED_TO_LOGIN_CLIENT: return "failed to sign-in, server internal error(please try again later).";
-      case MS_ERROR_FAILED_TO_RELOGIN: return "failed to re-login, server internal error(please try again later).";
+      case MS_ERROR_FAILED_TO_INSERT_CLIENT_IDENTITY: return "failed to sign-up,\n server internal error(please try again later).";
+      case MS_ERROR_FAILED_TO_REGISTER_CLIENT: return "failed to sign-up,\n server internal error(please try again later).";
+      case MS_ERROR_FAILED_TO_CREATE_LOBBY: return "failed to create lobby,\n server internal error(please try again later).";
+      case MS_ERROR_FAILED_TO_GET_LOBBY_LIST: return "failed to get lobby list,\n server internal error(please try again later).";
+      case MS_ERROR_FAILED_TO_GET_LOBBY_INFO: return "failed to get lobby by id,\n server internal error(please try again later).";
+      case MS_ERROR_FAILED_TO_LOGIN_CLIENT: return "failed to sign-in,\n server internal error(please try again later).";
+      case MS_ERROR_FAILED_TO_RELOGIN: return "failed to re-login, server\n internal error(please try again later).";
 
 
 

@@ -2,6 +2,7 @@
 #define H_GAMEMODE_MENSCH_CLASS
 
 #include <array>
+#include <vector>
 #include "../gameMode.h"
 #include "../config.h"
 #include "../uiComponents/text.h"
@@ -12,16 +13,20 @@
 #include <cstdlib>
 #include <ctime>
 
+
+//convert string to int
+#include <cstdlib>
+
 // ------- requests 501->700
 #define ROLE_DICE 501
-#define MOVE_PIECE 502
+#define MOVE_PIECE 502 //playerId, pieceId
 
 
 // ------- responses 701->999
-#define PLAYER_MOVED_PIECE 701
+#define PLAYER_MOVED_PIECE 701 //playerId, pieceI, roomIndex
 #define PIECE_KICKED 702
-#define PLAYER_ROLED_DICE 703
-#define TURN_FOR 704
+#define PLAYER_ROLED_DICE 703 //diceNumber
+#define TURN_FOR 704 //playerId
 #define UPDATE_BOARD 705
 #define LATEST_BOARD_DATA 706
 
@@ -131,6 +136,20 @@ namespace FluffyMultiplayer
                    // FluffyMultiplayer::MenschPiece& newPiece)
     // {
     // }
+
+    void sit(FluffyMultiplayer::MenschPiece* p)
+    {
+      if(piece==nullptr)
+      {
+        p->setPosition(position.x,position.y);
+        std::cout << "piece sit\n";
+      }
+      else
+      {
+        std::cout << "need to kick someone.\n";
+
+      }
+    }
 
     void setPosition(float x, float y)
     {
@@ -247,35 +266,32 @@ namespace FluffyMultiplayer
       sf::Vector2f mousePosition;
 
 
-      FluffyMultiplayer::GameMode* update(FluffyMultiplayer::SocketReceiveData& currentItem)
+      FluffyMultiplayer::GameMode* update(int& currentItemCode, std::vector<std::string>& cData)
       {
-        switch (currentItem.code)
+        switch (currentItemCode)
         {
-          case PLAYER_MOVED_PIECE:
+          case PLAYER_MOVED_PIECE: //playerId, pieceId, roomIndex
           {
-            std::cout << "PLAYER_MOVED_PIECE\n";
+            int playerId = stringToInt(cData[0]);
+            int pieceId = stringToInt(cData[1]);
+            int roomIndex = stringToInt(cData[2]);
+            menschMap[roomIndex].sit(&players[playerId].pieces[pieceId]);
+
+            std::cout << "moved piece details: player " <<playerId << " piece " << pieceId << " into room" << roomIndex << std::endl;
           }break;
-          case PIECE_KICKED:
+
+          case PLAYER_ROLED_DICE: //diceNumber
           {
-            std::cout << "PIECE_KICKED\n";
+            int diceNumber= stringToInt(cData[0]);
+            std::cout << "dice rolled set dice to " << diceNumber << std::endl;
+            dice.set(diceNumber);
           }break;
-          case PLAYER_ROLED_DICE:
+
+          case TURN_FOR: //playerId
           {
-            std::cout << "PLAYER_ROLED_DICE\n";
-            int x=3;
-            dice.set(x);
-          }break;
-          case TURN_FOR:
-          {
-            std::cout << "TURN_FOR\n";
-          }break;
-          case  UPDATE_BOARD:
-          {
-            std::cout << "UPDATE_BOARD\n";
-          }break;
-          case LATEST_BOARD_DATA:
-          {
-            std::cout << "LATEST_BOARD_DATA\n";
+            int playerId = stringToInt(cData[0]);
+            setTurn(playerId);
+            std::cout << "turn set for" << playerId << std::endl;
           }break;
 
           default:
@@ -284,6 +300,24 @@ namespace FluffyMultiplayer
           }
         }
         return this;
+      }
+
+      int stringToInt(const std::string& str)
+      {
+        const char* c = str.c_str();
+        return std::atoi(c);
+      }
+
+      void setTurn(int id)
+      {
+        turn = id;
+        for(int i=0; i<MENSCH_PLAYERS_COUNT; i++)
+        {
+          if(id == i) //turnon
+            players[i].turn=true;
+          else //turnoff
+            players[i].turn=false;
+        }
       }
 
       GM_MENSCH(sf::RenderWindow& window, FluffyMultiplayer::LobbyData* _lobby)

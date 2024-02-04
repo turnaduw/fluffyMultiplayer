@@ -7,7 +7,7 @@
 #define MS_VERSION "0.0.1"
 
 
-#define GAME_SERVER_APPLICATION_PATH "./game-server/"
+#define GAME_SERVER_APPLICATION_PATH "../game-server/"
 #define GAME_SERVER_APPLICATION_NAME "gs.run"
 
 #define MS_DATA_ENCRYPT_DECRYPT_SHIFT 5

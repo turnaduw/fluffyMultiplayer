@@ -45,14 +45,61 @@ namespace FluffyMultiplayer
 
   }
 
+  std::vector<int> dataIndexes(const std::string& data, const std::string& delimiter)
+  {
+    std::vector<int> result;
+    std::string str;
+    str = data;
+
+    int index;
+    for(int i=0; i<data.length(); i++)
+    {
+      if(str.empty())
+        break;
+
+      index = str.find(delimiter);
+      if (index == std::string::npos) //delimiter not found
+        break;
+
+      str = str.substr(index+delimiter.length() ,str.length()-1);
+      result.push_back(index);
+    }
+
+    return result;
+  }
+
+  std::vector<std::string> dataSeparator(const std::string& data, std::string delimiter, int startIndex=0)
+  {
+    std::cout << "dataSeparator.data="+data << std::endl;
+    std::vector<std::string> result;
+    std::string str = data.substr(startIndex,data.length()-1);
+
+    std::vector<int>indexes = dataIndexes(str,delimiter);
+    for(int i=0; i<indexes.size(); i++)
+    {
+      int index=indexes[i];
+
+      result.push_back(str.substr(0,index));
+      str = str.substr(index+delimiter.length() ,str.length()-1);
+    }
+    return result;
+  }
+
+
+
   FluffyMultiplayer::AppState* StateMainPage::update(FluffyMultiplayer::App& app)
   {
     //read from received data..
     FluffyMultiplayer::SocketReceiveData currentItem;
+    std::vector<std::string> cData;
     if(app.receivedTextDataList.size()>1)
       for(int i=0; i<app.receivedTextDataList.size(); i++)
       {
         currentItem = app.receivedTextDataList.front();
+        cData = dataSeparator(currentItem.data, MS_DATA_DELIMITER);
+
+
+
         switch(currentItem.code)
         {
           case RESPONSE_YOU_ARE_JOINT_INTO_LOBBY:
@@ -60,12 +107,25 @@ namespace FluffyMultiplayer
             app.log.print("joint into lobby.", FluffyMultiplayer::LogType::Information);
           }break;
 
+          case RESPONSE_LOBBY_PLAYERS_ARE: //playerId, playerName
+          {
+            app.log.print("lobby details..", FluffyMultiplayer::LogType::Information);
+            if(cData.size()%2==0) //to avoid 3 items then we call segfault by pres
+            {
+              for(int i=0; i<cData.size(); i+=2)
+              {
+                std::cout << "player: id=" << cData[i] << "\tname=" << cData[i+1] << std::endl;
+              }
+            }
+            else
+              std::cout << "a problem while loading players\n";
+          }break;
+
           default:
           {
-            std::cout << "passing vlaue into gamemode ................\n";
             //apply commands from server into client game
             if(app.currentGameMode!=nullptr)
-              app.currentGameMode->update(currentItem);
+              app.currentGameMode->update(currentItem.code,cData);
           }
         }
 

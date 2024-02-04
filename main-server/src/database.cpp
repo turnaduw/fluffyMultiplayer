@@ -724,9 +724,9 @@ namespace FluffyMultiplayer
                           " " +
                           lobbyInfo.password+
                           " " +
-                          std::to_string(selected_server_port) + //text port
+                          selected_server_port + //text port
                           " " +
-                          std::to_string(selecter_server_voice_port) +
+                          selecter_server_voice_port +
                           " " +
                           std::to_string(ownerId);
 

@@ -4,7 +4,6 @@
 #include "../appState.h"
 
 #include "../uiComponents/playerList.h"
-#include "../uiComponents/text.h"
 
 #include "../config.h"
 #include <array>
@@ -26,11 +25,6 @@ namespace FluffyMultiplayer
   private:
     //userinterface
     std::array<FluffyMultiplayer::PlayerList,MAX_PLAYERS_IN_LOBBY> playerList;
-    FluffyMultiplayer::Text testk;
-    FluffyMultiplayer::PlayerList playerlisttest;
-    FluffyMultiplayer::PlayerList* playerlistest2;
-    FluffyMultiplayer::PictureButton testPictureButton;
-    // FluffyMultiplayer::GameMode* currentGameMode;
 
     //mouse event handel variable to delecre once, not per loop delcre
     sf::Vector2f mousePosition;
