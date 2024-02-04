@@ -631,13 +631,20 @@ namespace FluffyMultiplayer
 
             }break;
 
-            case REQUEST_START_GAME:
+            case REQUEST_STOP_START_GAME:
             {
               if(doesItHavePermission(currentItem.sender))
               {
                 if(gameIsRunning)
                 {
-                  response(sendTextDataList, RESPONSE_ERROR_START_GAME_ALREADY_RUN,currentItem.sender);
+                    if(stopGame())
+                    {
+                      response(sendTextDataList, RESPONSE_GAME_STOPPED,&inLobbyPlayers,nullptr);
+                    }
+                    else
+                    {
+                      response(sendTextDataList, RESPONSE_INTERNAL_ERROR_FAILED_TO_STOP_GAME,currentItem.sender);
+                    }
                 }
                 else
                 {
@@ -654,32 +661,6 @@ namespace FluffyMultiplayer
               else
               {
                 response(sendTextDataList, RESPONSE_ERROR_START_GAME_NO_PERMISSION,currentItem.sender);
-              }
-            }break;
-
-            case REQUEST_STOP_GAME:
-            {
-              if(doesItHavePermission(currentItem.sender))
-              {
-                if(!gameIsRunning)
-                {
-                  response(sendTextDataList, RESPONSE_ERROR_STOP_GAME_NOT_STARTED,currentItem.sender);
-                }
-                else
-                {
-                  if(stopGame())
-                  {
-                    response(sendTextDataList, RESPONSE_GAME_STOPPED,&inLobbyPlayers,nullptr);
-                  }
-                  else
-                  {
-                    response(sendTextDataList, RESPONSE_INTERNAL_ERROR_FAILED_TO_STOP_GAME,currentItem.sender);
-                  }
-                }
-              }
-              else
-              {
-                response(sendTextDataList, RESPONSE_ERROR_STOP_GAME_NO_PERMISSION,currentItem.sender);
               }
             }break;
 
@@ -815,7 +796,7 @@ namespace FluffyMultiplayer
             }
             }break;
 
-            case REQUEST_TRANSFER_LOBBY_OWNERSHIP: //client will send: [0]->(targetId)
+            /*case REQUEST_TRANSFER_LOBBY_OWNERSHIP: //client will send: [0]->(targetId)
             {
               if(doesItHavePermission(currentItem.sender))
               {
@@ -857,7 +838,7 @@ namespace FluffyMultiplayer
               {
                 response(sendTextDataList, RESPONSE_ERROR_TRANSFER_OWNERSHIP_NO_PERMISSION,currentItem.sender);
               }
-            }break;
+            }break;*/
 
             case REQUEST_SEND_TEXT_CHAT: //client will send: [0]->(messageText)
             {
@@ -881,13 +862,18 @@ namespace FluffyMultiplayer
               }
             }break;
 
-            //case REQUEST_SEND_VOICE_CHAT: moved into processVoice()
-
-            case REQUEST_ENABLE_VOICE_CHAT:
+            //NOTE case REQUEST_SEND_VOICE_CHAT: moved into processVoice()
+            case REQUEST_ENABLE_DISABLE_VOICE_CHAT:
             {
               int cid = getSenderId(currentItem.sender);
               if(cid>=1)
-                updatePlayerVoiceChatStatus(cid,true);
+              {
+                int pindex = getIndexPlayerInLobbyByAddress(currentItem.sender);
+                if(inLobbyPlayers[pindex].voiceChatEnable)
+                  updatePlayerVoiceChatStatus(cid,false);
+                else
+                  updatePlayerVoiceChatStatus(cid,true);
+              }
 
                 std::string responseStr = std::to_string(cid) + MS_DATA_DELIMITER; //later can write reason and ban time to tell other clients
 
@@ -898,25 +884,6 @@ namespace FluffyMultiplayer
                 if(lobbySpecters.size()>=1)
                 {
                   response(sendTextDataList, RESPONSE_PLAYER_VOICE_CHAT_ENABLED,responseStr,&lobbySpecters,nullptr);
-                }
-
-            }break;
-
-            case REQUEST_DISABLE_VOICE_CHAT:
-            {
-              int cid = getSenderId(currentItem.sender);
-              if(cid>=1)
-                updatePlayerVoiceChatStatus(cid,false);
-
-                std::string responseStr = std::to_string(cid) + MS_DATA_DELIMITER; //later can write reason and ban time to tell other clients
-
-                //broadcast to inLobbyPlayers, player has been kicked from lobby
-                response(sendTextDataList, RESPONSE_PLAYER_VOICE_CHAT_DISABLED,responseStr,&inLobbyPlayers,nullptr);
-
-                //broadcast to specters, player has been kicked from lobby
-                if(lobbySpecters.size()>=1)
-                {
-                  response(sendTextDataList, RESPONSE_PLAYER_VOICE_CHAT_DISABLED,responseStr,&lobbySpecters,nullptr);
                 }
 
             }break;
