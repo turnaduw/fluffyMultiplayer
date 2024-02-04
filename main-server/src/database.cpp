@@ -398,7 +398,7 @@ namespace FluffyMultiplayer
       all += lCurrentPlayers + std::string(MS_DATA_DELIMITER);
       all += lGameMode + std::string(MS_DATA_DELIMITER);
       all += lServerAddress + std::string(MS_DATA_DELIMITER);
-      std::cout << "getLobbyList() lobby i="  << i <<  " data=" << all << std::endl;
+      // std::cout << "getLobbyList() lobby i="  << i <<  " data=" << all << std::endl;
     }
     return all;
   }

@@ -183,6 +183,9 @@ namespace FluffyMultiplayer
 
   StateMainPage::StateMainPage(std::string strlobbyList)
   {
+    //to avoid pass condition if(goGetLobbyList) so if that is true will go create infinite time and send request to server like spam and lobby list every second updated and refreshd
+    goGetLobbyList=false;
+
     //set game mode textures list
     lobbyGameModeTexturePathList = GAME_MODE_TEXTURE_LIST;
 
