@@ -12,7 +12,7 @@
 #define PRINT_LOGS_LEVEL FluffyMultiplayer::LogType::All
 #define LOG_FILE "./gameServer.log"
 
-#define DATABASE_FILENAME "../main-server/fluffy.db" //this path is from ./gameServer.run on runtime
+#define DATABASE_FILENAME "./fluffy.db" // this path changed becuase all servers will place inside one server.
 #define DATABASE_LOG_FILENAME "dbFluffy.log"
 #define DATABASE_PRINT_LOGS_LEVEL FluffyMultiplayer::LogType::Error
 
