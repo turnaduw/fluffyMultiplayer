@@ -61,6 +61,12 @@ namespace FluffyMultiplayer
         return inputBoxBound;
       }
 
+      void clear()
+      {
+        setText("");
+        enablePlaceholder();
+      }
+
       void setPosition(int x,int y)
       {
         position.x = x;
@@ -71,6 +77,8 @@ namespace FluffyMultiplayer
         errorText.setPosition(position.x+TI_ERROR_PADDING_X, position.y-TI_ERROR_PADDING_Y); //(origin.x + TI_ERROR_PADDING_X, origin.y - TI_ERROR_PADDING_Y);
         inputBoxSprite.setPosition(position.x, position.y); //(origin.x - TI_INPUTBOX_PADDING_X, origin.y + TI_INPUTBOX_PADDING_Y);
         mainText.setPosition(inputBoxSprite.getPosition().x+boxSize.y/3, inputBoxSprite.getPosition().y+boxSize.y/6);
+
+        inputBoxBound = inputBoxSprite.getGlobalBounds();
       }
 
       void setSize(int width, int height)
