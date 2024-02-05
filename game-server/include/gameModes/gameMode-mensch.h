@@ -53,13 +53,12 @@
 
 
 // ------- responses 701->999
-#define PLAYER_MOVED_PIECE 701
-#define PIECE_KICKED 701
-#define PLAYER_ROLED_DICE 702
-#define TURN_FOR 703
-#define UPDATE_BOARD 704
-#define LATEST_BOARD_DATA 705
-
+#define PLAYER_MOVED_PIECE 701 //playerId, pieceI, roomIndex
+#define PIECE_KICKED 702
+#define PLAYER_ROLED_DICE 703 //diceNumber
+#define TURN_FOR 704 //playerId
+#define UPDATE_BOARD 705
+#define LATEST_BOARD_DATA 706
 
 
 

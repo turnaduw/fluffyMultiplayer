@@ -14,5 +14,6 @@
 #include "../include/states/stateMainPage.h"
 #include "../include/states/stateJoinLobby.h"
 #include "../include/states/stateFailed.h"
+#include "../include/states/stateLobbySettings.h"
 
 #endif
