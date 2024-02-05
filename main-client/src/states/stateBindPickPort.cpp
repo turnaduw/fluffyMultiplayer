@@ -24,6 +24,8 @@ namespace FluffyMultiplayer
 
   void StateBindPickPort::render(sf::RenderWindow& window)
   {
+    setSimpleTextPosition((window.getSize().x/2)-25,
+                          (window.getSize().y/2)-25);
     window.draw(theText);
   }
 

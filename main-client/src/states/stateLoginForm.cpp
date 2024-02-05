@@ -7,12 +7,12 @@ namespace FluffyMultiplayer
     inputFocus = &usernameInput;
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
     initSimpleText(fontPath, "LOGIN FORM");
-    setSimpleTextPosition(150.0, 5.0);
-    usernameInput.init("","","username:","enter username..", 100.0, 100.0);
-    passwordInput.init("","","password:","enter password..", 100.0, 200.0);
-    saveLoginCheckBox.init("save login", 100.0, 300.0, sf::Color::Black, sf::Color::White, 22);
-    buttonGoToRegisterForm.init("Sign up", 100.0,400.0, sf::Color::Black,sf::Color::White, 60,30, 22);
-    buttonSubmit.init("submit", 300.0,400.0, sf::Color::Black,sf::Color::Green, 60,30, 22);
+    setSimpleTextPosition(410.0, 90.0);
+    usernameInput.init("","","username:","enter username..", 340.0, 190.0);
+    passwordInput.init("","","password:","enter password..", 340.0, 290.0);
+    saveLoginCheckBox.init("save login", 340.0, 390.0, sf::Color::Black, sf::Color::White, 22);
+    buttonGoToRegisterForm.init("Sign up", 340.0,490.0, sf::Color::White,sf::Color::White, 60,30, 22);
+    buttonSubmit.init("submit", 540.0,490.0, sf::Color::White,sf::Color::White, 60,30, 22);
   }
 
   FluffyMultiplayer::AppState* StateLoginForm::formFinishedResult(bool isSubmit)
@@ -56,7 +56,7 @@ namespace FluffyMultiplayer
   {
     init();
     form_data = _data;
-    
+
     //apply passed data into form element
     usernameInput.setText(form_data._inputs[0]);
     usernameInput.setError(form_data._errors[0]);

@@ -88,6 +88,7 @@ namespace FluffyMultiplayer
 
   void StateCreateLobbyForm::render(sf::RenderWindow& window)
   {
+    setSimpleTextPosition((window.getSize().x/2)-25, 25.0);
     window.draw(theText);
     passwordInput.render(window);
     gameModeSpinBox.render(window);

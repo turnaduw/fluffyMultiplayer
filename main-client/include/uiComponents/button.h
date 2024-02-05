@@ -82,7 +82,7 @@ namespace FluffyMultiplayer
         isButtonClicked=false;
 
         //set color
-        setBackgroundColor(bgColor);
+        // setBackgroundColor(bgColor);
         setForgroundColor(fgColor);
 
         //must first set size then set position (because of origin calculation)
@@ -92,7 +92,7 @@ namespace FluffyMultiplayer
         //button init
         buttonTexturePath = FE_PATH_TO_ASSETS BUTTON_TEXTURE;
         buttonTexture.loadFromFile(buttonTexturePath);
-        buttonSprite.setColor(backgroundColor);
+        // buttonSprite.setColor(backgroundColor);
         buttonSprite.setTexture(buttonTexture);
         buttonSprite.setPosition(buttonPosition);
         buttonBound = buttonSprite.getGlobalBounds();
