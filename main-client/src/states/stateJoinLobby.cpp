@@ -33,33 +33,36 @@ namespace FluffyMultiplayer
 
   StateJoinLobby::StateJoinLobby(FluffyMultiplayer::AnAddress target_address)
   {
-    closeButton.init("quit",200.0,200.0, sf::Color::Black, sf::Color::White, 60,30, 22);
-    backButton.init("back to home",400.0,200.0, sf::Color::Black, sf::Color::White, 60,30, 22);
+    closeButton.init("Quit",340.0,370.0, sf::Color::White, sf::Color::White, 60,30, 22);
+    backButton.init("Back",540.0,370.0, sf::Color::White, sf::Color::White, 60,30, 22);
     gameServerAddress = target_address;
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
-    initSimpleText(fontPath, "state joinLobby\n game has been launched.");
+    setSimpleTextPosition(395.0, 300.0);
+    initSimpleText(fontPath, "Game has been launched.");
     isGameLaunched=false;
   }
 
   StateJoinLobby::StateJoinLobby(std::string target_address)
   {
-    closeButton.init("quit",200.0,200.0, sf::Color::Black, sf::Color::White, 60,30, 22);
-    backButton.init("back to home",400.0,200.0, sf::Color::Black, sf::Color::White, 60,30, 22);
+    closeButton.init("Quit",340.0,370.0, sf::Color::White, sf::Color::White, 60,30, 22);
+    backButton.init("Back",540.0,370.0, sf::Color::White, sf::Color::White, 60,30, 22);
     //convert address from string to FluffyMultiplayer::AnAddress
     gameServerAddress = convertStringToAddress(target_address);
+    setSimpleTextPosition(395.0, 300.0);
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
-    initSimpleText(fontPath, "state joinLobby\n game has been launched.");
+    initSimpleText(fontPath, "Game has been launched.");
     isGameLaunched=false;
   }
 
   StateJoinLobby::StateJoinLobby()
   {
-    closeButton.init("quit",200.0,200.0, sf::Color::Black, sf::Color::White, 60,30, 22);
-    backButton.init("back to home",400.0,200.0, sf::Color::Black, sf::Color::White, 60,30, 22);
+    closeButton.init("Quit",340.0,370.0, sf::Color::White, sf::Color::White, 60,30, 22);
+    backButton.init("Back",540.0,370.0, sf::Color::White, sf::Color::White, 60,30, 22);
+    setSimpleTextPosition(395.0, 300.0);
 
     isGameLaunched=false;
   }
-  
+
   StateJoinLobby::~StateJoinLobby()
   {
 

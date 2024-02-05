@@ -8,20 +8,20 @@ namespace FluffyMultiplayer
     maxPlayersList = MAX_PLAYER_LIST;
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
     initSimpleText(fontPath, "Create Lobby FORM");
-    setSimpleTextPosition(150.0, 5.0);
+    setSimpleTextPosition(395.0, 55.0);
 
-    passwordInput.init("","","Password:","enter password..",100.0, 100.0);
+    passwordInput.init("","","Password:","enter password..",340.0, 160.0);
 
-    gameModeSpinBox.init("game mode:", GAME_MODE_LIST, 100.0, 200.0, sf::Color::Black, sf::Color::White, 22);
-    maxPlayersSpinBox.init("max players:", maxPlayersList, 100.0, 300.0, sf::Color::Black, sf::Color::White, 22);
+    gameModeSpinBox.init("game mode:", GAME_MODE_LIST, 340.0, 250.0, sf::Color::White, sf::Color::White, 22);
+    maxPlayersSpinBox.init("max players:", maxPlayersList, 340.0, 340.0, sf::Color::White, sf::Color::White, 22);
 
 
-    specterCheckBox.init("specter:", 100.0, 400.0, sf::Color::Black, sf::Color::White, 22);
-    voiceChatCheckBox.init("voice chat:", 100.0, 500.0, sf::Color::Black, sf::Color::White, 22);
-    textChatCheckBox.init("text chat:", 100.0, 600.0, sf::Color::Black, sf::Color::White, 22);
+    specterCheckBox.init("specter:", 340.0, 450.0, sf::Color::White, sf::Color::White, 22);
+    voiceChatCheckBox.init("voice chat:", 340.0, 500.0, sf::Color::White, sf::Color::White, 22);
+    textChatCheckBox.init("text chat:", 340.0, 550.0, sf::Color::White, sf::Color::White, 22);
 
-    buttonSubmit.init("submit", 300.0,700.0, sf::Color::Black,sf::Color::Green, 60,30, 22);
-    buttonCancel.init("cancel", 100.0,700.0, sf::Color::Black,sf::Color::White, 60,30, 22);
+    buttonSubmit.init("submit", 540.0,620.0, sf::Color::White,sf::Color::White, 60,30, 22);
+    buttonCancel.init("cancel", 340.0,620.0, sf::Color::White,sf::Color::White, 60,30, 22);
   }
 
   int StateCreateLobbyForm::convertStringToInt(const std::string& str)
@@ -88,7 +88,6 @@ namespace FluffyMultiplayer
 
   void StateCreateLobbyForm::render(sf::RenderWindow& window)
   {
-    setSimpleTextPosition((window.getSize().x/2)-25, 25.0);
     window.draw(theText);
     passwordInput.render(window);
     gameModeSpinBox.render(window);

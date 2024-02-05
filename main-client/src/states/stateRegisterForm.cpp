@@ -6,12 +6,12 @@ namespace FluffyMultiplayer
   {
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
     initSimpleText(fontPath, "REGISTER FORM");
-    setSimpleTextPosition(150.0, 5.0);
-    emailInput.init("","","email:","enter email..", 100.0, 100.0);
-    usernameInput.init("","","username:","enter username..", 100.0, 200.0);
-    passwordInput.init("","","password:","enter password..", 100.0, 300.0);
-    buttonGoToLoginForm.init("Sign In", 100.0,400.0, sf::Color::Black,sf::Color::White, 60,30, 22);
-    buttonSubmit.init("submit", 300.0,400.0, sf::Color::Black,sf::Color::Green, 60,30, 22);
+    setSimpleTextPosition(410.0, 90.0);
+    emailInput.init("","","email:","enter email..", 340.0, 190.0);
+    usernameInput.init("","","username:","enter username..", 340.0, 290.0);
+    passwordInput.init("","","password:","enter password..", 340.0, 390.0);
+    buttonGoToLoginForm.init("Sign In", 340.0,490.0, sf::Color::White,sf::Color::White, 60,30, 22);
+    buttonSubmit.init("Submit", 540.0,490.0, sf::Color::White,sf::Color::White, 60,30, 22);
     inputFocus = &emailInput;
   }
 

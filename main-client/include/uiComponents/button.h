@@ -70,6 +70,7 @@ namespace FluffyMultiplayer
       {
         buttonSize.x = x;
         buttonSize.y = y;
+        // buttonSprite.setScale(x,y);
       }
 
       void init(std::string btnText="Text",

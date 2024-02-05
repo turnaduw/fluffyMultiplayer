@@ -5,7 +5,7 @@ namespace FluffyMultiplayer
   StateWriteIdentityToLocal::StateWriteIdentityToLocal()
   {
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
-    initSimpleText(fontPath, "writing received identity into local files..\n please wait..");
+    initSimpleText(fontPath, "Writing received identity into local files..\n please wait..");
   }
 
   StateWriteIdentityToLocal::~StateWriteIdentityToLocal()
@@ -15,6 +15,8 @@ namespace FluffyMultiplayer
 
   void StateWriteIdentityToLocal::render(sf::RenderWindow& window)
   {
+    setSimpleTextPosition((window.getSize().x/2)-INITAL_TEXT_ON_SCREEN_PADDING_X,
+                          (window.getSize().y/2)-INITAL_TEXT_ON_SCREEN_PADDING_Y);
     window.draw(theText);
   }
 

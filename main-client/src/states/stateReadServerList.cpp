@@ -64,6 +64,8 @@ namespace FluffyMultiplayer
 
   void StateReadServerList::render(sf::RenderWindow& window)
   {
+    setSimpleTextPosition((window.getSize().x/2)-INITAL_TEXT_ON_SCREEN_PADDING_X,
+                          (window.getSize().y/2)-INITAL_TEXT_ON_SCREEN_PADDING_Y);
     window.draw(theText);
   }
 

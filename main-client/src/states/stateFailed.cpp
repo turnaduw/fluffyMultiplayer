@@ -10,9 +10,10 @@ namespace FluffyMultiplayer
     state2=nullptr;
     state3=nullptr;
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
-    text = "Failed: "+_text;
+    text = "Failed:\n"+_text;
     initSimpleText(fontPath, text);
-    buttons[0].init("OK",200.0,200.0, sf::Color::Black, sf::Color::White, 60,30, 22);
+    setSimpleTextPosition(395.0, 90.0);
+    buttons[0].init("OK",410.0,200.0, sf::Color::White, sf::Color::White, 60,30, 22);
   }
 
   StateFailed::StateFailed(std::string _text,FluffyMultiplayer::AppState* s1,
@@ -23,10 +24,11 @@ namespace FluffyMultiplayer
    state2=s2;
    state3=nullptr;
    std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
-   text = "Failed: "+_text;
+   text = "Failed:\n"+_text;
    initSimpleText(fontPath, text);
-   buttons[0].init("Retry",200.0,200.0, sf::Color::Black, sf::Color::White, 60,30, 22);
-   buttons[1].init("Cancel/Quit",400.0,200.0, sf::Color::Red, sf::Color::White, 60,30, 22);
+   setSimpleTextPosition(395.0, 190.0);
+   buttons[0].init("Retry",340.0,200.0, sf::Color::White, sf::Color::White, 60,30, 22);
+   buttons[1].init("Cancel/Quit",540.0,200.0, sf::Color::White, sf::Color::White, 60,30, 22);
 
  }
 
@@ -38,11 +40,12 @@ namespace FluffyMultiplayer
     outputStateCount=3;
     state3=s3;
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
-    text = "Failed: "+_text;
+    text = "Failed:\n"+_text;
     initSimpleText(fontPath, text);
-    buttons[0].init("Retry",200.0,200.0, sf::Color::Black, sf::Color::White, 60,30, 22);
-    buttons[1].init("Cancel/Quit",400.0,200.0, sf::Color::Red, sf::Color::White, 60,30, 22);
-    buttons[2].init("Skip",300.0,500.0, sf::Color::Black, sf::Color::White, 60,30, 22);
+    setSimpleTextPosition(395.0, 90.0);
+    buttons[0].init("Retry",340.0,200.0, sf::Color::White, sf::Color::White, 60,30, 22);
+    buttons[1].init("Cancel/Quit",540.0,200.0, sf::Color::White, sf::Color::White, 60,30, 22);
+    buttons[2].init("Skip",440.0,300.0, sf::Color::White, sf::Color::White, 60,30, 22);
   }
 
 

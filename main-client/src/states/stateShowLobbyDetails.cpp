@@ -13,24 +13,25 @@ namespace FluffyMultiplayer
   {
     lobby = selectedLobby;
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
-    lobbyAsText = "------------------------------------------------";
-    lobbyAsText += "\nlobby id: " + std::to_string(selectedLobby.id);
-    lobbyAsText += "\nlobby maxplayers: " + std::to_string(selectedLobby.maxPlayers);
-    lobbyAsText += "\nlobby currentplayers: " + std::to_string(selectedLobby.currentPlayers);
-    lobbyAsText += "\nlobby gameMode: " + std::to_string(selectedLobby.gameMode);
-    lobbyAsText += "\nlobby address: " + selectedLobby.address.ip.to_string() + ":" + std::to_string(selectedLobby.address.port);
-    lobbyAsText += "\nis lobby locked:" + boolToString(selectedLobby.isLocked);
-    lobbyAsText += "\nis voice chat forbidden:" + boolToString(selectedLobby.isVoiceChatForbidden);
-    lobbyAsText += "\nis text chat forbidden:" + boolToString(selectedLobby.isTextChatForbidden);
-    lobbyAsText += "\nis specter forbidden:" + boolToString(selectedLobby.isSpecterForbidden);
-    lobbyAsText += "\nis lobby in-game:" + boolToString(selectedLobby.lobbyStatusInGame);
-    lobbyAsText += "\nlobby will show in lobbyList: " + boolToString(selectedLobby.showLobbyInList);
+    // lobbyAsText = "------------------------------------------------";
+    lobbyAsText += "\nLobby Id: " + std::to_string(selectedLobby.id);
+    lobbyAsText += "\n\nLobby Max players: " + std::to_string(selectedLobby.maxPlayers);
+    lobbyAsText += "\n\nLobby Current Players: " + std::to_string(selectedLobby.currentPlayers);
+    lobbyAsText += "\n\nLobby Game Mode: " + std::to_string(selectedLobby.gameMode);
+    lobbyAsText += "\n\nLobby Address: " + selectedLobby.address.ip.to_string() + ":" + std::to_string(selectedLobby.address.port);
+    lobbyAsText += "\n\nIs Lobby Locked: " + boolToString(selectedLobby.isLocked);
+    lobbyAsText += "\n\nIs Voice Chat Forbidden: " + boolToString(selectedLobby.isVoiceChatForbidden);
+    lobbyAsText += "\n\nIs Text Chat Forbidden: " + boolToString(selectedLobby.isTextChatForbidden);
+    lobbyAsText += "\n\nIs Specter Forbidden: " + boolToString(selectedLobby.isSpecterForbidden);
+    lobbyAsText += "\n\nIs Lobby In-game: " + boolToString(selectedLobby.lobbyStatusInGame);
+    lobbyAsText += "\n\nReport To LobbyList: " + boolToString(selectedLobby.showLobbyInList);
 
-    std::string final=   "state StateShowLobbyDetails\nare you sure to join this lobby?\npress enter to join.\n\nlobby=\n\n" + lobbyAsText;
+    std::string final= "Are you sure to join this lobby?\n" + lobbyAsText;
     initSimpleText(fontPath,final);
 
-    buttonConfirm.init("Join",200.0,200.0, sf::Color::Black, sf::Color::White, 60,30, 22);
-    buttonCancel.init("Cancel",400.0,200.0, sf::Color::Black, sf::Color::White, 60,30, 22);
+    setSimpleTextPosition(340.0,50.0);
+    buttonConfirm.init("   Join",340.0,700.0, sf::Color::White, sf::Color::White, 60,30, 22);
+    buttonCancel.init("  Cancel",540.0,700.0, sf::Color::White, sf::Color::White, 60,30, 22);
   }
 
 

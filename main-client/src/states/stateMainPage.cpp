@@ -170,12 +170,12 @@ namespace FluffyMultiplayer
     }
 
     //print lobby
-    std::cout << "\ndataSeparator(lobby list) result=";
-    for(int i=0; i<MS_GET_LOBBY_LIST_LOBBY_FILEDS-1; i++)
-    {
-      std::cout << result[i] << "\t";
-    }
-    std::cout << std::endl;
+    // std::cout << "\ndataSeparator(lobby list) result=";
+    // for(int i=0; i<MS_GET_LOBBY_LIST_LOBBY_FILEDS-1; i++)
+    // {
+      // std::cout << result[i] << "\t";
+    // }
+    // std::cout << std::endl;
 
     return result;
   }
@@ -189,25 +189,25 @@ namespace FluffyMultiplayer
     //set game mode textures list
     lobbyGameModeTexturePathList = GAME_MODE_TEXTURE_LIST;
 
-    float ytools = 25.0;
+    float ytools = 27.5;
 
     //text inputs
     inputFocus = &lobbyIdInput;
-    lobbyIdInput.init("","","lobby id","enter lobby id to join", 27.0, ytools);
+    lobbyIdInput.init("",""," Lobby Id:","enter lobby id to join", 27.0, ytools);
 
     //buttons
-    buttonSubmitLobbyId.init("join", 297.0,ytools, sf::Color::Black, sf::Color::White, 60,30, 22);
+    buttonSubmitLobbyId.init("   Join", 305.0,ytools, sf::Color::White, sf::Color::White, 30,30, 22);
 
-    buttonCreateLobby.init("create-lobby", 566.0,ytools, sf::Color::Black,sf::Color::White, 60,30, 22);
+    buttonCreateLobby.init("  Create", 566.0,ytools, sf::Color::White,sf::Color::White, 70,30, 22);
 
-    buttonLogout.init("LogOut", PICTURE_BUTTON_LOGOUT_TEXTURE , 772.0,ytools, sf::Color::Black,sf::Color::White, 18);
-    buttonRefreshLobbyList.init("Refresh\nlobby\nlist", PICTURE_BUTTON_REFRESH_LOBBY_LIST_TEXTURE , 867.0,ytools, sf::Color::Black,sf::Color::White, 18);
-    buttonQuit.init("quit", PICTURE_BUTTON_QUIT_TEXTURE, 946.0,ytools, sf::Color::Black,sf::Color::White, 18);
+    buttonLogout.init("", PICTURE_BUTTON_LOGOUT_TEXTURE , 772.0,ytools, sf::Color::White,sf::Color::White, 18);
+    buttonRefreshLobbyList.init("", PICTURE_BUTTON_REFRESH_LOBBY_LIST_TEXTURE , 858.0,ytools, sf::Color::White,sf::Color::White, 18);
+    buttonQuit.init("", PICTURE_BUTTON_QUIT_TEXTURE, 946.0,ytools, sf::Color::White,sf::Color::White, 18);
 
 
     //line
-    line[0] = sf::Vertex(sf::Vector2f(0 , ytools+80));
-    line[1] = sf::Vertex(sf::Vector2f(998, ytools+80));
+    line[0] = sf::Vertex(sf::Vector2f(0 , ytools+70));
+    line[1] = sf::Vertex(sf::Vector2f(998, ytools+70));
 
 
 
@@ -240,7 +240,7 @@ namespace FluffyMultiplayer
     int index=0;
     int spaceBetweenCell = 20;
     int eachCellSize = 186 + spaceBetweenCell;
-    int window_x[2] = {0, 813}; //min, max
+    int window_x[2] = {50, 813}; //min, max
     int window_y[2] = {110, 813}; //min, max
 
     for(int y=window_y[0]; y<window_y[1] ; y+=eachCellSize)
@@ -289,7 +289,7 @@ namespace FluffyMultiplayer
       {
         return new FluffyMultiplayer::StateWaitForResponse
         (
-          "wait.. refresh lobby list..",
+          "Wait.. refresh lobby list..",
           std::to_string(MC_REQUEST_GET_LOBBY_LIST),
           this,
           new FluffyMultiplayer::StateMainPage,
@@ -308,7 +308,6 @@ namespace FluffyMultiplayer
           if(lobbyCells[i].getButtonBound().contains(mousePosition))
           {
             clickedLobby = lobbyCells[i].getLobbyData();
-            std::cout << "clicked on lobby from lobby list lobby id=" << clickedLobby.id << "\taddress=" << clickedLobby.address.ip << ":" <<clickedLobby.address.port << std::endl;
             return new FluffyMultiplayer::StateShowLobbyDetails(clickedLobby);
           }
         }

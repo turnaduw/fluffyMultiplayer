@@ -64,10 +64,12 @@ namespace FluffyMultiplayer
       std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
       text = "Wait for response:\n"+ _text;
       initSimpleText(fontPath, text);
+      setSimpleTextPosition(350.0, 190.0);
 
       timeouttxt.setFont(theFont);
-      timeouttxt.setString("timedout press enter to retry.");
-      buttonRetry.init("Retry", 200.0,200.0, sf::Color::Black,sf::Color::White, 60,30, 22);
+      timeouttxt.setString("Timedout press enter to retry.");
+      timeouttxt.setPosition(340.0, 190.0);
+      buttonRetry.init("  Retry", 420.0,300.0, sf::Color::Black,sf::Color::White, 60,30, 22);
     }
 
 
@@ -117,10 +119,12 @@ namespace FluffyMultiplayer
       std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
       text = "Wait for response:\n"+ _text;
       initSimpleText(fontPath, text);
+      setSimpleTextPosition(350.0, 190.0);
 
       timeouttxt.setFont(theFont);
-      timeouttxt.setString("timedout press enter to retry.");
-      buttonRetry.init("Retry", 200.0,200.0, sf::Color::Black,sf::Color::White, 60,30, 22);
+      timeouttxt.setString("Timedout press enter to retry.");
+      timeouttxt.setPosition(340.0, 190.0);
+      buttonRetry.init("  Retry", 420.0,300.0, sf::Color::Black,sf::Color::White, 60,30, 22);
     }
 
 
@@ -174,10 +178,12 @@ namespace FluffyMultiplayer
         std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
         text = "Wait for response:\n"+ _text;
         initSimpleText(fontPath, text);
+        setSimpleTextPosition(350.0, 190.0);
 
         timeouttxt.setFont(theFont);
-        timeouttxt.setString("timedout press enter to retry.");
-        buttonRetry.init("Retry", 200.0,200.0, sf::Color::Black,sf::Color::White, 60,30, 22);
+        timeouttxt.setString("Timedout press enter to retry.");
+        timeouttxt.setPosition(340.0, 190.0);
+        buttonRetry.init("  Retry", 420.0,300.0, sf::Color::Black,sf::Color::White, 60,30, 22);
       }
 
 
@@ -235,10 +241,12 @@ namespace FluffyMultiplayer
         std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
         text = "Wait for response:\n"+ _text;
         initSimpleText(fontPath, text);
+        setSimpleTextPosition(350.0, 190.0);
 
         timeouttxt.setFont(theFont);
-        timeouttxt.setString("timedout press enter to retry.");
-        buttonRetry.init("Retry", 200.0,200.0, sf::Color::Black,sf::Color::White, 60,30, 22);
+        timeouttxt.setString("Timedout press enter to retry.");
+        timeouttxt.setPosition(340.0, 190.0);
+        buttonRetry.init("  Retry", 420.0,300.0, sf::Color::Black,sf::Color::White, 60,30, 22);
       }
 
 
@@ -267,10 +275,12 @@ namespace FluffyMultiplayer
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
     text = "Wait for response:\n"+ _text;
     initSimpleText(fontPath, text);
+    setSimpleTextPosition(350.0, 190.0);
 
     timeouttxt.setFont(theFont);
-    timeouttxt.setString("timedout press enter to retry.");
-    buttonRetry.init("Retry", 200.0,200.0, sf::Color::Black,sf::Color::White, 60,30, 22);
+    timeouttxt.setString("Timedout press enter to retry.");
+    timeouttxt.setPosition(340.0, 190.0);
+    buttonRetry.init("  Retry", 420.0,300.0, sf::Color::Black,sf::Color::White, 60,30, 22);
   }
 
   StateWaitForResponse::StateWaitForResponse(std::string _text,
@@ -287,10 +297,12 @@ namespace FluffyMultiplayer
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
     text = "Wait for response:\n"+ _text;
     initSimpleText(fontPath, text);
+    setSimpleTextPosition(350.0, 190.0);
 
     timeouttxt.setFont(theFont);
-    timeouttxt.setString("timedout press enter to retry.");
-    buttonRetry.init("Retry", 200.0,200.0, sf::Color::Black,sf::Color::White, 60,30, 22);
+    timeouttxt.setString("Timedout press enter to retry.");
+    timeouttxt.setPosition(340.0, 190.0);
+    buttonRetry.init("  Retry", 420.0,300.0, sf::Color::Black,sf::Color::White, 60,30, 22);
   }
 
 

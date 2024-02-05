@@ -29,7 +29,7 @@ namespace FluffyMultiplayer
       FluffyMultiplayer::Icon iconVoiceChatStatus;
       FluffyMultiplayer::Icon iconTextChatStatus;
       FluffyMultiplayer::Icon iconSpecterStatus;
-      FluffyMultiplayer::Icon iconLockedStatus;
+      // FluffyMultiplayer::Icon iconLockedStatus;
       FluffyMultiplayer::IconText iconTextPlayers;
       FluffyMultiplayer::Text textInGameStatus;
       FluffyMultiplayer::Icon iconPrivateLobby;
@@ -131,6 +131,7 @@ namespace FluffyMultiplayer
             (
               std::string
               (
+                " " +
                 std::to_string(lobbyInfo.currentPlayers)
                 + "/" +
                 std::to_string(lobbyInfo.maxPlayers)
@@ -152,12 +153,12 @@ namespace FluffyMultiplayer
 
             if(lobbyInfo.isLocked)
             {
-              iconLockedStatus.initIcon
-              (
-                LOBBY_CELL_INFO_LOCKED_LOBBY_TEXTURE,
-                x LOBBY_CELL_LOCKED_STATUS_PADDING_X,
-                y LOBBY_CELL_LOCKED_STATUS_PADDING_Y
-              );
+              // iconLockedStatus.initIcon
+              // (
+              //   LOBBY_CELL_INFO_LOCKED_LOBBY_TEXTURE,
+              //   x LOBBY_CELL_LOCKED_STATUS_PADDING_X,
+              //   y LOBBY_CELL_LOCKED_STATUS_PADDING_Y
+              // );
             }
 
             iconGameMode.initIcon
@@ -212,7 +213,7 @@ namespace FluffyMultiplayer
             iconSpecterStatus.render(window);
             iconTextPlayers.render(window);
             textInGameStatus.render(window);
-            iconLockedStatus.render(window);
+            // iconLockedStatus.render(window);
             iconGameMode.render(window);
           }
           else //if lobby is disabled to report status just draw this

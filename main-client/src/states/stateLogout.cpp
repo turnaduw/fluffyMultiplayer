@@ -5,9 +5,10 @@ namespace FluffyMultiplayer
   StateLogout::StateLogout()
   {
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
-    initSimpleText(fontPath, "state logout\nare you sure to logout?\npress enter to confirm others to cancel.");
-    buttonConfirm.init("ok, Confirm", 200.0,200.0, sf::Color::Black,sf::Color::White, 60,30, 22);
-    buttonCancel.init("Cancel", 400.0,200.0, sf::Color::Black,sf::Color::White, 60,30, 22);
+    initSimpleText(fontPath, "Are you sure to logout?");
+    setSimpleTextPosition(395.0, 300.0);
+    buttonConfirm.init("Logout", 340.0,370.0, sf::Color::White,sf::Color::White, 60,30, 22);
+    buttonCancel.init("Cancel", 540.0,370.0, sf::Color::White,sf::Color::White, 60,30, 22);
   }
 
   StateLogout::~StateLogout()
