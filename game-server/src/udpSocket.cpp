@@ -55,11 +55,20 @@ namespace FluffyMultiplayer
     for(int i=0; i<currentItem.receivers->size();i++)
     {
       if(currentItem.except != nullptr)
+      {
         for(int j=0; j<currentItem.except->size();j++)
-          if(currentItem.receivers[i] == currentItem.except[j]) //skip this client
+        {
+          //skip this client (this is sender or from exception list)
+          if((*currentItem.receivers)[i].address == (*currentItem.except)[j].address)
+          {
             continue;
+          }
           else
+          {
             sendDirect(currentItem.data, (*currentItem.receivers)[i].address,true,0);
+          }
+        }
+      }
       else //there is no exception send to all
         sendDirect(currentItem.data, (*currentItem.receivers)[i].address,true,0);
     }
