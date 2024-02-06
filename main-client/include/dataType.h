@@ -1,6 +1,7 @@
 #ifndef H_MAIN_CLIENT_DATA_TYPE
 #define H_MAIN_CLIENT_DATA_TYPE
 #include <boost/asio.hpp>
+using boost::asio::ip::udp;
 
 namespace FluffyMultiplayer
 {
@@ -8,6 +9,11 @@ namespace FluffyMultiplayer
   {
     boost::asio::ip::address ip;
     unsigned short port;
+    void setFrom(const std::string& str, unsigned short _port)
+    {
+      ip = boost::asio::ip::address::from_string(str);
+      port = _port;
+    }
   };
   struct LobbyData
   {

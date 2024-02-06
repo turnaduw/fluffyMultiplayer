@@ -38,7 +38,6 @@ namespace FluffyMultiplayer
 
     std::string getIdentityFromResponsedData(const std::string& _data,std::string delimter,std::string closer);
     std::string getServerAddressFromResponseData(const std::string& _data,std::string delimiter,std::string closer);
-    std::string getLobbyFromResponseData(const std::string& _data,std::string delimiter,std::string closer);
 
     //login form
     FluffyMultiplayer::LoginFormData* loginData_ptr;
@@ -54,7 +53,7 @@ namespace FluffyMultiplayer
 
 
     FluffyMultiplayer::Button buttonRetry;
-    
+
     //mouse event handel variable to delecre once, not per loop delcre
     sf::Vector2f mousePosition;
 

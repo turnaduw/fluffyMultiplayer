@@ -58,6 +58,8 @@ namespace FluffyMultiplayer
   {
     closeButton.init("Quit",340.0,370.0, sf::Color::White, sf::Color::White, 60,30, 22);
     backButton.init("Back",540.0,370.0, sf::Color::White, sf::Color::White, 60,30, 22);
+    std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
+    initSimpleText(fontPath, "Game has been launched.");
     setSimpleTextPosition(395.0, 300.0);
 
     isGameLaunched=false;

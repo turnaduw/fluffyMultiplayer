@@ -19,12 +19,15 @@ namespace FluffyMultiplayer
     //mouse event handel variable to delecre once, not per loop delcre
     sf::Vector2f mousePosition;
 
-    
+
     std::string lobbyAsText;
-    std::string dataSeparator(std::string&, std::string);
+    std::vector<std::string> dataSeparator(std::string&, std::string);
     std::vector<int> dataIndexes(const std::string&, const std::string&) const;
 
+    FluffyMultiplayer::AnAddress stringToAnAddress(const std::string& lData);
     std::string boolToString(bool);
+    bool stringToBool(const std::string&);
+    int stringToInt(const std::string&);
   public:
     StateShowLobbyDetails(FluffyMultiplayer::LobbyData);
     StateShowLobbyDetails(std::string);

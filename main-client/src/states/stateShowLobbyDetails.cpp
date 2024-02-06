@@ -37,6 +37,31 @@ namespace FluffyMultiplayer
 
 
 
+  int StateShowLobbyDetails::stringToInt(const std::string& str)
+  {
+    const char* c = str.c_str();
+    return std::atoi(c);
+  }
+  bool StateShowLobbyDetails::stringToBool(const std::string& str)
+  {
+    const char* c = str.c_str();
+    return static_cast<bool>(std::atoi(c));
+  }
+
+
+  FluffyMultiplayer::AnAddress StateShowLobbyDetails::stringToAnAddress(const std::string& str)
+  {
+    std::vector<int> indexesIp = dataIndexes(str,MC_IP_PORT_SEPARATOR);
+
+    std::string ipReceived = str.substr(0,indexesIp[0]);
+    std::string portReceived = str.substr(indexesIp[0]+1,str.length());
+    std::cout << "stringToAnAddress() -> ipReceived=" << ipReceived << "\tportReceived="<< portReceived << std::endl;
+    unsigned short portFromString = static_cast<unsigned short>(stringToInt(portReceived));
+
+    FluffyMultiplayer::AnAddress temp;
+    temp.setFrom(ipReceived,portFromString);
+    return temp;
+  }
 
   std::vector<int> StateShowLobbyDetails::dataIndexes(const std::string& data, const std::string& delimiter) const
   {
@@ -60,50 +85,79 @@ namespace FluffyMultiplayer
 
     return result;
   }
-  std::string StateShowLobbyDetails::dataSeparator(std::string& data, std::string delimiter)
+
+  std::vector<std::string> StateShowLobbyDetails::dataSeparator(std::string& data, std::string delimiter)
   {
-    std::string res;
-    std::array<std::string,MS_GET_LOBBY_LIST_LOBBY_FILEDS> result;
+    int startIndex=0;
+    std::vector<std::string> result;
+    std::string str = data.substr(startIndex,data.length()-1);
 
-    std::vector<int>indexes = dataIndexes(data,delimiter);
-    int index;
-    for(int i=0; i<MS_GET_LOBBY_LIST_LOBBY_FILEDS-1; i++)
+    std::vector<int>indexes = dataIndexes(str,delimiter);
+    for(int i=0; i<indexes.size(); i++)
     {
-      index = indexes[i];
-      result[i] = data.substr(0,index);
-      data = data.substr(index+delimiter.length() ,data.length());
+      int index=indexes[i];
+
+      result.push_back(str.substr(0,index));
+      str = str.substr(index+delimiter.length() ,str.length()-1);
     }
-
-    res = "------------------------------------------------";
-    res += "\nis lobby locked:" +  result[0];
-    res += "\nis voice chat forbidden:" +  result[1];
-    res += "\nis text chat forbidden:" +  result[2];
-    res += "\nis specter forbidden:" +  result[3];
-    res += "\nis lobby in-game:" +  result[4];
-    res += "\nlobby will show in lobbyList: " + result[5];
-    res += "\nlobby id: " + result[6];
-    res += "\nlobby maxplayers: " + result[7];
-    res += "\nlobby currentplayers: " +result[8];
-    res += "\nlobby gameMode: " + result[9];
-    res += "\nlobby address: " + result[10];
-
-    return res;
+    return result;
   }
 
 
   StateShowLobbyDetails::StateShowLobbyDetails(std::string selectedLobbyStr)
   {
     //convert string to lobby
-    lobbyAsText = dataSeparator(selectedLobbyStr,MC_REQUEST_DELIMITER);
+    std::vector<std::string>lData = dataSeparator(selectedLobbyStr,MC_REQUEST_DELIMITER);
 
-    std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
+    std::cout << "StateShowLobbyDetails(string) ldata.size=" << lData.size() << std::endl;
+    std::cout << "StateShowLobbyDetails(string) ldata=\n";
+    for(auto l: lData)
+    {
+        std::cout << l << std::endl;
+    }
 
+    if(lData.size()>=11)
+    {
+      //set on lobby
+      FluffyMultiplayer::LobbyData receivedLobby
+      {
+        stringToBool(lData[0]),
+        stringToBool(lData[1]),
+        stringToBool(lData[2]),
+        stringToBool(lData[3]),
+        stringToBool(lData[4]),
+        stringToBool(lData[5]),
+        stringToInt(lData[6]),
+        stringToInt(lData[7]),
+        stringToInt(lData[8]),
+        stringToInt(lData[9]),
+        stringToAnAddress(lData[10])
+      };
 
-    std::string final=   "state StateShowLobbyDetails\nare you sure to join this lobby?\npress enter to join.\n\nlobby=\n\n" + lobbyAsText;
-    initSimpleText(fontPath,final);
+      lobby = receivedLobby;
+      std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
+      // lobbyAsText = "------------------------------------------------";
+      lobbyAsText += "\nLobby Id: " + std::to_string(receivedLobby.id);
+      lobbyAsText += "\n\nLobby Max players: " + std::to_string(receivedLobby.maxPlayers);
+      lobbyAsText += "\n\nLobby Current Players: " + std::to_string(receivedLobby.currentPlayers);
+      lobbyAsText += "\n\nLobby Game Mode: " + std::to_string(receivedLobby.gameMode);
+      lobbyAsText += "\n\nLobby Address: " + receivedLobby.address.ip.to_string() + ":" + std::to_string(receivedLobby.address.port);
+      lobbyAsText += "\n\nIs Lobby Locked: " + boolToString(receivedLobby.isLocked);
+      lobbyAsText += "\n\nIs Voice Chat Forbidden: " + boolToString(receivedLobby.isVoiceChatForbidden);
+      lobbyAsText += "\n\nIs Text Chat Forbidden: " + boolToString(receivedLobby.isTextChatForbidden);
+      lobbyAsText += "\n\nIs Specter Forbidden: " + boolToString(receivedLobby.isSpecterForbidden);
+      lobbyAsText += "\n\nIs Lobby In-game: " + boolToString(receivedLobby.lobbyStatusInGame);
+      lobbyAsText += "\n\nReport To LobbyList: " + boolToString(receivedLobby.showLobbyInList);
 
-    buttonConfirm.init("Join",200.0,200.0, sf::Color::Black, sf::Color::White, 60,30, 22);
-    buttonCancel.init("Cancel",400.0,200.0, sf::Color::Black, sf::Color::White, 60,30, 22);
+      std::string final= "Are you sure to join this lobby?\n" + lobbyAsText;
+      initSimpleText(fontPath,final);
+
+      setSimpleTextPosition(340.0,50.0);
+      buttonConfirm.init("   Join",340.0,700.0, sf::Color::White, sf::Color::White, 60,30, 22);
+      buttonCancel.init("  Cancel",540.0,700.0, sf::Color::White, sf::Color::White, 60,30, 22);
+    }
+    else
+      std::cout << "StateShowLobbyDetails(string) input is small size=" << lData.size() << std::endl;
   }
 
   StateShowLobbyDetails::~StateShowLobbyDetails()
