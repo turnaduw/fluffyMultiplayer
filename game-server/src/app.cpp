@@ -527,12 +527,21 @@ namespace FluffyMultiplayer
                     {
                       log.print("client version is ok.",FluffyMultiplayer::LogType::Information);
 
+
+
                       //get client info by identity
                       db.queryStr="SELECT clientId FROM fm_client_login WHERE identity='";
                       db.queryStr+= cData[0] + "';";
                       int cId = stringToInt(db.search_in_db(db.queryStr,true));
                       if(cId>=1) //is client exsits?
                       {
+                        //check for old connected with that id and kick them out,
+                        //e.g player timedout and connected again we have to remove that old one from player lists
+                        if(isIdExistsInLobby(cId))
+                        {
+                          kickOutPlayerFromLobby(cId);
+                        }
+
                         //check for ban by id
                         if(isIdBannedFromLobby(cId))
                         {
@@ -582,15 +591,6 @@ namespace FluffyMultiplayer
                             response(sendTextDataList, RESPONSE_YOU_ARE_JOINT_INTO_LOBBY,currentItem.sender);
 
 
-                            //tell sender his information and others information
-                            response(sendTextDataList, RESPONSE_LOBBY_PLAYERS_ARE,
-                                  "joint into lobby and your data is =.. + lobbyData + lobbyPlayers + ...",
-                                  currentItem.sender);
-
-
-                            //if game is on report game data.. for specters or reconnecter player
-                            //...
-
 
                             //broadcast to in lobby client joint except that connected player
                             std::vector<FluffyMultiplayer::Player> exceptSenderList
@@ -611,6 +611,67 @@ namespace FluffyMultiplayer
                             playerConnectedStr += MS_DATA_DELIMITER;
                             playerConnectedStr += std::to_string(static_cast<int>(tempPlayer.voiceChatEnable));
                             playerConnectedStr += MS_DATA_DELIMITER;
+
+
+                            //package old players into a string
+                            std::string oldPlayers;
+                            for(int i=0; i< inLobbyPlayers.size(); i++)
+                            {
+                              if(inLobbyPlayers[i].id == tempPlayer.id)
+                                continue;//skip this player were added (becuase its that player who new connected must be first)
+                              else
+                              {
+                                oldPlayers += std::to_string(inLobbyPlayers[i].id);
+                                oldPlayers += MS_DATA_DELIMITER;
+                                oldPlayers += inLobbyPlayers[i].name;
+                                oldPlayers += MS_DATA_DELIMITER;
+                                oldPlayers += std::to_string(static_cast<int>(inLobbyPlayers[i].isOwner));
+                                oldPlayers += MS_DATA_DELIMITER;
+                                oldPlayers += std::to_string(static_cast<int>(inLobbyPlayers[i].isAdmin));
+                                oldPlayers += MS_DATA_DELIMITER;
+                                oldPlayers += std::to_string(static_cast<int>(inLobbyPlayers[i].isSpecter));
+                                oldPlayers += MS_DATA_DELIMITER;
+                                oldPlayers += std::to_string(static_cast<int>(inLobbyPlayers[i].voiceChatEnable));
+                                oldPlayers += MS_DATA_DELIMITER;
+                              }
+                            }
+
+                            //package specters into a string
+                            for(int i=0; i< lobbySpecters.size(); i++)
+                            {
+                              if(lobbySpecters[i].id == tempPlayer.id)
+                                continue;//skip this player were added (becuase its that player who new connected must be first)
+                              else
+                              {
+                                oldPlayers += std::to_string(lobbySpecters[i].id);
+                                oldPlayers += MS_DATA_DELIMITER;
+                                oldPlayers += lobbySpecters[i].name;
+                                oldPlayers += MS_DATA_DELIMITER;
+                                oldPlayers += std::to_string(static_cast<int>(lobbySpecters[i].isOwner));
+                                oldPlayers += MS_DATA_DELIMITER;
+                                oldPlayers += std::to_string(static_cast<int>(lobbySpecters[i].isAdmin));
+                                oldPlayers += MS_DATA_DELIMITER;
+                                oldPlayers += std::to_string(static_cast<int>(lobbySpecters[i].isSpecter));
+                                oldPlayers += MS_DATA_DELIMITER;
+                                oldPlayers += std::to_string(static_cast<int>(lobbySpecters[i].voiceChatEnable));
+                                oldPlayers += MS_DATA_DELIMITER;
+                              }
+                            }
+
+
+
+                            //playerConnectedStr must hold only that newly conencted player because needs to send that into others just that new one player.
+                            oldPlayers = playerConnectedStr + oldPlayers;
+
+                            //tell sender his information and others information
+                            response(sendTextDataList, RESPONSE_LOBBY_PLAYERS_ARE,
+                              oldPlayers, //first player is that client conected new, other is players in lobby then specters
+                              currentItem.sender);
+
+
+                            //if game is on report game data.. for specters or reconnecter player
+                            //...
+
 
                             //broadcast to inlobby players except sender
                             response(sendTextDataList, RESPONSE_PLAYER_JOINT_INTO_LOBBY,
@@ -953,6 +1014,44 @@ namespace FluffyMultiplayer
 
     //remove processed element
     receivedTextDataList.pop();
+  }
+
+  bool App::isIdExistsInLobby(int id)
+  {
+    for(auto player: inLobbyPlayers)
+      if(player.id == id)
+        return true;
+
+    for(auto specter: lobbySpecters)
+      if(specter.id == id)
+        return true;
+
+    return false;
+  }
+
+  void App::kickOutPlayerFromLobby(int id)
+  {
+    for(int i=0; i<inLobbyPlayers.size(); i++)
+    {
+      if(inLobbyPlayers[i].id == id)
+      {
+        inLobbyPlayers.erase(inLobbyPlayers.begin()+i);
+        log.print("player found and kicked Out Player From Lobby.", FluffyMultiplayer::LogType::Information);
+        return;
+      }
+    }
+
+    for(int i=0; i<lobbySpecters; i++)
+    {
+      if(lobbySpecters[i].id == id)
+      {
+        lobbySpecters.erase(lobbySpecters.begin()+i);
+        log.print("specter found and kicked Out Player From Lobby.", FluffyMultiplayer::LogType::Information);
+        return;
+      }
+    }
+
+    log.print("player/specter not found to kickOutPlayerFromLobby", FluffyMultiplayer::LogType::Information);
   }
 
   void App::processVoice()

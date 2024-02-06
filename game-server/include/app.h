@@ -14,6 +14,8 @@
 #include "dataBase.h"
 #include "log.h"
 
+//remove from vector
+#include<bits/stdc++.h>
 
 
 #include "lobby-request-response-list.h"
@@ -129,6 +131,8 @@ namespace FluffyMultiplayer
       int getSenderId(const FluffyMultiplayer::AnAddress&) const;
       void prepareData(FluffyMultiplayer::SocketReceiveData&);
       bool isPlayerOwner(int);
+      bool isIdExistsInLobby(int);
+      void kickOutPlayerFromLobby(int);
 
       //lobby
       bool startGame();
