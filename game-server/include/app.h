@@ -36,7 +36,7 @@ namespace FluffyMultiplayer
 
       FluffyMultiplayer::LobbyData lobbyData;
       FluffyMultiplayer::GameMode* currentGameMode;
-      bool gameIsRunning; //a flag stop or start game
+      bool gameIsRunning; //a flag stop or start game, and know that joint user is player in lobby or specter
       bool appIsRunning; //a flag close or continue app
 
       //receive and send data.
@@ -128,6 +128,7 @@ namespace FluffyMultiplayer
       FluffyMultiplayer::AnAddress getPlayerAddressById(const int&) const;
       int getSenderId(const FluffyMultiplayer::AnAddress&) const;
       void prepareData(FluffyMultiplayer::SocketReceiveData&);
+      bool isPlayerOwner(int);
 
       //lobby
       bool startGame();

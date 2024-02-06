@@ -236,9 +236,17 @@ namespace FluffyMultiplayer
     switch (lobbyData.gameMode)
     {
       case 1:
-        currentGameMode = new FluffyMultiplayer::GameModeMensch((*this)); break;
+      {
+        log.print("selected gameMode is Mensch", FluffyMultiplayer::LogType::Information);
+        currentGameMode = new FluffyMultiplayer::GameModeMensch((*this));
+      }break;
+
       default:
-        currentGameMode = nullptr; break;
+      {
+        log.print("unknown lobby gameMode... gm-code="+std::to_string(lobbyData.gameMode),
+                  FluffyMultiplayer::LogType::Warning);
+        currentGameMode = nullptr;
+      }break;
     }
   }
 
@@ -371,9 +379,15 @@ namespace FluffyMultiplayer
         e.voiceChatEnable=status;
   }
 
+  bool App::isPlayerOwner(int pid)
+  {
+    if(pid == lobbyData.ownerId)
+      return true;
+    return false;
+  }
+
   void App::processText()
   {
-    std::cout << "processText called\n";
     FluffyMultiplayer::SocketReceiveData currentItem;
     log.print("[text] receivedTextDataList.size()="+std::to_string(receivedTextDataList.size()), FluffyMultiplayer::LogType::Information);
 
@@ -501,74 +515,135 @@ namespace FluffyMultiplayer
             }break;
 
 
-            case REQUEST_JOIN_TO_LOBBY: // player will send cData = [0]->(identity), [1]->(password)
+            case REQUEST_JOIN_TO_LOBBY: // player will send cData = [0]->(identity), [1]->(password), [2]->(his client version)
             {
                 if(cData[1] == lobbyData.password)
                 {
-                  log.print("password passed.",FluffyMultiplayer::LogType::Information);
+                  log.print("client entered password correctly.",FluffyMultiplayer::LogType::Information);
                   if(ds.isIdentityValid(cData[0]))
                   {
-                    //get client info by identity
-                    db.queryStr="SELECT clientId FROM fm_client_login WHERE identity='";
-                    db.queryStr+= cData[0] + "';";
-                    int cId = stringToInt(db.search_in_db(db.queryStr,true));
-                    if(cId>=1) //is client exsits?
+                    log.print("client identity is valid.",FluffyMultiplayer::LogType::Information);
+                    if(cData[2] == GAME_SERVER_VERSION)
                     {
-                      //check for ban by id
-                      if(isIdBannedFromLobby(cId))
+                      log.print("client version is ok.",FluffyMultiplayer::LogType::Information);
+
+                      //get client info by identity
+                      db.queryStr="SELECT clientId FROM fm_client_login WHERE identity='";
+                      db.queryStr+= cData[0] + "';";
+                      int cId = stringToInt(db.search_in_db(db.queryStr,true));
+                      if(cId>=1) //is client exsits?
                       {
-                        response(sendTextDataList, RESPONSE_ERROR_JOIN_LOBBY_YOU_ARE_BANNED,currentItem.sender);
-                      }
-                      else
-                      {
-                        //try to add client into lobby.
-                        db.queryStr="INSERT OR REPLACE INTO fm_client_in_lobby (clientId,lobbyId) VALUES('";
-                        db.queryStr+= std::to_string(cId) + "', '";
-                        db.queryStr+= std::to_string(lobbyData.id) + "');";
-                        if(db.query_to_db())
+                        //check for ban by id
+                        if(isIdBannedFromLobby(cId))
                         {
-                          //increase currentplayers
-                          lobbyData.currentPlayers++;
-
-                          //get client info
-                          db.queryStr="SELECT username FROM fm_client WHERE id='";
-                          db.queryStr+= std::to_string(cId) + "';";
-                          std::string cUsername = db.search_in_db(db.queryStr,true);
-
-                          db.queryStr="SELECT isAdmin FROM fm_client WHERE id='";
-                          db.queryStr+= std::to_string(cId) + "';";
-                          bool cIsAdmin = stringToBool(db.search_in_db(db.queryStr,true));
-
-                          //add to inLobbyPlayers
-                          tempPlayer.set(cId,cData[0],currentItem.sender,cUsername,cIsAdmin);
-                          inLobbyPlayers.push_back(tempPlayer);
-
-                          //tell sender his id
-                          response(sendTextDataList, RESPONSE_YOU_ARE_JOINT_INTO_LOBBY,"joint into lobby and your data is =.. + lobbyData + lobbyPlayers + ...",currentItem.sender);
-
-                          //broadcast to in lobby client joint
-                          response(sendTextDataList, RESPONSE_PLAYER_JOINT_INTO_LOBBY,"player joint in lobby his info=..",&inLobbyPlayers,nullptr);
-
-                          //broadcast to speceter
-                          if(lobbySpecters.size()>=1)
-                          {
-                            response(sendTextDataList, RESPONSE_PLAYER_JOINT_INTO_LOBBY,"player joint in lobby his info=..",&lobbySpecters,nullptr);
-                          }
-
+                          response(sendTextDataList, RESPONSE_ERROR_JOIN_LOBBY_YOU_ARE_BANNED,currentItem.sender);
                         }
                         else
                         {
-                          //faield to join lobby maybe client is already in lobby or have some databse insert issue
-                          // RESPONSE_ERROR_JOIN_LOBBY_YOU_ARE_ALREADY_JOINT -> because of using INSERT OR REPLACE INTO this problem solved for many cases
-                          response(sendTextDataList, RESPONSE_INTERNAL_ERROR_FAILED_TO_JOIN_INTO_LOBBY,currentItem.sender);
-                        }
-                      }
+                          //try to add client into lobby.
+                          db.queryStr="INSERT OR REPLACE INTO fm_client_in_lobby (clientId,lobbyId) VALUES('";
+                          db.queryStr+= std::to_string(cId) + "', '";
+                          db.queryStr+= std::to_string(lobbyData.id) + "');";
+                          if(db.query_to_db())
+                          {
+                            //increase currentplayers
+                            lobbyData.currentPlayers++;
 
+                            //get client info
+                            db.queryStr="SELECT username FROM fm_client WHERE id='";
+                            db.queryStr+= std::to_string(cId) + "';";
+                            std::string cUsername = db.search_in_db(db.queryStr,true);
+
+                            db.queryStr="SELECT isAdmin FROM fm_client WHERE id='";
+                            db.queryStr+= std::to_string(cId) + "';";
+                            bool cIsAdmin = stringToBool(db.search_in_db(db.queryStr,true));
+
+                            //set connected player as tempplayer (this will push into list specter or in lobby)
+                            tempPlayer.set(cId,cData[0],currentItem.sender,
+                                      cUsername,cIsAdmin,isPlayerOwner(cId),gameIsRunning);
+
+                            //check that connected is player in lobby (inGame) or as specter
+                            if(gameIsRunning)
+                            {
+                              log.print("player added into lobby as SPECTER.",FluffyMultiplayer::LogType::Information);
+                              lobbySpecters.push_back(tempPlayer);
+                            }
+                            else
+                            {
+                              log.print("player added into lobby as PLAYER.",FluffyMultiplayer::LogType::Information);
+                              inLobbyPlayers.push_back(tempPlayer);
+                            }
+                            std::string serverStatusPrint = "\n----------------------------\nserver status:\ntotal connected:" + std::to_string(connectedPlayers.size());
+                            serverStatusPrint += "\n players in lobby:" +  std::to_string(inLobbyPlayers.size());
+                            serverStatusPrint += "\n players as specter:" +  std::to_string(lobbySpecters.size());
+                            log.print(serverStatusPrint, FluffyMultiplayer::LogType::Information);
+
+                            //tell sender ur accepted but this response will popout and that client has no access to data because will pop() from WaitForResponse due to Pointers and States
+                            response(sendTextDataList, RESPONSE_YOU_ARE_JOINT_INTO_LOBBY,currentItem.sender);
+
+
+                            //tell sender his information and others information
+                            response(sendTextDataList, RESPONSE_LOBBY_PLAYERS_ARE,
+                                  "joint into lobby and your data is =.. + lobbyData + lobbyPlayers + ...",
+                                  currentItem.sender);
+
+
+                            //if game is on report game data.. for specters or reconnecter player
+                            //...
+
+
+                            //broadcast to in lobby client joint except that connected player
+                            std::vector<FluffyMultiplayer::Player> exceptSenderList
+                            {
+                              tempPlayer
+                            };
+
+                            //package connected player information: id, name, isOwner, isAdmin, isSpecter, voiceChatStatus
+                            std::string playerConnectedStr = std::to_string(tempPlayer.id);
+                            playerConnectedStr += MS_DATA_DELIMITER;
+                            playerConnectedStr += tempPlayer.name;
+                            playerConnectedStr += MS_DATA_DELIMITER;
+                            playerConnectedStr += std::to_string(static_cast<int>(tempPlayer.isOwner));
+                            playerConnectedStr += MS_DATA_DELIMITER;
+                            playerConnectedStr += std::to_string(static_cast<int>(tempPlayer.isAdmin));
+                            playerConnectedStr += MS_DATA_DELIMITER;
+                            playerConnectedStr += std::to_string(static_cast<int>(tempPlayer.isSpecter));
+                            playerConnectedStr += MS_DATA_DELIMITER;
+                            playerConnectedStr += std::to_string(static_cast<int>(tempPlayer.voiceChatEnable));
+                            playerConnectedStr += MS_DATA_DELIMITER;
+
+                            //broadcast to inlobby players except sender
+                            response(sendTextDataList, RESPONSE_PLAYER_JOINT_INTO_LOBBY,
+                                     playerConnectedStr,&inLobbyPlayers,&exceptSenderList);
+
+                            //broadcast to speceters except sender
+                            if(lobbySpecters.size()>=1)
+                            {
+                              response(sendTextDataList, RESPONSE_PLAYER_JOINT_INTO_LOBBY,
+                                       playerConnectedStr,&lobbySpecters,&exceptSenderList);
+                            }
+
+                          }
+                          else
+                          {
+                            //faield to join lobby maybe client is already in lobby or have some databse insert issue
+                            // RESPONSE_ERROR_JOIN_LOBBY_YOU_ARE_ALREADY_JOINT -> because of using INSERT OR REPLACE INTO this problem solved for many cases
+                            response(sendTextDataList, RESPONSE_INTERNAL_ERROR_FAILED_TO_JOIN_INTO_LOBBY,currentItem.sender);
+                          }
+                        }
+
+                      }
+                      else
+                      {
+                        //id is <=0 so invalid. player not found -> invalid identity
+                        response(sendTextDataList, RESPONSE_ERROR_JOIN_LOBBY_INVALID_IDENTITY,currentItem.sender);
+                      }
                     }
                     else
                     {
-                      //id is <=0 so invalid. player not found -> invalid identity
-                      response(sendTextDataList, RESPONSE_ERROR_JOIN_LOBBY_INVALID_IDENTITY,currentItem.sender);
+                      std::string strVersionError = "client version is out of date. entered version: "+  cData[2];
+                      log.print(strVersionError,FluffyMultiplayer::LogType::Information);
+                      response(sendTextDataList, RESPONSE_ERROR_YOUR_GAME_CLIENT_VERSION_IS_OUT_OF_DATE,currentItem.sender);
                     }
                   }
                   else
@@ -796,50 +871,6 @@ namespace FluffyMultiplayer
             }
             }break;
 
-            /*case REQUEST_TRANSFER_LOBBY_OWNERSHIP: //client will send: [0]->(targetId)
-            {
-              if(doesItHavePermission(currentItem.sender))
-              {
-                int targetId=stringToInt(cData[0]);
-                if(isPlayerIdExistsOnLobby(targetId))
-                {
-                  db.queryStr = "UPDATE fm_lobby SET owner='";
-                  db.queryStr+= std::to_string(targetId) + "' WHERE id='";
-                  db.queryStr+= std::to_string(lobbyData.id) + "';";
-                  if(db.query_to_db())
-                  {
-                    lobbyData.ownerId=targetId;
-
-                    log.print("lobby owner changed to ("+std::to_string(targetId), FluffyMultiplayer::LogType::Information);
-
-                    std::string responseStr = std::to_string(targetId) + MS_DATA_DELIMITER;
-
-                    //broadcast to inLobbyPlayers, player has been kicked from lobby
-                    response(sendTextDataList, REQUEST_TRANSFER_LOBBY_OWNERSHIP,responseStr,&inLobbyPlayers,nullptr);
-
-                    //broadcast to specters, player has been kicked from lobby
-                    if(lobbySpecters.size()>=1)
-                    {
-                      response(sendTextDataList, REQUEST_TRANSFER_LOBBY_OWNERSHIP,responseStr,&lobbySpecters,nullptr);
-                    }
-                  }
-                  else
-                  {
-                    response(sendTextDataList, RESPONSE_INTERNAL_ERROR_FAILED_TO_TRANSFER_LOBBY_OWNERSHIP,currentItem.sender);
-                  }
-                }
-                else
-                {
-                  response(sendTextDataList, RESPONSE_ERROR_TRANSFER_OWNERSHIP_INVALID_TARGET,currentItem.sender);
-                }
-
-              }
-              else
-              {
-                response(sendTextDataList, RESPONSE_ERROR_TRANSFER_OWNERSHIP_NO_PERMISSION,currentItem.sender);
-              }
-            }break;*/
-
             case REQUEST_SEND_TEXT_CHAT: //client will send: [0]->(messageText)
             {
               if(lobbyData.isTextChatForbidden)
@@ -863,6 +894,8 @@ namespace FluffyMultiplayer
             }break;
 
             //NOTE case REQUEST_SEND_VOICE_CHAT: moved into processVoice()
+
+
             case REQUEST_ENABLE_DISABLE_VOICE_CHAT:
             {
               int cid = getSenderId(currentItem.sender);
@@ -908,7 +941,7 @@ namespace FluffyMultiplayer
               else
               {
                 log.print("unknown request code and game running = false (not started or paused)", FluffyMultiplayer::LogType::Warning);
-                response(sendTextDataList, RESPONSE_UNKNOWN_REQUESST_GAME_PAUSED_OR_NOT_STARTED,currentItem.sender);
+                response(sendTextDataList, RESPONSE_UNKNOWN_REQUEST_GAME_PAUSED_OR_NOT_STARTED,currentItem.sender);
               }
             }
 

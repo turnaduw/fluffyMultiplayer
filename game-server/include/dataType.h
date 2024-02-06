@@ -36,7 +36,7 @@ namespace FluffyMultiplayer
         return true;
       return false;
     }
-    std::string getAsString()
+    std::string getAsString() const
     {
       return ip.to_string() + ":" + std::to_string(port);
     }
@@ -78,6 +78,8 @@ namespace FluffyMultiplayer
     FluffyMultiplayer::AnAddress address;
     FluffyMultiplayer::TimeAndDate connectedTime;
     bool voiceChatEnable;
+    bool isOwner;
+    bool isSpecter;
 
     bool operator ==(const FluffyMultiplayer::Player& p) const
     {
@@ -91,6 +93,8 @@ namespace FluffyMultiplayer
         FluffyMultiplayer::AnAddress _address,
         std::string _name=DEFAULT_PLAYER_NAME,
         bool _isAdmin=false,
+        bool _isOwner=false,
+        bool _isSpecter=false,
         bool _voiceChatEnable=DEFAULT_PLAYER_VOICE_ENABLE,
         FluffyMultiplayer::TimeAndDate _connectedTime=FluffyMultiplayer::TimeAndDate::now())
     {
@@ -99,6 +103,8 @@ namespace FluffyMultiplayer
       name=_name;
       isAdmin=_isAdmin;
       address=_address;
+      isOwner=_isOwner;
+      isSpecter=_isSpecter;
       connectedTime=_connectedTime;
       voiceChatEnable=_voiceChatEnable;
     }
