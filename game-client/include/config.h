@@ -1,6 +1,7 @@
 #ifndef H_MAIN_CLIENT_CONFIG_FILE
 #define H_MAIN_CLIENT_CONFIG_FILE
 
+#define GAME_CLIENT_VERSION "2.0.0"
 //MC means MainClient
 
 //window

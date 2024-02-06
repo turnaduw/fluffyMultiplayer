@@ -40,7 +40,10 @@ namespace FluffyMultiplayer
   FluffyMultiplayer::AppState* StateJoinLobby::formFinishedResult(FluffyMultiplayer::App& app)
   {
     entered_password = passwordInput.getEnteredText();
-    std::string _data = app.getIdentity() + std::string(MS_DATA_DELIMITER) + entered_password;
+    std::string _data = app.getIdentity() + std::string(MS_DATA_DELIMITER); //identity
+    _data += entered_password + std::string(MS_DATA_DELIMITER); //password
+    _data += GAME_CLIENT_VERSION + std::string(MS_DATA_DELIMITER); //version
+
     app.addSendText(REQUEST_JOIN_TO_LOBBY,_data);
 
 
