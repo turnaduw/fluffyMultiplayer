@@ -940,8 +940,8 @@ namespace FluffyMultiplayer
               }
               else
               {
-                  std::string responseStr = getPlayerUsernameById(getSenderId(currentItem.sender)) +
-                                              ": " + cData[0] + "\n";
+                  std::string responseStr = getPlayerUsernameById(getSenderId(currentItem.sender)) + ": " + cData[0] + "\n";
+                  log.print(responseStr, FluffyMultiplayer::LogType::Information);
 
                   //broadcast  new text message.. to inLobbyPlayers
                   response(sendTextDataList, RESPONSE_PLAYER_SENT_TEXT_MESSAGE,responseStr,&inLobbyPlayers,nullptr);
@@ -960,24 +960,31 @@ namespace FluffyMultiplayer
             case REQUEST_ENABLE_DISABLE_VOICE_CHAT:
             {
               int cid = getSenderId(currentItem.sender);
+              int responseCode = 0;
               if(cid>=1)
               {
                 int pindex = getIndexPlayerInLobbyByAddress(currentItem.sender);
                 if(inLobbyPlayers[pindex].voiceChatEnable)
+                {
                   updatePlayerVoiceChatStatus(cid,false);
+                  responseCode = RESPONSE_PLAYER_VOICE_CHAT_DISABLED;
+                }
                 else
+                {
                   updatePlayerVoiceChatStatus(cid,true);
+                  responseCode = RESPONSE_PLAYER_VOICE_CHAT_ENABLED;
+                }
               }
 
                 std::string responseStr = std::to_string(cid) + MS_DATA_DELIMITER; //later can write reason and ban time to tell other clients
 
                 //broadcast to inLobbyPlayers, player has been kicked from lobby
-                response(sendTextDataList, RESPONSE_PLAYER_VOICE_CHAT_ENABLED,responseStr,&inLobbyPlayers,nullptr);
+                response(sendTextDataList, responseCode,responseStr,&inLobbyPlayers,nullptr);
 
                 //broadcast to specters, player has been kicked from lobby
                 if(lobbySpecters.size()>=1)
                 {
-                  response(sendTextDataList, RESPONSE_PLAYER_VOICE_CHAT_ENABLED,responseStr,&lobbySpecters,nullptr);
+                  response(sendTextDataList, responseCode,responseStr,&lobbySpecters,nullptr);
                 }
 
             }break;
@@ -1041,7 +1048,7 @@ namespace FluffyMultiplayer
       }
     }
 
-    for(int i=0; i<lobbySpecters; i++)
+    for(int i=0; i<lobbySpecters.size(); i++)
     {
       if(lobbySpecters[i].id == id)
       {
