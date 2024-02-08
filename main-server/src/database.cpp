@@ -677,10 +677,10 @@ namespace FluffyMultiplayer
              if(query_to_db(basic_query))
              {
                //get create lobby id via owner id, add that owner id into lobby
-               basic_query = "INSERT INTO fm_client_in_lobby ( clientId, lobbyId ) VALUES('";
-               basic_query += std::to_string(ownerId) + "', (SELECT  id FROM fm_lobby WHERE owner='";
-               basic_query += std::to_string(ownerId) + "'));";
-               if(query_to_db(basic_query))
+               // basic_query = "INSERT INTO fm_client_in_lobby ( clientId, lobbyId ) VALUES('";
+               // basic_query += std::to_string(ownerId) + "', (SELECT  id FROM fm_lobby WHERE owner='";
+               // basic_query += std::to_string(ownerId) + "'));";
+               // if(query_to_db(basic_query))
                {
                  //get lobby address
                  outputServerIpPort = getLobbyInfoByOwnerId(ownerId);
@@ -738,8 +738,8 @@ namespace FluffyMultiplayer
                   return MS_RESPONSE_SUCCESS_LOBBY_CREATED;
                 }
                }
-               else
-                return MS_ERROR_FAILED_TO_CREATE_LOBBY;//failed to add client into lobby
+               // else
+               //  return MS_ERROR_FAILED_TO_CREATE_LOBBY;//failed to add client into lobby
              }
              else
                return MS_ERROR_FAILED_TO_CREATE_LOBBY; //failed to insert lobby
