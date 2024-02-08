@@ -447,7 +447,14 @@ namespace FluffyMultiplayer
           //add to connected list
           if(connectPlayer(currentItem.sender))
           {
-            response(RESPONSE_CONNECTION_ACCEPTED, currentItem.sender, false);
+            if(lobbyData.maxPlayers==lobbyData.currentPlayers)
+            {
+              response(RESPONSE_ERROR_LOBBY_IS_FULL, currentItem.sender, false);
+            }
+            else
+            {
+              response(RESPONSE_CONNECTION_ACCEPTED, currentItem.sender, false);
+            }
           }
           else
           {
