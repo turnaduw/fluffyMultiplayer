@@ -5,6 +5,7 @@
 #include <iostream>
 #include "../config.h"
 #include "uiComponent.h"
+#include <string>
 
 namespace FluffyMultiplayer
 {
@@ -14,6 +15,7 @@ namespace FluffyMultiplayer
       sf::Font textFont;
       sf::Text textText;
       float x,y;
+      std::string textValue;
     public:
       void setTextPosition(float _x, float _y)
       {
@@ -22,8 +24,20 @@ namespace FluffyMultiplayer
         textText.setPosition(x,y);
       }
 
+      int getLength() const
+      {
+        return textValue.length();
+      }
+
+      void appendToText(std::string str)
+      {
+        textValue+=str;
+        textText.setString(textValue);
+      }
+
       void setText(std::string str)
       {
+        textValue=str;
         textText.setString(str);
       }
 

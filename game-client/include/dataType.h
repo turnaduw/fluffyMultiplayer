@@ -80,6 +80,9 @@ namespace FluffyMultiplayer
     std::string name; //same username
     bool isAdmin;
     bool voiceChatEnable;
+    bool isOwner;
+    bool isSpecter;
+    bool isMe;
 
     bool operator ==(const FluffyMultiplayer::Player& p) const
     {
@@ -91,12 +94,18 @@ namespace FluffyMultiplayer
     void set(int _id,
         std::string _name=DEFAULT_PLAYER_NAME,
         bool _isAdmin=false,
-        bool _voiceChatEnable=DEFAULT_PLAYER_VOICE_ENABLE)
+        bool _voiceChatEnable=DEFAULT_PLAYER_VOICE_ENABLE,
+        bool _isOwner=false,
+        bool _isSpecter=false,
+        bool _isMe=false)
     {
       id=_id;
       name=_name;
       isAdmin=_isAdmin;
       voiceChatEnable=_voiceChatEnable;
+      isOwner=_isOwner;
+      isSpecter=_isSpecter;
+      isMe=_isMe;
     }
   };
 

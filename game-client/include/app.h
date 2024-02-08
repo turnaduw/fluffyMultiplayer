@@ -42,7 +42,6 @@ namespace FluffyMultiplayer
   class App
   {
     private:
-      bool gameIsRunning; //a flag stop or start game
       bool appIsRunning; //a flag close or continue app
 
       FluffyMultiplayer::DataSecurity ds;
@@ -67,6 +66,8 @@ namespace FluffyMultiplayer
       void receiveData();
 
     public:
+      bool gameIsRunning; //a flag stop or start game
+      
       bool inLobby;
       FluffyMultiplayer::Log log;
       FluffyMultiplayer::GameMode* currentGameMode;

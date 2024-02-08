@@ -26,9 +26,15 @@ namespace FluffyMultiplayer
   {
   private:
     //userinterface
-    std::array<FluffyMultiplayer::PlayerList,MAX_PLAYERS_IN_LOBBY> playerList;
-    // std::vector<FluffyMultiplayer::PlayerList> playerList;
+    std::vector<FluffyMultiplayer::Player> players;
+    FluffyMultiplayer::Player tempPlayer; //to avoid delecre everytime a player.
 
+    std::array<FluffyMultiplayer::PlayerList,MAX_PLAYERS_IN_LOBBY> playerList;
+
+
+    FluffyMultiplayer::Text textChat;
+
+    
     //mouse event handel variable to delecre once, not per loop delcre
     sf::Vector2f mousePosition;
 
@@ -40,6 +46,8 @@ namespace FluffyMultiplayer
     FluffyMultiplayer::TextInput chatInput;
     FluffyMultiplayer::PictureButton sendChatButton;
 
+    bool stringToBool(const std::string&);
+    int stringToInt(const std::string&);
 
     void sendChat(FluffyMultiplayer::App& app); //to avoid duplicate code for send chat
 
