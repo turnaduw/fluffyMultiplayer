@@ -50,8 +50,8 @@ namespace FluffyMultiplayer
       std::queue<FluffyMultiplayer::SocketReceiveData> receivedVoiceDataList;
       std::queue<FluffyMultiplayer::SocketSendData> sendVoiceDataList;
 
-      boost::mutex socketMutex;
-
+      boost::mutex sendTextDataListMutex;
+      boost::mutex sendVoiceDataListMutex;
 
       /*to avoid create every time an object from type
         e.g: SocketSendData while want push into queue<SocketSendData> create once here*/
@@ -90,22 +90,26 @@ namespace FluffyMultiplayer
       void processText();
 
 
-      void safePushToList(std::queue<FluffyMultiplayer::SocketSendData>& list);
-      void response(std::queue<FluffyMultiplayer::SocketSendData>& list, int code,
-                    FluffyMultiplayer::AnAddress receiver);
+      void safePushToList(bool);
+      void response(int code,
+                    FluffyMultiplayer::AnAddress receiver,
+                    bool isVoiceData);
 
-      void response(std::queue<FluffyMultiplayer::SocketSendData>& list, int code,
-                    std::string data, FluffyMultiplayer::AnAddress receiver);
+      void response(int code,
+                    std::string data, FluffyMultiplayer::AnAddress receiver,
+                    bool isVoiceData);
 
 
-      void response(std::queue<FluffyMultiplayer::SocketSendData>& list, int code,
+      void response(int code,
                     const std::vector<FluffyMultiplayer::Player>* receivers,
-                    const std::vector<FluffyMultiplayer::Player>* except);
+                    const std::vector<FluffyMultiplayer::Player>* except,
+                    bool isVoiceData);
 
 
-      void response(std::queue<FluffyMultiplayer::SocketSendData>& list, int code, std::string data,
+      void response(int code, std::string data,
                     const std::vector<FluffyMultiplayer::Player>* receivers,
-                    const std::vector<FluffyMultiplayer::Player>* except);
+                    const std::vector<FluffyMultiplayer::Player>* except,
+                    bool isVoiceData);
 
 
       //connection

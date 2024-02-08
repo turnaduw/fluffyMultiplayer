@@ -206,11 +206,11 @@ namespace FluffyMultiplayer
       void broadCast(FluffyMultiplayer::App& app,
                 int code, std::string data,bool alsoToSpecters=false)
       {
-        app.response(app.sendTextDataList, code, data, &app.inLobbyPlayers,nullptr);
+        app.response(code, data, &app.inLobbyPlayers,nullptr, false);
 
         if(alsoToSpecters)
         {
-          app.response(app.sendTextDataList, code, data, &app.lobbySpecters,nullptr);
+          app.response(code, data, &app.lobbySpecters,nullptr, false);
         }
       }
 
