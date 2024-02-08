@@ -1,5 +1,5 @@
 #!/bin/bash
-compileMain="main.cpp ./include/*.h ./include/gameModes/*.h ./src/*.cpp -o gs.run -std=c++11 -lboost_regex -lboost_system -lboost_filesystem -lboost_thread -lboost_chrono -lsqlite3"
+compileMain="main.cpp ./include/*.h ./include/gameModes/*.h ./src/*.cpp -o gs.run -std=c++11 -lboost_regex -lboost_system -lboost_filesystem -lboost_thread -lsqlite3"
 PS3="Select compile type: "
 select compileMode in normal debug run runViaGDB
 do

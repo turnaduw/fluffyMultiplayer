@@ -69,7 +69,6 @@ namespace FluffyMultiplayer
       FluffyMultiplayer::SocketReceiveData unpackData(std::string&); //remove request code and last delimiter and closer from received data
 
     public:
-      boost::thread threadSend;
       boost::thread threadReceive;
 
 

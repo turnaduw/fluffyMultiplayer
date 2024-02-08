@@ -8,56 +8,50 @@ namespace FluffyMultiplayer
   void App::sendData()
   {
     FluffyMultiplayer::SocketSendData currentItem;
-    while(true)
+    try
     {
-      try
-      {
 
-        {//lock and unlock mutex for send Text (in this case dont wait for whole function ends to unlock)
-          //lock mutex for socket to avoid segment fault or data corruption.
-          boost::lock_guard<boost::mutex> lock(sendTextDataListMutex);
+      {//lock and unlock mutex for send Text (in this case dont wait for whole function ends to unlock)
+        //lock mutex for socket to avoid segment fault or data corruption.
+        boost::lock_guard<boost::mutex> lock(sendTextDataListMutex);
 
-          //text data
-          if(sendTextDataList.size()>=1) //on that socket self will check socketStatus before send
-          {
-            currentItem = sendTextDataList.front();
-            ds.encryptData(currentItem.data);
+        //text data
+        if(sendTextDataList.size()>=1) //on that socket self will check socketStatus before send
+        {
+          currentItem = sendTextDataList.front();
+          ds.encryptData(currentItem.data);
 
-            socketText->send(currentItem);
+          socketText->send(currentItem);
 
-            //remove proceessed element
-            sendTextDataList.pop();
-          }
+          //remove proceessed element
+          sendTextDataList.pop();
         }
+      }
 
 
 
-        {//lock and unlock mutex for send voice (in this case dont wait for whole function ends to unlock)
-          //voice data
+      {//lock and unlock mutex for send voice (in this case dont wait for whole function ends to unlock)
+        //voice data
 
-          boost::lock_guard<boost::mutex> lock(sendVoiceDataListMutex);
+        boost::lock_guard<boost::mutex> lock(sendVoiceDataListMutex);
 
-          if(sendVoiceDataList.size()>=1) //on that socket self will check socketStatus before send
-          {
-            currentItem = sendVoiceDataList.front();
-            ds.encryptData(currentItem.data);
+        if(sendVoiceDataList.size()>=1) //on that socket self will check socketStatus before send
+        {
+          currentItem = sendVoiceDataList.front();
+          ds.encryptData(currentItem.data);
 
-            socketVoice->send(currentItem);
+          socketVoice->send(currentItem);
 
-            //remove proccessed element
-            sendVoiceDataList.pop();
-          }
+          //remove proccessed element
+          sendVoiceDataList.pop();
         }
+      }
 
-        // Sleep for 10 milliseconds to make space for others to push into list.
-        boost::this_thread::sleep_for(boost::chrono::milliseconds(10));
-      }
-      catch (std::exception& e)
-      {
-          std::string errorMsg = e.what();
-          log.print("from App::sendData catched exception: "+errorMsg, FluffyMultiplayer::LogType::Warning);
-          continue;
-      }
+    }
+    catch (std::exception& e)
+    {
+      std::string errorMsg = e.what();
+      log.print("from App::sendData catched exception: "+errorMsg, FluffyMultiplayer::LogType::Warning);
     }
   }
 
@@ -182,6 +176,9 @@ namespace FluffyMultiplayer
       boost::lock_guard<boost::mutex> lock(sendTextDataListMutex);
       sendTextDataList.push(sendTemp);
     }
+
+    //call that method to check send lists then use socket to send data,
+    sendData();
   }
 
 
@@ -237,16 +234,18 @@ namespace FluffyMultiplayer
     blockedAddresses.push_back({"0.0.0.0",0});
 
     lobbyData = _lobby;
+    log.print("currentplayers="+std::to_string(lobbyData.currentPlayers), FluffyMultiplayer::LogType::Information);
+
     currentGameMode=nullptr;
     gameIsRunning=false;
     appIsRunning=true; //a flag close or continue app while loop
 
-    threadSend = boost::thread(&FluffyMultiplayer::App::sendData, this);
     threadReceive = boost::thread(&FluffyMultiplayer::App::receiveData, this);
 
     socketText = new FluffyMultiplayer::UdpSocket(io_context_text, _lobby.textPort, MC_RECEIVE_BUFFER_TEXT);
     socketVoice = new FluffyMultiplayer::UdpSocket(io_context_voice, _lobby.voicePort, MC_RECEIVE_BUFFER_VOICE);
 
+    //here we can not make condition to check isTextChatForbidden becuase we using this socket also to send application/game data, beside textchat
     socketText->enable();
 
     if(!lobbyData.isVoiceChatForbidden)
@@ -447,14 +446,7 @@ namespace FluffyMultiplayer
           //add to connected list
           if(connectPlayer(currentItem.sender))
           {
-            if(lobbyData.maxPlayers==lobbyData.currentPlayers)
-            {
-              response(RESPONSE_ERROR_LOBBY_IS_FULL, currentItem.sender, false);
-            }
-            else
-            {
-              response(RESPONSE_CONNECTION_ACCEPTED, currentItem.sender, false);
-            }
+            response(RESPONSE_CONNECTION_ACCEPTED, currentItem.sender, false);
           }
           else
           {
@@ -572,7 +564,13 @@ namespace FluffyMultiplayer
                           kickOutPlayerFromLobby(cId);
                         }
 
-                        //check for ban by id
+                        //check for ban and lobby size
+                        // if(lobbyData.currentPlayers>=lobbyData.maxPlayers)
+                        // {
+                          // std::string lobbyFullstr = " lobby is full, current-players:" + std::to_string(lobbyData.currentPlayers) + " max-players:" + std::to_string(lobbyData.maxPlayers);
+                          // log.print(lobbyFullstr,FluffyMultiplayer::LogType::Information);
+                          // response(RESPONSE_ERROR_LOBBY_IS_FULL, currentItem.sender, false);
+                        // }
                         if(isIdBannedFromLobby(cId))
                         {
                           response(RESPONSE_ERROR_JOIN_LOBBY_YOU_ARE_BANNED,currentItem.sender, false);
