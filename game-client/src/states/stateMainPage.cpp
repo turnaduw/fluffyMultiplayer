@@ -19,10 +19,10 @@ namespace FluffyMultiplayer
 
 
     inputFocus = &chatInput;
-    textChat.initText(" Text Chat:\n",27.0, 450.0);
+    textChat.initText("",27.0, 450.0);
     textChat.setFontSize(15);
-    chatInput.init("",""," chat:","enter text", 27.0, 700.0);
-    sendChatButton.init("", ICON_SEND , 250.0, 700.0, sf::Color::White,sf::Color::White, 12);
+    chatInput.init("",""," chat:","enter text", 27.0, 725.0);
+    sendChatButton.init("", ICON_SEND , 300.0, 725.0, sf::Color::White,sf::Color::White, 12);
 
     for(int i=0; i<MAX_PLAYERS_IN_LOBBY; i++)
     {
@@ -242,11 +242,14 @@ namespace FluffyMultiplayer
 
           case RESPONSE_PLAYER_SENT_TEXT_MESSAGE:
           {
-            textChatLines++;
             //limit lenght textbox
             if(textChatLines>TEXT_CHAT_BOX_MAXIMUM_LINES)
+            {
               textChat.setText("");//clear
+              textChatLines=0;
+            }
 
+            textChatLines++;
             textChat.appendToText(cData[0]);
           }break;
 
