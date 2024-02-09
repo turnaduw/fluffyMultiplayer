@@ -221,7 +221,6 @@ namespace FluffyMultiplayer
           enteredString.erase(std::remove(enteredString.begin(), enteredString.end(), '\n'), enteredString.cend()); //enter (feed line)
           enteredString.erase(std::remove(enteredString.begin(), enteredString.end(), '\t'), enteredString.cend()); //tab
           enteredString.erase(std::remove(enteredString.begin(), enteredString.end(), '\e'), enteredString.cend()); //escape
-          enteredString.erase(std::remove(enteredString.begin(), enteredString.end(), ' '), enteredString.cend()); //space
       }
 
       void enablePlaceholder()
