@@ -26,7 +26,7 @@ namespace FluffyMultiplayer
 
     for(int i=0; i<MAX_PLAYERS_IN_LOBBY; i++)
     {
-      playerList[i].init(i,PLAYERS_LOBBY_EMPTY_SLOT_NAME,27.0, i*PLAYER_LIST_BOX_PER_PLAYER_Y, false,false,false,false,false);
+      playerList[i].init(i,PLAYERS_LOBBY_EMPTY_SLOT_NAME,PLAYER_LIST_X, i*PLAYER_LIST_BOX_PER_PLAYER_Y, false,false,false,false,false);
     }
   }
 
@@ -197,7 +197,7 @@ namespace FluffyMultiplayer
               {
                 if(playerList[i].getName() == PLAYERS_LOBBY_EMPTY_SLOT_NAME)
                 {
-                  playerList[i].init(id,name,0.0,i*PLAYER_LIST_BOX_PER_PLAYER_Y,false,voiceChat,owner,specter,admin);//false is for IsMe (this is another player always is false)
+                  playerList[i].init(id,name,PLAYER_LIST_X,i*PLAYER_LIST_BOX_PER_PLAYER_Y,false,voiceChat,owner,specter,admin);//false is for IsMe (this is another player always is false)
                   break;
                 }
               }

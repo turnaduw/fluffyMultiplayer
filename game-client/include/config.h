@@ -241,6 +241,7 @@
 
 
 #define PLAYER_LIST_BOX_PER_PLAYER_Y 50.0
+#define PLAYER_LIST_X 27.0
 //player list paddings
 #define PLAYER_LIST_ID_PADDING_X +0.0
 #define PLAYER_LIST_ID_PADDING_Y +5.0
