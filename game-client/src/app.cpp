@@ -175,14 +175,14 @@ namespace FluffyMultiplayer
     //init log
     log.init(APP_LOG_FILENAME,APP_PRINT_LOGS_LEVEL);
 
-    log.print("app init.", FluffyMultiplayer::LogType::Information);
+    log.print("game init.", FluffyMultiplayer::LogType::Information);
     lobby = new FluffyMultiplayer::LobbyData;
 
     lobby->address.set(_server);
     identity = _identity;
 
-    log.print("app lobby address=."+lobby->address.getAsString(), FluffyMultiplayer::LogType::Information);
-    log.print("app identity=."+identity, FluffyMultiplayer::LogType::Information);
+    log.print("game lobby address=."+lobby->address.getAsString(), FluffyMultiplayer::LogType::Information);
+    log.print("game identity=."+identity, FluffyMultiplayer::LogType::Information);
 
 
     appIsRunning=true;
@@ -211,13 +211,13 @@ namespace FluffyMultiplayer
   }
   void App::close()
   {
-    log.print("app has been safely closed.", FluffyMultiplayer::LogType::Information);
+    log.print("game has been safely closed.", FluffyMultiplayer::LogType::Information);
     appWindow.close();
   }
 
   void App::run()
   {
-    log.print("app run.", FluffyMultiplayer::LogType::Information);
+    log.print("game run.", FluffyMultiplayer::LogType::Information);
     while (appWindow.isOpen())
     {
        // Event processing

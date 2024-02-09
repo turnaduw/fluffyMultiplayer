@@ -5,12 +5,13 @@ namespace FluffyMultiplayer
   StateMainPage::StateMainPage(FluffyMultiplayer::App& app)
   {
     std::cout << "statemainPage constructor called=======================\n";
-    app.currentGameMode = new FluffyMultiplayer::GM_MENSCH(app.appWindow,app.lobby);
+    // app.currentGameMode = new FluffyMultiplayer::GM_MENSCH(app.appWindow,app.lobby);
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
-    std::string txttemp = "lobbyid:???";//+std::to_string(app.lobby->id);
+    std::string txttemp = "";//+std::to_string(app.lobby->id);
     initSimpleText(fontPath, txttemp);
     setSimpleTextPosition(27.5, 27.5);
 
+    textChatLines=0;
 
     pauseResumeGameButton.init("pause\nresume", ICON_PAUSE , 772.0, 27.5, sf::Color::White,sf::Color::White, 12);
     lobbySettingsButton.init("settings", ICON_SETTINGS , 858.0, 27.5, sf::Color::White,sf::Color::White, 12);
@@ -18,9 +19,15 @@ namespace FluffyMultiplayer
 
 
     inputFocus = &chatInput;
-    textChat.initText(" Text Chat:\n",27.0, 400.0);
-    chatInput.init("",""," chat:","enter text", 27.0, 800.0);
-    sendChatButton.init("send", ICON_SEND , 200.0, 800.0, sf::Color::White,sf::Color::White, 12);
+    textChat.initText(" Text Chat:\n",27.0, 450.0);
+    textChat.setFontSize(15);
+    chatInput.init("",""," chat:","enter text", 27.0, 700.0);
+    sendChatButton.init("", ICON_SEND , 250.0, 700.0, sf::Color::White,sf::Color::White, 12);
+
+    for(int i=0; i<MAX_PLAYERS_IN_LOBBY; i++)
+    {
+      playerList[i].init(i,PLAYERS_LOBBY_EMPTY_SLOT_NAME,27.0, i*PLAYER_LIST_BOX_PER_PLAYER_Y, false,false,false,false,false);
+    }
   }
 
   StateMainPage::~StateMainPage()
@@ -101,7 +108,7 @@ namespace FluffyMultiplayer
         currentItem = app.receivedTextDataList.front();
         cData = dataSeparator(currentItem.data, MS_DATA_DELIMITER);
 
-
+        app.log.print("update called, currentItem.Code="+std::to_string(currentItem.code), FluffyMultiplayer::LogType::Information);
 
         switch(currentItem.code)
         {
@@ -185,7 +192,15 @@ namespace FluffyMultiplayer
             }
             else
             {
-              playerList[players.size()-1].init(id,name,0.0,PLAYER_LIST_BOX_PER_PLAYER_Y*playerList.size(),false,voiceChat,owner,specter,admin);
+              //check for empty slot
+              for(int i=0; i<MAX_PLAYERS_IN_LOBBY; i++)
+              {
+                if(playerList[i].getName() == PLAYERS_LOBBY_EMPTY_SLOT_NAME)
+                {
+                  playerList[i].init(id,name,0.0,i*PLAYER_LIST_BOX_PER_PLAYER_Y,false,voiceChat,owner,specter,admin);//false is for IsMe (this is another player always is false)
+                  break;
+                }
+              }
             }
 
 
@@ -227,13 +242,12 @@ namespace FluffyMultiplayer
 
           case RESPONSE_PLAYER_SENT_TEXT_MESSAGE:
           {
-            std::cout << "receied text message:" << cData[0] << std::endl;
-
+            textChatLines++;
             //limit lenght textbox
-            if(textChat.getLength()>TEXT_CHAT_BOX_MAXIMUM_LENGTH)
-            textChat.setText("");//clear
+            if(textChatLines>TEXT_CHAT_BOX_MAXIMUM_LINES)
+              textChat.setText("");//clear
 
-            textChat.appendToText(cData[0]+"\n");
+            textChat.appendToText(cData[0]);
           }break;
 
           case RESPONSE_PLAYER_CONNECTION_LOST:
@@ -289,9 +303,18 @@ namespace FluffyMultiplayer
 
               tempPlayer.set(id,name,admin,voiceChat,owner,specter,isme); //this is another players evertime isMe is false (only first item is me when connected and receied player data)
               players.push_back(tempPlayer);
-              playerList[players.size()-1].init(id,name,0.0,0.0,isme,voiceChat,owner,specter,admin);
+
+
+              //check for empty slot and place current player
+              for(int i=0; i<MAX_PLAYERS_IN_LOBBY; i++)
+              {
+                if(playerList[i].getName() == PLAYERS_LOBBY_EMPTY_SLOT_NAME)
+                {
+                  playerList[i].init(id,name,0.0,i*PLAYER_LIST_BOX_PER_PLAYER_Y,isme,voiceChat,owner,specter,admin);
+                  break;
+                }
+              }
             }
-            std::cout << "after add ALL OLD  Players IN LOBBY ,playerList.size=" << playerList.size() << std::endl;
 
           }break;
 
@@ -299,7 +322,7 @@ namespace FluffyMultiplayer
           {
             //apply commands from server into client game
             if(app.currentGameMode!=nullptr && app.gameIsRunning)
-            app.currentGameMode->update(currentItem.code,cData);
+              app.currentGameMode->update(currentItem.code,cData);
             else
             std::cout << "gameMode is null and received response code =" << currentItem.code << std::endl;
           }
@@ -310,10 +333,10 @@ namespace FluffyMultiplayer
         app.receivedTextDataList.pop();
       }
     }
-    else
-    {
-      std::cout << "ELSEEE update main state size receivedTextDataList is < 1, size=" << app.receivedTextDataList.size()  << std::endl;
-    }
+    // else
+    // {
+    //   std::cout << "ELSEEE update main state size receivedTextDataList is < 1, size=" << app.receivedTextDataList.size()  << std::endl;
+    // }
 
 
     return this;

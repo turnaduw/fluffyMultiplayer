@@ -97,7 +97,7 @@ namespace FluffyMultiplayer
       id=-1;
       position.x=M_DEAD_POSITION_X;
       position.y=M_DEAD_POSITION_Y;
-      pb.init("piece",ICON_PIECE,position.x,position.y,
+      pb.init("",ICON_PIECE,position.x,position.y,
               sf::Color::Black,sf::Color::White,10);
     }
     void init(int _id, float x, float y, sf::Color piece_color)
@@ -206,8 +206,8 @@ namespace FluffyMultiplayer
       position.x = DFEAULT_DICE_X;
       position.y = DEFAULT_DICE_Y;
       texturesPath = DICE_TEXTURES;
-      // pb.init("dice",texturesPath[value],position.x,position.y);
-      pb.init("dice","gmMensch-dice2.png",position.x,position.y);
+      pb.init("",texturesPath[value],position.x,position.y);
+      // pb.init("dice","gmMensch-dice2.png",position.x,position.y);
     }
 
     void setPosition(float x, float y)
@@ -222,7 +222,7 @@ namespace FluffyMultiplayer
       if(number>=MINIMUM_DICE_VALUE && number<=MAXIMUM_DICE_VALUE)
       {
         value=number;
-        pb.init("dice",texturesPath[value],position.x,position.y);
+        pb.init("",texturesPath[value],position.x,position.y);
       }
       else
         std::cout << "invalid dice value" << std::endl;

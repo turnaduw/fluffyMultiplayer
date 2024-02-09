@@ -43,7 +43,8 @@ namespace FluffyMultiplayer
   {
     private:
       bool appIsRunning; //a flag close or continue app
-
+      int textChatLines; //a counter holds number of text message lines received
+      int playersAddedToPlayerList;//a counter holds count of players added into lobbyPlayers, we have array so we cant know which index is for next player
       FluffyMultiplayer::DataSecurity ds;
 
       std::string identity;
@@ -67,7 +68,7 @@ namespace FluffyMultiplayer
 
     public:
       bool gameIsRunning; //a flag stop or start game
-      
+
       bool inLobby;
       FluffyMultiplayer::Log log;
       FluffyMultiplayer::GameMode* currentGameMode;

@@ -5,9 +5,9 @@
 //MC means MainClient
 
 //window
-#define WINDOW_WIDTH 1824
-#define WINDOW_HEIGHT 1080
-#define WINDOW_TITLE "Fluffy Multiplayer App"
+#define WINDOW_WIDTH 1000
+#define WINDOW_HEIGHT 800
+#define WINDOW_TITLE "Fluffy Multiplayer Lobby"
 #define WINDOW_STYLE sf::Style::Default
 #define WINDOW_MAX_FPS 60
 
@@ -20,7 +20,7 @@
 #define DEFAULT_PLAYER_VOICE_ENABLE false
 
 
-#define APP_LOG_FILENAME "app.log"
+#define APP_LOG_FILENAME "game.log"
 #define APP_PRINT_LOGS_LEVEL FluffyMultiplayer::LogType::All
 
 #define SOCKET_LOG_FILENAME "socket.log"
@@ -102,6 +102,7 @@
 #define UI_COMPONENT_FONT_DEFAULT "./somewhere/componentFontNotFound.ttf"
 
 #define MAX_PLAYERS_IN_LOBBY 5
+#define PLAYERS_LOBBY_EMPTY_SLOT_NAME "empty"
 
 //state main page elements: 48x48
 #define ICON_OWNER "iconOwner.png"
@@ -244,22 +245,22 @@
 #define PLAYER_LIST_ID_PADDING_X +0.0
 #define PLAYER_LIST_ID_PADDING_Y +5.0
 
-#define PLAYER_LIST_NAME_PADDING_X +25.0
+#define PLAYER_LIST_NAME_PADDING_X +35.0
 #define PLAYER_LIST_NAME_PADDING_Y +5.0
 
-#define PLAYER_LIST_VOICECHAT_PADDING_X +80.0
+#define PLAYER_LIST_VOICECHAT_PADDING_X +120.0
 #define PLAYER_LIST_VOICECHAT_PADDING_Y +5.0
 
-#define PLAYER_LIST_OWNER_PADDING_X +120.0
+#define PLAYER_LIST_OWNER_PADDING_X +155.0
 #define PLAYER_LIST_OWNER_PADDING_Y +5.0
 
-#define PLAYER_LIST_ADMIN_PADDING_X +160.0
+#define PLAYER_LIST_ADMIN_PADDING_X +195.0
 #define PLAYER_LIST_ADMIN_PADDING_Y +5.0
 
-#define PLAYER_LIST_SPECTER_PADDING_X +200.0
+#define PLAYER_LIST_SPECTER_PADDING_X +230.0
 #define PLAYER_LIST_SPECTER_PADDING_Y +5.0
 
 
-#define TEXT_CHAT_BOX_MAXIMUM_LENGTH 2000
+#define TEXT_CHAT_BOX_MAXIMUM_LINES 15
 
 #endif

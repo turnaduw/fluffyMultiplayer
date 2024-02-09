@@ -28,13 +28,14 @@ namespace FluffyMultiplayer
     //userinterface
     std::vector<FluffyMultiplayer::Player> players;
     FluffyMultiplayer::Player tempPlayer; //to avoid delecre everytime a player.
+    int textChatLines;//to count line of text chat received.
 
     std::array<FluffyMultiplayer::PlayerList,MAX_PLAYERS_IN_LOBBY> playerList;
 
 
     FluffyMultiplayer::Text textChat;
 
-    
+
     //mouse event handel variable to delecre once, not per loop delcre
     sf::Vector2f mousePosition;
 
