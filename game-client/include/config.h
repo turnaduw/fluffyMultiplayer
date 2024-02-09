@@ -118,6 +118,8 @@
 #define ICON_PAUSE "iconPause.png"
 #define ICON_RESUME "iconResume.png"
 #define ICON_BACKGROUND_GAMEMODE_MENSCH "mensch-bg.png"
+#define ICON_VOICECHAT_DISABLED_TEXTURE "lobbyVoiceChatDisabled.png"
+#define ICON_VOICECHAT_ENABLED_TEXTURE "lobbyVoiceChatEnabled.png"
 
 //---------------------------- Form Elements
 #define FE_PATH_TO_ASSETS "./assets/uiComponents/"

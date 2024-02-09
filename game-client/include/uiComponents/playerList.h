@@ -53,6 +53,14 @@ namespace FluffyMultiplayer
       void updateVoiceChatStatus(bool status)
       {
         voiceChat = status;
+        if(voiceChat)
+        {
+          voiceChatPB.init("", ICON_VOICECHAT_ENABLED_TEXTURE, x+PLAYER_LIST_VOICECHAT_PADDING_X , y+PLAYER_LIST_VOICECHAT_PADDING_Y, sf::Color::White,sf::Color::White, 18);
+        }
+        else
+        {
+          voiceChatPB.init("", ICON_VOICECHAT_DISABLED_TEXTURE, x+PLAYER_LIST_VOICECHAT_PADDING_X , y+PLAYER_LIST_VOICECHAT_PADDING_Y, sf::Color::White,sf::Color::White, 18);
+        }
       }
 
       void render(sf::RenderWindow& window)
@@ -68,8 +76,7 @@ namespace FluffyMultiplayer
         if(isSpecter)
           specterIcon.render(window);
 
-        if(voiceChat)
-          voiceChatPB.render(window);
+        voiceChatPB.render(window);
       }
 
       void init(int playerId, std::string playerName, float _x=0.0, float _y=0.0,
@@ -94,7 +101,15 @@ namespace FluffyMultiplayer
         idText.initText(idprint,x+PLAYER_LIST_ID_PADDING_X, y+PLAYER_LIST_ID_PADDING_Y, 17);
         nameText.initText(name,x+PLAYER_LIST_NAME_PADDING_X, y+PLAYER_LIST_NAME_PADDING_Y, 17);
 
-        voiceChatPB.init("", ICON_VOICECHAT, x+PLAYER_LIST_VOICECHAT_PADDING_X , y+PLAYER_LIST_VOICECHAT_PADDING_Y, sf::Color::White,sf::Color::White, 18);
+        if(voiceChat)
+        {
+          voiceChatPB.init("", ICON_VOICECHAT_ENABLED_TEXTURE, x+PLAYER_LIST_VOICECHAT_PADDING_X , y+PLAYER_LIST_VOICECHAT_PADDING_Y, sf::Color::White,sf::Color::White, 18);
+        }
+        else
+        {
+          voiceChatPB.init("", ICON_VOICECHAT_DISABLED_TEXTURE, x+PLAYER_LIST_VOICECHAT_PADDING_X , y+PLAYER_LIST_VOICECHAT_PADDING_Y, sf::Color::White,sf::Color::White, 18);
+        }
+
         ownerIcon.initIcon(ICON_OWNER, x+PLAYER_LIST_OWNER_PADDING_X , y+PLAYER_LIST_OWNER_PADDING_Y);
         adminIcon.initIcon(ICON_ADMIN, x+PLAYER_LIST_ADMIN_PADDING_X , y+PLAYER_LIST_ADMIN_PADDING_Y);
         specterIcon.initIcon(ICON_SPECTER, x+PLAYER_LIST_SPECTER_PADDING_X , y+PLAYER_LIST_SPECTER_PADDING_Y);
