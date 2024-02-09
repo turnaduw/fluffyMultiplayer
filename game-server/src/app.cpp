@@ -256,7 +256,7 @@ namespace FluffyMultiplayer
 
     switch (lobbyData.gameMode)
     {
-      case 1:
+      case GAME_MODE_MENSCH_ID:
       {
         log.print("selected gameMode is Mensch", FluffyMultiplayer::LogType::Information);
         currentGameMode = new FluffyMultiplayer::GameModeMensch((*this));
@@ -747,6 +747,29 @@ namespace FluffyMultiplayer
                 }
 
             }break;
+
+            case REQUEST_GET_LOBBY_INFO:
+            //id,gm,max,current,voicePort,voiceStatus,textStatus,specterStatus
+            {
+              std::string responseLobbyInfoIs = std::to_string(lobbyData.id);
+              responseLobbyInfoIs += MS_DATA_DELIMITER;
+              responseLobbyInfoIs += std::to_string(lobbyData.gameMode);
+              responseLobbyInfoIs += MS_DATA_DELIMITER;
+              responseLobbyInfoIs += std::to_string(lobbyData.maxPlayers);
+              responseLobbyInfoIs += MS_DATA_DELIMITER;
+              responseLobbyInfoIs += std::to_string(lobbyData.currentPlayers);
+              responseLobbyInfoIs += MS_DATA_DELIMITER;
+              responseLobbyInfoIs += std::to_string(lobbyData.voicePort);
+              responseLobbyInfoIs += MS_DATA_DELIMITER;
+              responseLobbyInfoIs += std::to_string(lobbyData.isVoiceChatForbidden);
+              responseLobbyInfoIs += MS_DATA_DELIMITER;
+              responseLobbyInfoIs += std::to_string(lobbyData.isTextChatForbidden);
+              responseLobbyInfoIs += MS_DATA_DELIMITER;
+              responseLobbyInfoIs += std::to_string(lobbyData.isSpecterForbidden);
+              responseLobbyInfoIs += MS_DATA_DELIMITER;
+              response(RESPONSE_LOBBY_INFO_IS,responseLobbyInfoIs, currentItem.sender, false);
+            }break;
+
 
             case REQUEST_GET_LOBBY_SETTINGS:
             {

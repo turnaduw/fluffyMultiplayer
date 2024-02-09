@@ -4,12 +4,10 @@ namespace FluffyMultiplayer
 {
   StateMainPage::StateMainPage(FluffyMultiplayer::App& app)
   {
-    std::cout << "statemainPage constructor called=======================\n";
-    // app.currentGameMode = new FluffyMultiplayer::GM_MENSCH(app.appWindow,app.lobby);
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
-    std::string txttemp = "";//+std::to_string(app.lobby->id);
+    std::string txttemp = "Lobby Id: ????";
     initSimpleText(fontPath, txttemp);
-    setSimpleTextPosition(27.5, 27.5);
+    setSimpleTextPosition(700.0, 27.5);
 
     textChatLines=0;
 
@@ -28,6 +26,9 @@ namespace FluffyMultiplayer
     {
       playerList[i].init(i,PLAYERS_LOBBY_EMPTY_SLOT_NAME,PLAYER_LIST_X, i*PLAYER_LIST_BOX_PER_PLAYER_Y, false,false,false,false,false);
     }
+
+    //send a request to get lobby info then if resposne code received will apply into app.lobby pointer's
+    app.addSendText(REQUEST_GET_LOBBY_INFO);
   }
 
   StateMainPage::~StateMainPage()
@@ -112,6 +113,41 @@ namespace FluffyMultiplayer
 
         switch(currentItem.code)
         {
+          case RESPONSE_LOBBY_INFO_IS:
+          //id,gm,max,current,voicePort,voiceStatus,textStatus,specterStatus
+          {
+            app.lobby->id=stringToInt(cData[0]);
+            app.lobby->gameMode=stringToInt(cData[1]);
+            app.lobby->maxPlayers=stringToInt(cData[2]);
+            app.lobby->currentPlayers=stringToInt(cData[3]);
+            app.lobby->voicePort=static_cast<unsigned short>(stringToInt(cData[4]));
+            app.lobby->isVoiceChatForbidden=stringToBool(cData[5]);
+            app.lobby->isTextChatForbidden=stringToBool(cData[6]);
+            app.lobby->isSpecterForbidden=stringToBool(cData[7]);
+
+            //set lobby id to show to player
+            setSimpleTextValue("Lobby Id: "+cData[0]);
+
+            //set lobby gameMode
+            switch (app.lobby->gameMode)
+            {
+              case GAME_MODE_MENSCH_ID:
+              {
+                app.log.print("selected gameMode is Mensch", FluffyMultiplayer::LogType::Information);
+                app.currentGameMode = new FluffyMultiplayer::GM_MENSCH(app.appWindow,app.lobby);
+              }break;
+
+              default:
+              {
+                app.log.print("unknown lobby gameMode... gm-code="+std::to_string(app.lobby->gameMode),
+                          FluffyMultiplayer::LogType::Warning);
+                app.currentGameMode = nullptr;
+              }break;
+            }
+
+
+          }break;
+
           case RESPONSE_CONNECTION_ACCEPTED:
           case RESPONSE_INTERNAL_ERROR_FAILED_TO_CONNECT:
           case RESPONSE_ERROR_CONNECTION_NOT_EXISTS:
@@ -140,7 +176,7 @@ namespace FluffyMultiplayer
           case RESPONSE_UNKNOWN_REQUEST_GAME_PAUSED_OR_NOT_STARTED:
           case RESPONSE_ERROR_SEND_VOICE_CHAT_DISABLED:
           {
-            std::cout << "mainState: something received. code=" << currentItem.code << std::endl;
+            app.log.print("mainState: something received. code="+std::to_string(currentItem.code), FluffyMultiplayer::LogType::Information);
           }
 
 

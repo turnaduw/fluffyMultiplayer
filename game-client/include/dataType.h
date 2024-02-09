@@ -175,7 +175,18 @@ namespace FluffyMultiplayer
 
      LobbyData()
      {
-
+       id=-1;
+       isLocked = false;
+       isVoiceChatForbidden =false;
+       isTextChatForbidden = false;
+       isSpecterForbidden=false;
+       lobbyStatusInGame=false;
+       showLobbyInList=false;
+       maxPlayers=-1;
+       currentPlayers=-1;
+       gameMode=-1;
+       voicePort=-1;
+       ownerId=-1;
      }
   };
 

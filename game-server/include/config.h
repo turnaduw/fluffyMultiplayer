@@ -22,6 +22,8 @@
 #define SOCKET_LOG_FILENAME "socket.log"
 #define SOCKET_PRINT_LOGS_LEVEL FluffyMultiplayer::LogType::All
 
+#define GAME_MODE_MENSCH_ID 1
+
 
 #define MS_RECEIVED_DATA_MINIMUM_LENGTH 1
 #define MS_DATA_DELIMITER ",&"

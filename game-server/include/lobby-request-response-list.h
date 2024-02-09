@@ -20,7 +20,7 @@
 //voice chat
 #define REQUEST_SEND_VOICE_CHAT 113
 #define REQUEST_ENABLE_DISABLE_VOICE_CHAT 114 //add/remoev client to/from voice chats
-
+#define REQUEST_GET_LOBBY_INFO 115
 
 
 // ------------------------- responses, range: 201 -> 500
@@ -48,6 +48,7 @@
 
 #define RESPONSE_UNKNOWN_REQUEST_GAME_PAUSED_OR_NOT_STARTED 220
 #define RESPONSE_UNKNOWN_REQUEST_GAME_IS_NOT_STARTED 221
+#define RESPONSE_LOBBY_INFO_IS 222 //diffrent LOBBY SETTING with this, is get lobby info just resposne some info but lobby settings response password,owner or some security data
 
 // = = = errors 301 (to sender)
 #define RESPONSE_ERROR_CONNECTION_EXISTS 301

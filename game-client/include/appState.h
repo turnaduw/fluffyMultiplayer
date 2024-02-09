@@ -34,6 +34,11 @@ namespace FluffyMultiplayer
       theText.setPosition(x,y);
     }
 
+    void setSimpleTextValue(std::string text)
+    {
+      theText.setString(text);
+    }
+
   public:
     virtual void render(sf::RenderWindow&)=0;
 
