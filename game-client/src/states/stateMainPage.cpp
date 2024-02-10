@@ -27,7 +27,7 @@ namespace FluffyMultiplayer
     inputFocus = &chatInput;
     textChat.initText("",5.0, 450.0);
     textChat.setFontSize(15);
-    chatInput.init("","","","enter text", 5.0, 740.0);
+    chatInput.init("","","",PLACE_HOLDER_TEXT_CHAT, 5.0, 740.0);
     sendChatButton.init("", ICON_SEND , 303.0, 740.0, sf::Color::White,sf::Color::White, 12);
 
     for(int i=0; i<MAX_PLAYERS_IN_LOBBY; i++)
@@ -292,10 +292,13 @@ namespace FluffyMultiplayer
             bool admin=stringToBool(cData[3]);
             bool specter=stringToBool(cData[4]);
             bool voiceChat=stringToBool(cData[5]);
-            std::cout << "player joint into lobby player: " << id << "\tname:" << name << "\tvc:" << voiceChat << "\towner:" << owner << "\tspecter:" << specter << "\tadmin:" << admin << std::endl;
             tempPlayer.set(id,name,admin,voiceChat,owner,specter,false); //this is another players evertime isMe is false (only first item is me when connected and receied player data)
             players.push_back(tempPlayer);
-            std::cout << "players size=" << players.size() << std::endl;
+
+            std::string connectMessage = "player (";
+            connectMessage += name;
+            connectMessage += ") joint to the lobby.\n";
+            appendToTextChat(connectMessage);
 
             //check for empty slot
             for(int i=0; i<MAX_PLAYERS_IN_LOBBY; i++)
@@ -513,7 +516,7 @@ namespace FluffyMultiplayer
   void StateMainPage::sendChat(FluffyMultiplayer::App& app)
   {
     std::string txt = chatInput.getEnteredText();
-    if(!txt.empty())
+    if(!txt.empty() && txt != PLACE_HOLDER_TEXT_CHAT)
     {
       app.addSendText(REQUEST_SEND_TEXT_CHAT,txt);
       chatInput.clear();

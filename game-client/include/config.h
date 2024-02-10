@@ -106,7 +106,7 @@
 
 #define MAX_PLAYERS_IN_LOBBY 5
 #define PLAYERS_LOBBY_EMPTY_SLOT_NAME "empty"
-
+#define PLACE_HOLDER_TEXT_CHAT "enter text"
 //state main page elements: 48x48
 #define ICON_OWNER "iconOwner.png"
 #define ICON_SPECTER "iconSpecter.png"
@@ -267,6 +267,6 @@
 #define PLAYER_LIST_SPECTER_PADDING_Y +5.0
 
 
-#define TEXT_CHAT_BOX_MAXIMUM_LINES 12
+#define TEXT_CHAT_BOX_MAXIMUM_LINES 15
 
 #endif
