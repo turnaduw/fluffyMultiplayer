@@ -801,13 +801,33 @@ namespace FluffyMultiplayer
                 log.print("lobby settings updated "+lobbyData.getAsStringForOwner(getPlayerUsernameById(lobbyData.ownerId)), FluffyMultiplayer::LogType::Information);
 
 
+                //lobby settings updated: id,gm,max,current,voicePort,voiceStatus,textStatus,specterStatus,ownerid
+                std::string responseLobbySettingsUpdated = std::to_string(lobbyData.id);
+                responseLobbySettingsUpdated += MS_DATA_DELIMITER;
+                responseLobbySettingsUpdated += std::to_string(lobbyData.gameMode);
+                responseLobbySettingsUpdated += MS_DATA_DELIMITER;
+                responseLobbySettingsUpdated += std::to_string(lobbyData.maxPlayers);
+                responseLobbySettingsUpdated += MS_DATA_DELIMITER;
+                responseLobbySettingsUpdated += std::to_string(lobbyData.currentPlayers);
+                responseLobbySettingsUpdated += MS_DATA_DELIMITER;
+                responseLobbySettingsUpdated += std::to_string(lobbyData.voicePort);
+                responseLobbySettingsUpdated += MS_DATA_DELIMITER;
+                responseLobbySettingsUpdated += std::to_string(lobbyData.isVoiceChatForbidden);
+                responseLobbySettingsUpdated += MS_DATA_DELIMITER;
+                responseLobbySettingsUpdated += std::to_string(lobbyData.isTextChatForbidden);
+                responseLobbySettingsUpdated += MS_DATA_DELIMITER;
+                responseLobbySettingsUpdated += std::to_string(lobbyData.isSpecterForbidden);
+                responseLobbySettingsUpdated += MS_DATA_DELIMITER;
+                responseLobbySettingsUpdated += std::to_string(lobbyData.ownerId);
+                responseLobbySettingsUpdated += MS_DATA_DELIMITER;
+
                 //broadcast lobby setting changes to in lobby
-                response(RESPONSE_LOBBY_SETTINGS_UPDATED,lobbyData.getAsStringForPlayers(),&inLobbyPlayers,nullptr,false);
+                response(RESPONSE_LOBBY_SETTINGS_UPDATED,responseLobbySettingsUpdated,&inLobbyPlayers,nullptr,false);
 
                 //broadcast lobby setting changes to specters
                 if(lobbySpecters.size()>=1)
                 {
-                  response(RESPONSE_LOBBY_SETTINGS_UPDATED,lobbyData.getAsStringForPlayers(),&lobbySpecters,nullptr,false);
+                  response(RESPONSE_LOBBY_SETTINGS_UPDATED,responseLobbySettingsUpdated,&lobbySpecters,nullptr,false);
                 }
 
               }
@@ -1027,7 +1047,7 @@ namespace FluffyMultiplayer
                 }
               }
 
-                std::string responseStr = std::to_string(cid) + MS_DATA_DELIMITER; //later can write reason and ban time to tell other clients
+                std::string responseStr = std::to_string(cid) + MS_DATA_DELIMITER;
 
                 //broadcast to inLobbyPlayers, player has been kicked from lobby
                 response(responseCode,responseStr,&inLobbyPlayers,nullptr,false);
@@ -1280,7 +1300,7 @@ namespace FluffyMultiplayer
   bool App::startGame()
   {
     gameIsRunning=true;
-    db.queryStr="UPDATE fm_lobby SET lobbyStatusInGame='1' WHERE id='";
+    db.queryStr="UPDATE fm_lobby SET lobbyStatus='1' WHERE id='";
     db.queryStr+= std::to_string(lobbyData.id) + "';";
     if(db.query_to_db())
       return true;
@@ -1289,7 +1309,7 @@ namespace FluffyMultiplayer
   bool App::stopGame()
   {
     gameIsRunning=false;
-    db.queryStr="UPDATE fm_lobby SET lobbyStatusInGame='0' WHERE id='";
+    db.queryStr="UPDATE fm_lobby SET lobbyStatus='0' WHERE id='";
     db.queryStr+= std::to_string(lobbyData.id) + "';";
     if(db.query_to_db())
       return true;
