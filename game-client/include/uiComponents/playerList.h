@@ -77,7 +77,7 @@ namespace FluffyMultiplayer
         isMe=false;
         id=-1;
         std::string idprint = "("+std::to_string(id)+")";
-        idText.setText(idprint)
+        idText.setText(idprint);
         setName(PLAYERS_LOBBY_EMPTY_SLOT_NAME);
       }
 
