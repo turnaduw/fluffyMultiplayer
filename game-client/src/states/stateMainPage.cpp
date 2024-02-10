@@ -7,7 +7,7 @@ namespace FluffyMultiplayer
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
     std::string txttemp = "Lobby Id: ????";
     initSimpleText(fontPath, txttemp);
-    setSimpleTextPosition(417.0,27.5);
+    setSimpleTextPosition(255.0,27.5);
     setSimpleTextFontsize(15);
 
     textChatLines=0;
