@@ -4,6 +4,37 @@
 
 namespace FluffyMultiplayer
 {
+
+  void App::stopGame()
+  {
+    gameIsRunning=false;
+  }
+
+  void App::startGame()
+  {
+    gameIsRunning=true;
+  }
+
+  void App::changeGameMode(int gameModeId)
+  {
+    switch (gameModeId)
+    {
+      case GAME_MODE_MENSCH_ID:
+      {
+        stopGame();
+        log.print("selected gameMode is Mensch", FluffyMultiplayer::LogType::Information);
+        currentGameMode = new FluffyMultiplayer::GM_MENSCH(appWindow,lobby);
+      }break;
+
+      default:
+      {
+        log.print("unknown lobby gameMode... gm-code="+std::to_string(lobby->gameMode),
+                  FluffyMultiplayer::LogType::Warning);
+        currentGameMode = nullptr;
+      }break;
+    }
+  }
+
   void App::sendData()
   {
     FluffyMultiplayer::SocketSendData currentItem;

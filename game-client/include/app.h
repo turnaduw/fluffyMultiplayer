@@ -111,6 +111,9 @@ namespace FluffyMultiplayer
       bool addSendVoice(int code);
       bool addSendText(int code, std::string data);
       bool addSendText(int code);
+      void changeGameMode(int gameModeId);
+      void stopGame();
+      void startGame();
 
       bool isSenderIsServer(FluffyMultiplayer::AnAddress sender);
       void prepareData(FluffyMultiplayer::SocketReceiveData&);
