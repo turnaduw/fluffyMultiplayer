@@ -136,6 +136,8 @@ namespace FluffyMultiplayer
       bool isPlayerOwner(int);
       bool isIdExistsInLobby(int);
       void kickOutPlayerFromLobby(int);
+      void destroyLobby();
+      void changeOwner(const int&);
 
       //lobby
       bool startGame();

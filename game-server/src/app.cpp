@@ -510,6 +510,11 @@ namespace FluffyMultiplayer
                 db.queryStr+= std::to_string(lobbyData.id) + "';";
                 if(db.query_to_db())
                 {
+
+                  //get owner status before disocnnect player, maybe after disconnect player that player not found and owner status miss.
+                  bool isThatPlayerOwner = isPlayerOwner(cid);
+
+
                   // remove from connectedPlayers and inLobbyPlayers and lobbySpecter if exists
                   std::string responseStr = std::to_string(cid) + MS_DATA_DELIMITER;
 
@@ -523,6 +528,20 @@ namespace FluffyMultiplayer
                     {
                       response(RESPONSE_PLAYER_DISCONNECTED,responseStr,&lobbySpecters, nullptr,false);
                     }
+
+                    //check for is that player left were owner or not
+                    if(isThatPlayerOwner)
+                    {
+                        if(inLobbyPlayers.size() >= 1)
+                          changeOwner(inLobbyPlayers[0].id);
+                        else if(lobbySpecters.size() >= 1)
+                          changeOwner(lobbySpecters[0].id);
+                        else //delete lobby, lobby is empty..
+                          destroyLobby();
+                    }
+                    else
+                      log.print("that player left, were not owner.",FluffyMultiplayer::LogType::Information);
+
                   }
                   else //connection not found to disconnect
                   {
@@ -1094,6 +1113,53 @@ namespace FluffyMultiplayer
     receivedTextDataList.pop();
   }
 
+
+  void App::changeOwner(const int& oid)
+  {
+    if(oid<=0)
+    {
+      log.print("change owner id failed, invalid id..", FluffyMultiplayer::LogType::Information);
+      return;
+    }
+
+
+    lobbyData.ownerId = oid;
+
+    //apply into db
+    db.queryStr="UPDATE fm_lobby SET owner='";
+    db.queryStr+= std::to_string(oid) + "' WHERE id='";
+    db.queryStr+= std::to_string(lobbyData.id) + "';";
+    if(db.query_to_db())
+    {
+      std::string responseStr = std::to_string(oid) + MS_DATA_DELIMITER;
+
+      //broadcast result of owner changed to lobby players
+      response(RESPONSE_LOBBY_OWNER_CHANGED,responseStr,&inLobbyPlayers, nullptr,false);
+
+      //broadcast to specters
+      if(lobbySpecters.size()>=1)
+        response(RESPONSE_LOBBY_OWNER_CHANGED,responseStr,&lobbySpecters, nullptr,false);
+    }
+    else
+    {
+      log.print("Internal errro while changing owner of lobby..", FluffyMultiplayer::LogType::Warning);
+    }
+  }
+
+  void App::destroyLobby()
+  {
+    db.queryStr = "DELETE FROM fm_lobby WHERE id='";
+    db.queryStr+= std::to_string(lobbyData.id) + "';";
+    if(db.query_to_db())
+    {
+      appIsRunning=false;
+    }
+    else
+    {
+      log.print("failed to destroy lobby, (internal error because of database while deleting lobby.)", FluffyMultiplayer::LogType::Information);
+    }
+  }
+
   bool App::isIdExistsInLobby(int id)
   {
     for(auto player: inLobbyPlayers)
@@ -1263,7 +1329,7 @@ namespace FluffyMultiplayer
     connectedPlayers = _connectedPlayers;
 
     //check if that connection does not exists on connectedPlayers skip other commands
-    if(currentPlayersBefore == currentPlayersBefore)
+    if(currentPlayersBefore == lobbyData.currentPlayers)
     {
       log.print("disconnect player failed, Currentplayers are still same old value.", FluffyMultiplayer::LogType::Warning);
       return false; //could not remove there is no connection exists
