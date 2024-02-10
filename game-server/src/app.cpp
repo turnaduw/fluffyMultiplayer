@@ -362,9 +362,9 @@ namespace FluffyMultiplayer
 
   bool App::doesItHavePermission(const FluffyMultiplayer::AnAddress& sender)
   {
-    int id=getSenderId(sender);
-    if(id>=1)
-      if(inLobbyPlayers[id].isAdmin || id == lobbyData.ownerId)
+    int index=getIndexPlayerInLobbyByAddress(sender);
+    if(index>=1)
+      if(inLobbyPlayers[index].isAdmin || inLobbyPlayers[index].id == lobbyData.ownerId)
         return true;
     return false;
   }
@@ -533,9 +533,9 @@ namespace FluffyMultiplayer
                     if(isThatPlayerOwner)
                     {
                         if(inLobbyPlayers.size() >= 1)
-                          changeOwner(inLobbyPlayers[0].id);
+                          changeOwner(inLobbyPlayers[INDEX_NEXT_OWNER_AFTER_OWNER_LEFT].id);
                         else if(lobbySpecters.size() >= 1)
-                          changeOwner(lobbySpecters[0].id);
+                          changeOwner(lobbySpecters[INDEX_NEXT_OWNER_AFTER_OWNER_LEFT].id);
                         else //delete lobby, lobby is empty..
                           destroyLobby();
                     }
