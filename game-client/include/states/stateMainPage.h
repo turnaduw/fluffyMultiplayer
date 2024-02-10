@@ -51,6 +51,9 @@ namespace FluffyMultiplayer
     int stringToInt(const std::string&);
 
     void sendChat(FluffyMultiplayer::App& app); //to avoid duplicate code for send chat
+    void appendToTextChat(std::string&);
+    std::string getPlayerNameById(int&);
+    void removeFromLobby(int&);
 
   public:
     StateMainPage(FluffyMultiplayer::App&);

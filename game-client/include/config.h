@@ -17,6 +17,7 @@
 #define TEXT_CHAT_BUFFER_SIZE 1024
 
 #define DEFAULT_PLAYER_NAME "?player?"
+#define PLAYER_NAME_NOT_FOUND_NAME "?player?"
 #define DEFAULT_PLAYER_VOICE_ENABLE false
 
 

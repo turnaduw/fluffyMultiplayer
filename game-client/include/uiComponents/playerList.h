@@ -43,11 +43,40 @@ namespace FluffyMultiplayer
     public:
       //publiced to access into bounds from outside like playerList[i].pictureButtons[j].getButtonBound()
       FluffyMultiplayer::PictureButton voiceChatPB;
+      void setOwner(bool status)
+      {
+        isOwner=status;
+      }
+      bool getIsOwner() const
+      {
+        return isOwner;
+      }
 
+      int getId() const
+      {
+        return id;
+      }
 
       std::string getName() const
       {
         return name;
+      }
+
+      void setName(std::string _name)
+      {
+        name = _name;
+        nameText.setText(name);
+      }
+
+      void clear()
+      {
+        isOwner=false;
+        isAdmin=false;
+        isSpecter=false;
+        voiceChat=false;
+        isMe=false;
+        id=-1;
+        setName(PLAYERS_LOBBY_EMPTY_SLOT_NAME);
       }
 
       void updateVoiceChatStatus(bool status)
@@ -76,7 +105,8 @@ namespace FluffyMultiplayer
         if(isSpecter)
           specterIcon.render(window);
 
-        voiceChatPB.render(window);
+        if(id>-1) //to avoid render icon for empty/clear player
+          voiceChatPB.render(window);
       }
 
       void init(int playerId, std::string playerName, float _x=0.0, float _y=0.0,
@@ -96,7 +126,7 @@ namespace FluffyMultiplayer
 
         std::string idprint = "("+std::to_string(playerId)+")";
         if(isMe)
-          name += "[*****ME]";
+          name += "[*ME*]";
 
         idText.initText(idprint,x+PLAYER_LIST_ID_PADDING_X, y+PLAYER_LIST_ID_PADDING_Y, 17);
         nameText.initText(name,x+PLAYER_LIST_NAME_PADDING_X, y+PLAYER_LIST_NAME_PADDING_Y, 17);

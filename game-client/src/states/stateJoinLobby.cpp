@@ -7,10 +7,10 @@ namespace FluffyMultiplayer
     inputFocus = &passwordInput;
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
     initSimpleText(fontPath, "LOBBY PASSWORD");
-    setSimpleTextPosition(150.0, 5.0);
-    passwordInput.init("","","password:","enter password..", 100.0, 200.0);
-    buttonCancel.init("cancel", 100.0,400.0, sf::Color::Black,sf::Color::White, 60,30, 22);
-    buttonSubmit.init("join", 300.0,400.0, sf::Color::Black,sf::Color::Green, 60,30, 22);
+    setSimpleTextPosition(491.0, 120.0);
+    passwordInput.init("","","Passord:","enter password..", 340.0, 290.0);
+    buttonCancel.init("Cancel", 340.0, 490.0, sf::Color::Black,sf::Color::White, 60,30, 22);
+    buttonSubmit.init("Join", 540.0, 490.0, sf::Color::Black,sf::Color::Green, 60,30, 22);
   }
 
   StateJoinLobby::StateJoinLobby()
@@ -85,7 +85,7 @@ namespace FluffyMultiplayer
         }
         else if(buttonCancel.getButtonBound().contains(mousePosition))
         {
-          return formFinishedResult(app);
+          app.close();
         }
         else if(passwordInput.getInputBoxBound().contains(mousePosition))
         {

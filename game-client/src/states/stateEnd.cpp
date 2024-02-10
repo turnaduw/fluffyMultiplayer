@@ -5,9 +5,10 @@ namespace FluffyMultiplayer
   StateEnd::StateEnd()
   {
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
-    initSimpleText(fontPath, "state end");
-    buttonConfirm.init("YES quit",200.0,200.0, sf::Color::Black, sf::Color::White, 60,30, 22);
-    buttonCancel.init("no back",400.0,200.0, sf::Color::Black, sf::Color::White, 60,30, 22);
+    initSimpleText(fontPath, "Are you sure to quit?");
+    setSimpleTextPosition(395.0, 300.0);
+    buttonConfirm.init("Quit",340.0,370.0, sf::Color::White, sf::Color::White, 60,30, 22);
+    buttonCancel.init("Back",540.0,370.0, sf::Color::White, sf::Color::White, 60,30, 22);
   }
 
   StateEnd::~StateEnd()
