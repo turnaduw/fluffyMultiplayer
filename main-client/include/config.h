@@ -60,9 +60,9 @@
 #define MC_RESPONSE_POSITION_MIN_INDEX 0
 #define MC_RESPONSE_POSITION_MAX_INDEX 3
 
-#define GAME_MODE_LIST {"Mensch","Chess","TicTacToe"}
-#define GAME_MODE_TEXTURE_LIST {"gm-mensch.png","gm-chess.png","gm-tictatoe.png"}
-#define MAX_PLAYER_LIST {"2","4","6","8","10"}
+#define GAME_MODE_LIST {"Unknown","Mensch","Chess","TicTacToe"}
+#define GAME_MODE_TEXTURE_LIST {"unknown.png","gm-mensch.png","gm-chess.png","gm-tictatoe.png"}
+#define MAX_PLAYER_LIST {"2","4","6","8","10","12","14","16","18","20","30"}
 
 #define MS_GET_LOBBY_LIST_COUNT_OF_RESULTS 10
 #define MS_GET_LOBBY_LIST_LOBBY_FILEDS 12
