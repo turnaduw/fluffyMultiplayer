@@ -17,8 +17,9 @@ namespace FluffyMultiplayer
     initSimpleText(fontPath, text);
 
     timeouttxt.setFont(theFont);
-    timeouttxt.setString("timedout press enter to retry.");
-    buttonRetry.init("Retry", 200.0,200.0, sf::Color::Black,sf::Color::White, 60,30, 22);
+    timeouttxt.setString("Timedout press enter to retry.");
+    timeouttxt.setPosition(340.0, 190.0);
+    buttonRetry.init("  Retry", 420.0,300.0, sf::Color::Black,sf::Color::White, 60,30, 22);
   }
 
 
@@ -49,7 +50,6 @@ namespace FluffyMultiplayer
       case RESPONSE_LOBBY_DELETED: return "lobby has been deleted"; //to all
       case RESPONSE_LOBBY_SETTINGS_UPDATED: return "lobby settings updated"; //to all
       case RESPONSE_LOBBY_SETTINGS_IS: return "lobby setting received from server";
-      case RESPONSE_LOBBY_OWNER_CHANGED: return "lobby owner changed"; //to all
 
       case RESPONSE_UNKNOWN_REQUEST_GAME_PAUSED_OR_NOT_STARTED: return "game is paused or not started";
       case RESPONSE_UNKNOWN_REQUEST_GAME_IS_NOT_STARTED: return "game is not started";
