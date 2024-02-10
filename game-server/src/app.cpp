@@ -393,11 +393,9 @@ namespace FluffyMultiplayer
 
 
 
-  void App::updatePlayerVoiceChatStatus(const int& id, bool status)
+  void App::updatePlayerVoiceChatStatus(const int& index, bool status)
   {
-    for(auto e: inLobbyPlayers)
-      if(e.id == id)
-        e.voiceChatEnable=status;
+    inLobbyPlayers[index].voiceChatEnable=status;
   }
 
   bool App::isPlayerOwner(int pid)
@@ -560,13 +558,10 @@ namespace FluffyMultiplayer
             {
                 if(cData[1] == lobbyData.password)
                 {
-                  log.print("client entered password correctly.",FluffyMultiplayer::LogType::Information);
                   if(ds.isIdentityValid(cData[0]))
                   {
-                    log.print("client identity is valid.",FluffyMultiplayer::LogType::Information);
                     if(cData[2] == GAME_SERVER_VERSION)
                     {
-                      log.print("client version is ok.",FluffyMultiplayer::LogType::Information);
 
 
 
@@ -1054,14 +1049,15 @@ namespace FluffyMultiplayer
               if(cid>=1)
               {
                 int pindex = getIndexPlayerInLobbyByAddress(currentItem.sender);
+
                 if(inLobbyPlayers[pindex].voiceChatEnable)
                 {
-                  updatePlayerVoiceChatStatus(cid,false);
+                  updatePlayerVoiceChatStatus(pindex,false);
                   responseCode = RESPONSE_PLAYER_VOICE_CHAT_DISABLED;
                 }
                 else
                 {
-                  updatePlayerVoiceChatStatus(cid,true);
+                  updatePlayerVoiceChatStatus(pindex,true);
                   responseCode = RESPONSE_PLAYER_VOICE_CHAT_ENABLED;
                 }
               }
