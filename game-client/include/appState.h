@@ -39,6 +39,11 @@ namespace FluffyMultiplayer
       theText.setString(text);
     }
 
+    void setSimpleTextFontsize(unsigned int _fontSize)
+    {
+      theText.setCharacterSize(_fontSize);
+    }
+
   public:
     virtual void render(sf::RenderWindow&)=0;
 

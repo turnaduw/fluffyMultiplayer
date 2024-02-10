@@ -39,7 +39,7 @@ namespace FluffyMultiplayer
     sf::Vertex chatAndPlayerListLine[2];
     sf::Vertex seperatorChatWithPlayerListLine[2];
 
-
+    bool amILobbyOwner; //this flag will use for render or not owner options for this client
 
     //mouse event handel variable to delecre once, not per loop delcre
     sf::Vector2f mousePosition;
@@ -59,7 +59,8 @@ namespace FluffyMultiplayer
     void appendToTextChat(std::string&);
     std::string getPlayerNameById(int&);
     void removeFromLobby(int&);
-
+    void isThisPcOwner(int);
+    
   public:
     StateMainPage(FluffyMultiplayer::App&);
     ~StateMainPage();

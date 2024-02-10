@@ -8,8 +8,10 @@ namespace FluffyMultiplayer
     std::string txttemp = "Lobby Id: ????";
     initSimpleText(fontPath, txttemp);
     setSimpleTextPosition(417.0,27.5);
+    setSimpleTextFontsize(15);
 
     textChatLines=0;
+    amILobbyOwner=false;
 
     pauseResumeGameButton.init("", ICON_PAUSE , 772.0, 27.5, sf::Color::White,sf::Color::White, 12);
     lobbySettingsButton.init("", ICON_SETTINGS , 858.0, 27.5, sf::Color::White,sf::Color::White, 12);
@@ -190,10 +192,13 @@ namespace FluffyMultiplayer
             //owner left the lobby so owner changed..
             app.lobby->ownerId=stringToInt(cData[0]);
 
+            int newOwnerId = app.lobby->ownerId;
+
+            isThisPcOwner(newOwnerId);
             //try to find new owner and apply
             for(int i=0; i<MAX_PLAYERS_IN_LOBBY; i++)
             {
-               if(playerList[i].getId() == app.lobby->ownerId)
+               if(playerList[i].getId() == newOwnerId)
                {
                  //add owner to new owner
                  playerList[i].setOwner(true);
@@ -201,7 +206,7 @@ namespace FluffyMultiplayer
                  //remove owner from old owner.
                  for(int i=0; i<MAX_PLAYERS_IN_LOBBY; i++)
                  {
-                   if(playerList[i].getIsOwner() == true && playerList[i].getId() != app.lobby->ownerId)
+                   if(playerList[i].getIsOwner() == true && playerList[i].getId() != newOwnerId)
                    {
                      playerList[i].setOwner(false);
                      break; //only one client were owner do not to check others if old owner found
@@ -230,10 +235,14 @@ namespace FluffyMultiplayer
               app.lobby->isSpecterForbidden=stringToBool(cData[7]);
 
               app.lobby->ownerId=stringToInt(cData[8]);
+
+
+              int newOwnerId = app.lobby->ownerId;
+              isThisPcOwner(newOwnerId);
               //check for owner changes:
               for(int i=0; i<MAX_PLAYERS_IN_LOBBY; i++)
               {
-                if(playerList[i].getId() == app.lobby->ownerId)
+                if(playerList[i].getId() == newOwnerId)
                   if(playerList[i].getIsOwner() == true) //owner didnt changed.
                     break;
                   else //owner changed..
@@ -243,7 +252,7 @@ namespace FluffyMultiplayer
 
                     //remove owner from old owner.
                     for(int i=0; i<MAX_PLAYERS_IN_LOBBY; i++)
-                      if(playerList[i].getIsOwner() == true && playerList[i].getId() != app.lobby->ownerId)
+                      if(playerList[i].getIsOwner() == true && playerList[i].getId() != newOwnerId)
                       {
                         playerList[i].setOwner(false);
                         break; //only one client were owner do not to check others if old owner found
@@ -411,8 +420,6 @@ namespace FluffyMultiplayer
               isme=false;
 
 
-              if(i==0) //becuase first element is this client :)
-              isme=true;
 
               if(i+eachPlayerData-1 >= cData.size())
               break;
@@ -423,6 +430,14 @@ namespace FluffyMultiplayer
               admin=stringToBool(cData[i+3]);
               specter=stringToBool(cData[i+4]);
               voiceChat=stringToBool(cData[i+5]);
+              if(i==0) //becuase first element is this client :)
+              {
+                isme=true;
+                if(owner==true)
+                {
+                  amILobbyOwner=true;
+                }
+              }
               // playerList.push_back(FluffyMultiplayer::PlayerList{id,name,isme,voiceChat,owner,specter,admin});
               std::cout << "RESPONSE_LOBBY_PLAYERS_ARE player: " << id << "\tname:" << name << "\tisme:" << isme << "\tvc:" << voiceChat << "\towner:" << owner << "\tspecter:" << specter << "\tadmin:" << admin << std::endl;
 
@@ -459,6 +474,18 @@ namespace FluffyMultiplayer
       }
     }
     return this;
+  }
+
+  void StateMainPage::isThisPcOwner(int oid)
+  {
+    if(playerList[THIS_CLIENT_PLYARE_LOBBY_INDEX].getId() == oid) //index 0 is always for this pc
+    {
+      amILobbyOwner=true;
+    }
+    else
+    {
+      amILobbyOwner=false;
+    }
   }
 
   void StateMainPage::removeFromLobby(int& id)
@@ -540,7 +567,6 @@ namespace FluffyMultiplayer
         // #define REQUEST_KICK_PLAYER 109
         // #define REQUEST_BAN_PLAYER 110
         // #define REQUEST_SEND_VOICE_CHAT 113
-        // #define REQUEST_ENABLE_DISABLE_VOICE_CHAT 115 //exit client from voice chats
 
         if(sendChatButton.getButtonBound().contains(mousePosition))
         {
@@ -562,6 +588,10 @@ namespace FluffyMultiplayer
         else if(pauseResumeGameButton.getButtonBound().contains(mousePosition))
         {
           app.addSendText(REQUEST_STOP_START_GAME);
+        }
+        else if(playerList[THIS_CLIENT_PLYARE_LOBBY_INDEX].voiceChatPB.getButtonBound().contains(mousePosition))
+        {
+          app.addSendText(REQUEST_ENABLE_DISABLE_VOICE_CHAT);
         }
         else
         {

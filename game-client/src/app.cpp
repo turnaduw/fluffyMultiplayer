@@ -243,13 +243,14 @@ namespace FluffyMultiplayer
   void App::close()
   {
     log.print("game has been safely closed.", FluffyMultiplayer::LogType::Information);
+    appIsRunning=false;
     appWindow.close();
   }
 
   void App::run()
   {
     log.print("game run.", FluffyMultiplayer::LogType::Information);
-    while (appWindow.isOpen())
+    while (appWindow.isOpen() && appIsRunning)
     {
        // Event processing
        sf::Event event;
