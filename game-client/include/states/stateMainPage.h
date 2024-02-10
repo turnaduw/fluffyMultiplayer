@@ -35,6 +35,11 @@ namespace FluffyMultiplayer
 
     FluffyMultiplayer::Text textChat;
 
+    sf::Vertex topLine[2];
+    sf::Vertex chatAndPlayerListLine[2];
+    sf::Vertex seperatorChatWithPlayerListLine[2];
+
+
 
     //mouse event handel variable to delecre once, not per loop delcre
     sf::Vector2f mousePosition;

@@ -11,16 +11,24 @@ namespace FluffyMultiplayer
 
     textChatLines=0;
 
-    pauseResumeGameButton.init("pause\nresume", ICON_PAUSE , 772.0, 27.5, sf::Color::White,sf::Color::White, 12);
-    lobbySettingsButton.init("settings", ICON_SETTINGS , 858.0, 27.5, sf::Color::White,sf::Color::White, 12);
-    quitButton.init("quit", PICTURE_BUTTON_QUIT_TEXTURE , 946.0, 27.5, sf::Color::White,sf::Color::White, 12);
+    pauseResumeGameButton.init("", ICON_PAUSE , 772.0, 27.5, sf::Color::White,sf::Color::White, 12);
+    lobbySettingsButton.init("", ICON_SETTINGS , 858.0, 27.5, sf::Color::White,sf::Color::White, 12);
+    quitButton.init("", PICTURE_BUTTON_QUIT_TEXTURE , 946.0, 27.5, sf::Color::White,sf::Color::White, 12);
+
+    //intit lines
+    topLine[0] = sf::Vertex(sf::Vector2f(250 , 27.0+70));
+    topLine[1] = sf::Vertex(sf::Vector2f(998, 27.0+70));
+    chatAndPlayerListLine[0] = sf::Vertex(sf::Vector2f(250 , 0));
+    chatAndPlayerListLine[1] = sf::Vertex(sf::Vector2f(250, 750));
+    seperatorChatWithPlayerListLine[0] = sf::Vertex(sf::Vector2f(0 , 440));
+    seperatorChatWithPlayerListLine[1] = sf::Vertex(sf::Vector2f(250, 440));
 
 
     inputFocus = &chatInput;
-    textChat.initText("",27.0, 450.0);
+    textChat.initText("",5.0, 450.0);
     textChat.setFontSize(15);
-    chatInput.init("",""," chat:","enter text", 27.0, 740.0);
-    sendChatButton.init("", ICON_SEND , 325.0, 740.0, sf::Color::White,sf::Color::White, 12);
+    chatInput.init("","","","enter text", 5.0, 740.0);
+    sendChatButton.init("", ICON_SEND , 303.0, 740.0, sf::Color::White,sf::Color::White, 12);
 
     for(int i=0; i<MAX_PLAYERS_IN_LOBBY; i++)
     {
@@ -46,6 +54,11 @@ namespace FluffyMultiplayer
     sendChatButton.render(window);
     pauseResumeGameButton.render(window);
     textChat.render(window);
+
+    //lines
+    window.draw(topLine, 2, sf::Lines);
+    window.draw(chatAndPlayerListLine, 2, sf::Lines);
+    window.draw(seperatorChatWithPlayerListLine, 2, sf::Lines);
 
     //player list
     for(int i=0; i<MAX_PLAYERS_IN_LOBBY; i++)
@@ -171,6 +184,32 @@ namespace FluffyMultiplayer
             std::cout << "received voice message from other clients..\n";
           }break;
 
+
+          case RESPONSE_LOBBY_OWNER_CHANGED:  //new owner id
+          {
+            //owner left the lobby so owner changed..
+            app.lobby->ownerId=stringToInt(cData[0]);
+
+            //try to find new owner and apply
+            for(int i=0; i<MAX_PLAYERS_IN_LOBBY; i++)
+            {
+               if(playerList[i].getId() == app.lobby->ownerId)
+               {
+                 //add owner to new owner
+                 playerList[i].setOwner(true);
+
+                 //remove owner from old owner.
+                 for(int i=0; i<MAX_PLAYERS_IN_LOBBY; i++)
+                 {
+                   if(playerList[i].getIsOwner() == true && playerList[i].getId() != app.lobby->ownerId)
+                   {
+                     playerList[i].setOwner(false);
+                     break; //only one client were owner do not to check others if old owner found
+                   }
+                 }
+               }
+            }
+          }break;
 
           case RESPONSE_LOBBY_SETTINGS_UPDATED:
           //id,gm,max,current,voicePort,voiceStatus,textStatus,specterStatus,ownerid
@@ -393,7 +432,7 @@ namespace FluffyMultiplayer
               {
                 if(playerList[i].getName() == PLAYERS_LOBBY_EMPTY_SLOT_NAME)
                 {
-                  playerList[i].init(id,name,0.0,i*PLAYER_LIST_BOX_PER_PLAYER_Y,isme,voiceChat,owner,specter,admin);
+                  playerList[i].init(id,name,PLAYER_LIST_X,i*PLAYER_LIST_BOX_PER_PLAYER_Y,isme,voiceChat,owner,specter,admin);
                   break;
                 }
               }
