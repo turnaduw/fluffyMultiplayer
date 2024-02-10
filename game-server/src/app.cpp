@@ -363,8 +363,7 @@ namespace FluffyMultiplayer
   bool App::doesItHavePermission(const FluffyMultiplayer::AnAddress& sender)
   {
     int index=getIndexPlayerInLobbyByAddress(sender);
-    if(index>=1)
-      if(inLobbyPlayers[index].isAdmin || inLobbyPlayers[index].id == lobbyData.ownerId)
+    if(inLobbyPlayers[index].isAdmin || inLobbyPlayers[index].id == lobbyData.ownerId)
         return true;
     return false;
   }
