@@ -103,10 +103,10 @@ namespace FluffyMultiplayer
           switch (notificationData.type)
           {
             case FluffyMultiplayer::NotificationType::normal : bgColor = sf::Color::White; break;
-            case FluffyMultiplayer::NotificationType::error : bgColor = sf::Color::Red; break;
-            case FluffyMultiplayer::NotificationType::success : bgColor = sf::Color::Green; break;
-            case FluffyMultiplayer::NotificationType::warning : bgColor = sf::Color::Yellow; break;
-            default: bgColor = sf::Color::Black; break; //unkwon notification type..
+            case FluffyMultiplayer::NotificationType::error : bgColor = sf::Color::White; break;
+            case FluffyMultiplayer::NotificationType::success : bgColor = sf::Color::White; break;
+            case FluffyMultiplayer::NotificationType::warning : bgColor = sf::Color::White; break;
+            default: bgColor = sf::Color::White; break; //unkwon notification type..
           }
 
           //icon init
