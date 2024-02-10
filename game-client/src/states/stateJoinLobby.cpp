@@ -49,19 +49,15 @@ namespace FluffyMultiplayer
 
     return new FluffyMultiplayer::StateWaitForResponse
     (
-      "waiting for response from server\nto join into lobby.\nplease wait..",
+      "Waiting for response from server\nto join into lobby.\nplease wait..",
       this,
       std::vector<FluffyMultiplayer::AppState*>
           {
-            new FluffyMultiplayer::StateMainPage(app),
-            new FluffyMultiplayer::StateFailed("incorrect password.\n",this,nullptr),
-            new FluffyMultiplayer::StateFailed("invalid identity.\n",this,nullptr)
+            new FluffyMultiplayer::StateMainPage(app)
           },
       std::vector<int>
         {
-          RESPONSE_YOU_ARE_JOINT_INTO_LOBBY, //success
-          RESPONSE_ERROR_JOIN_LOBBY_PASSWORD_INCORRECT,
-          RESPONSE_ERROR_JOIN_LOBBY_INVALID_IDENTITY
+          RESPONSE_YOU_ARE_JOINT_INTO_LOBBY //success
         }
     );
 
