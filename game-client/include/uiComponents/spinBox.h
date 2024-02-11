@@ -77,6 +77,12 @@ namespace FluffyMultiplayer
         }
       }
 
+      void setCurrent(int current)
+      {
+        currentItem = current;
+        spinBoxText.setString(spinBoxString+items[currentItem]);
+      }
+
       void init(std::string btnText=SPINBOX_DEFAULT_TEXT, std::vector<std::string> allItems=SPINBOX_DEAULT_ITEMS,
               float posX=SPINBOX_DEFAULT_POS_X, float posY=SPINBOX_DEFAULT_POS_Y,
               sf::Color bgColor=SPINBOX_DEFAULT_BACKGROUND_COLOR,
