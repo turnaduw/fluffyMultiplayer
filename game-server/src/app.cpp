@@ -811,36 +811,54 @@ namespace FluffyMultiplayer
                 lobbyData.isSpecterForbidden = stringToBool(cData[4]);
                 lobbyData.password = cData[5];
                 lobbyData.ownerId = stringToInt(cData[6]);
-                log.print("lobby settings updated "+lobbyData.getAsStringForOwner(getPlayerUsernameById(lobbyData.ownerId)), FluffyMultiplayer::LogType::Information);
 
-
-                //lobby settings updated: id,gm,max,current,voicePort,voiceStatus,textStatus,specterStatus,ownerid
-                std::string responseLobbySettingsUpdated = std::to_string(lobbyData.id);
-                responseLobbySettingsUpdated += MS_DATA_DELIMITER;
-                responseLobbySettingsUpdated += std::to_string(lobbyData.gameMode);
-                responseLobbySettingsUpdated += MS_DATA_DELIMITER;
-                responseLobbySettingsUpdated += std::to_string(lobbyData.maxPlayers);
-                responseLobbySettingsUpdated += MS_DATA_DELIMITER;
-                responseLobbySettingsUpdated += std::to_string(lobbyData.currentPlayers);
-                responseLobbySettingsUpdated += MS_DATA_DELIMITER;
-                responseLobbySettingsUpdated += std::to_string(lobbyData.voicePort);
-                responseLobbySettingsUpdated += MS_DATA_DELIMITER;
-                responseLobbySettingsUpdated += std::to_string(lobbyData.isVoiceChatForbidden);
-                responseLobbySettingsUpdated += MS_DATA_DELIMITER;
-                responseLobbySettingsUpdated += std::to_string(lobbyData.isTextChatForbidden);
-                responseLobbySettingsUpdated += MS_DATA_DELIMITER;
-                responseLobbySettingsUpdated += std::to_string(lobbyData.isSpecterForbidden);
-                responseLobbySettingsUpdated += MS_DATA_DELIMITER;
-                responseLobbySettingsUpdated += std::to_string(lobbyData.ownerId);
-                responseLobbySettingsUpdated += MS_DATA_DELIMITER;
-
-                //broadcast lobby setting changes to in lobby
-                response(RESPONSE_LOBBY_SETTINGS_UPDATED,responseLobbySettingsUpdated,&inLobbyPlayers,nullptr,false);
-
-                //broadcast lobby setting changes to specters
-                if(lobbySpecters.size()>=1)
+                //update lobby on database
+                db.queryStr = "UPDATE fm_lobby SET maxPlayers='";
+                db.queryStr+= cData[0] + "', gameMode='";
+                db.queryStr+= cData[1] + "', voiceChatForbidden='";
+                db.queryStr+= cData[2] + "', textChatForbidden='";
+                db.queryStr+= cData[3] + "', specterForbidden='";
+                db.queryStr+= cData[4] + "', password='";
+                db.queryStr+= cData[5] + "', owner='";
+                db.queryStr+= cData[6] + "' WHERE id='";
+                db.queryStr+= std::to_string(lobbyData.id) + "';";
+                if(db.query_to_db())
                 {
-                  response(RESPONSE_LOBBY_SETTINGS_UPDATED,responseLobbySettingsUpdated,&lobbySpecters,nullptr,false);
+                  log.print("lobby settings updated "+lobbyData.getAsStringForOwner(getPlayerUsernameById(lobbyData.ownerId)), FluffyMultiplayer::LogType::Information);
+
+                  //lobby settings updated: id,gm,max,current,voicePort,voiceStatus,textStatus,specterStatus,ownerid
+                  std::string responseLobbySettingsUpdated = std::to_string(lobbyData.id);
+                  responseLobbySettingsUpdated += MS_DATA_DELIMITER;
+                  responseLobbySettingsUpdated += std::to_string(lobbyData.gameMode);
+                  responseLobbySettingsUpdated += MS_DATA_DELIMITER;
+                  responseLobbySettingsUpdated += std::to_string(lobbyData.maxPlayers);
+                  responseLobbySettingsUpdated += MS_DATA_DELIMITER;
+                  responseLobbySettingsUpdated += std::to_string(lobbyData.currentPlayers);
+                  responseLobbySettingsUpdated += MS_DATA_DELIMITER;
+                  responseLobbySettingsUpdated += std::to_string(lobbyData.voicePort);
+                  responseLobbySettingsUpdated += MS_DATA_DELIMITER;
+                  responseLobbySettingsUpdated += std::to_string(lobbyData.isVoiceChatForbidden);
+                  responseLobbySettingsUpdated += MS_DATA_DELIMITER;
+                  responseLobbySettingsUpdated += std::to_string(lobbyData.isTextChatForbidden);
+                  responseLobbySettingsUpdated += MS_DATA_DELIMITER;
+                  responseLobbySettingsUpdated += std::to_string(lobbyData.isSpecterForbidden);
+                  responseLobbySettingsUpdated += MS_DATA_DELIMITER;
+                  responseLobbySettingsUpdated += std::to_string(lobbyData.ownerId);
+                  responseLobbySettingsUpdated += MS_DATA_DELIMITER;
+
+                  //broadcast lobby setting changes to in lobby
+                  response(RESPONSE_LOBBY_SETTINGS_UPDATED,responseLobbySettingsUpdated,&inLobbyPlayers,nullptr,false);
+
+                  //broadcast lobby setting changes to specters
+                  if(lobbySpecters.size()>=1)
+                  {
+                    response(RESPONSE_LOBBY_SETTINGS_UPDATED,responseLobbySettingsUpdated,&lobbySpecters,nullptr,false);
+                  }
+                }
+                else
+                {
+                  log.print("failed to update lobby, internal error. ", FluffyMultiplayer::LogType::Information);
+                  response(RESPONSE_INTERNAL_ERROR_FAILED_TO_UPDATE_LOBBY_SETTINGS,currentItem.sender, false);
                 }
 
               }
