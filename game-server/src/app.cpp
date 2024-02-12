@@ -254,6 +254,12 @@ namespace FluffyMultiplayer
     log.init(LOG_FILE,PRINT_LOGS_LEVEL);
     db.init(DATABASE_FILENAME);
 
+    changeGameMode();
+  }
+
+  void App::changeGameMode()
+  {
+    log.print("selected gameMode code:"+std::to_string(lobbyData.gameMode), FluffyMultiplayer::LogType::Information);
     switch (lobbyData.gameMode)
     {
       case GAME_MODE_MENSCH_ID:
@@ -825,6 +831,8 @@ namespace FluffyMultiplayer
                 if(db.query_to_db())
                 {
                   log.print("lobby settings updated "+lobbyData.getAsStringForOwner(getPlayerUsernameById(lobbyData.ownerId)), FluffyMultiplayer::LogType::Information);
+
+                  changeGameMode();
 
                   //lobby settings updated: id,gm,max,current,voicePort,voiceStatus,textStatus,specterStatus,ownerid
                   std::string responseLobbySettingsUpdated = std::to_string(lobbyData.id);

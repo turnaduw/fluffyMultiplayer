@@ -116,13 +116,19 @@ namespace FluffyMultiplayer
   {
     try
     {
-      if (!statusSocket)
-        return 0;
+      // if (!statusSocket)
+        // return 0;
 
       char buffer[bufferSize];
-      std::memset(buffer, 0, bufferSize);  // Initialize buffer with null characters using memset
+      // std::memset(buffer, 0, bufferSize);  // Initialize buffer with null characters using memset
 
-      size_t receive_length = socket.receive_from(boost::asio::buffer(buffer, bufferSize), senderEndpoint);
+      //make buffer empty
+      for(int i=0; i<bufferSize; i++)
+        buffer[i] = '\0';
+
+      //will return to tell caller how much has length
+      char temp[bufferSize];
+      receive_length = socket.receive_from(boost::asio::buffer(buffer,bufferSize), senderEndpoint);
 
       if(receive_length > bufferSize)
       {
@@ -131,7 +137,11 @@ namespace FluffyMultiplayer
       else
       {
         // Copy received data to the output buffer
-        std::copy_n(buffer, receive_length, data);
+        // std::copy_n(buffer, receive_length, data);
+        //set data
+        for(int i=0; i<bufferSize; i++)
+          data[i] = buffer[i];
+
 
         // Set the sender address
         senderAddress = senderEndpoint;

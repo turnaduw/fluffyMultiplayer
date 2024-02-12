@@ -63,6 +63,9 @@ namespace FluffyMultiplayer
       void sendData();
       void receiveData();
 
+      void changeGameMode();
+
+      
       //data splitters
       std::vector<int> dataIndexes(const std::string& data, const std::string& delimiter) const;
       std::vector<std::string> dataSeparator(const std::string& data, std::string delimiter, int startIndex);

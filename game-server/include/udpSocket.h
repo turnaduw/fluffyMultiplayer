@@ -29,12 +29,13 @@ namespace FluffyMultiplayer
 
     public:
       UdpSocket(boost::asio::io_context& io_context, unsigned short default_port, int _bufferSize)
-          : socket(io_context, udp::endpoint(udp::v4(), default_port)) , statusSocket(false)
+          : socket(io_context, udp::endpoint(udp::v4(), default_port))
       {
         bufferSize = _bufferSize;
         socket.non_blocking(true);
         port = default_port;
         log.init(SOCKET_LOG_FILENAME,SOCKET_PRINT_LOGS_LEVEL);
+        statusSocket=false;
       }
       ~UdpSocket()
       {
