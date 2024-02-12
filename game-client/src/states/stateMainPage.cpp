@@ -2,6 +2,54 @@
 
 namespace FluffyMultiplayer
 {
+
+  StateMainPage::StateMainPage(std::vector<FluffyMultiplayer::Player> _players,
+                              int _textChatLines,
+                              std::array<FluffyMultiplayer::PlayerList,MAX_PLAYERS_IN_LOBBY> _playerList,
+                              FluffyMultiplayer::Text _textChat,
+                              bool _amILobbyOwner,FluffyMultiplayer::App& app)
+  {
+    players = _players;
+    textChatLines = _textChatLines;
+    amILobbyOwner = _amILobbyOwner;
+
+    std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
+    std::string txttemp = "Lobby Id: " + std::to_string(app.lobby->id);
+    initSimpleText(fontPath, txttemp);
+    setSimpleTextPosition(255.0,27.5);
+    setSimpleTextFontsize(15);
+
+    pauseResumeGameButton.init("", ICON_PAUSE , 772.0, 27.5, sf::Color::White,sf::Color::White, 12);
+    lobbySettingsButton.init("", ICON_SETTINGS , 858.0, 27.5, sf::Color::White,sf::Color::White, 12);
+    quitButton.init("", PICTURE_BUTTON_QUIT_TEXTURE , 946.0, 27.5, sf::Color::White,sf::Color::White, 12);
+
+    //intit lines
+    topLine[0] = sf::Vertex(sf::Vector2f(250 , 27.0+70));
+    topLine[1] = sf::Vertex(sf::Vector2f(998, 27.0+70));
+    chatAndPlayerListLine[0] = sf::Vertex(sf::Vector2f(250 , 0));
+    chatAndPlayerListLine[1] = sf::Vertex(sf::Vector2f(250, 750));
+    seperatorChatWithPlayerListLine[0] = sf::Vertex(sf::Vector2f(0 , 440));
+    seperatorChatWithPlayerListLine[1] = sf::Vertex(sf::Vector2f(250, 440));
+
+
+    inputFocus = &chatInput;
+    textChat.initText("",5.0, 450.0);
+    textChat.setFontSize(15);
+    chatInput.init("","","",PLACE_HOLDER_TEXT_CHAT, 5.0, 740.0);
+    sendChatButton.init("", ICON_SEND , 303.0, 740.0, sf::Color::White,sf::Color::White, 12);
+    textChat = _textChat;
+
+    for(int i=0; i<MAX_PLAYERS_IN_LOBBY; i++)
+    {
+      playerList[i].init(-1,PLAYERS_LOBBY_EMPTY_SLOT_NAME,PLAYER_LIST_X, i*PLAYER_LIST_BOX_PER_PLAYER_Y, false,false,false,false,false);
+    }
+    playerList = _playerList;
+
+    //send a request to get latest lobby info maybe after update owner or other data of lobby changed.
+    app.addSendText(REQUEST_GET_LOBBY_INFO);
+  }
+
+
   StateMainPage::StateMainPage(FluffyMultiplayer::App& app)
   {
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
@@ -266,13 +314,23 @@ namespace FluffyMultiplayer
           case RESPONSE_LOBBY_SETTINGS_IS:
           //lobby id, maxplayer, gameMode, currentplayers, voiceChatStatus, textChatStatus, specterStatus, password, ownerId, owner username
           {
+
+            //update applobby
+
             std::cout << "open lobby settings form and insert data into it\n"
                       << "lobby data for owner: lobbyId:" << cData[0] << "\tmaxP:"
                       << cData[1] << "\tGameMode:" << cData[2] << "\tcurrentP:" << cData[3]
                       << "\tvoiceChat:" << cData[4] << "\ttextChat:" << cData[5]
                       << "\tspecterStatus:" << cData[6] << "\tpassowrd:" << cData[7]
-                      << "\townerId:" << cData[7] << "\townerUsername:" << cData[8]
+                      << "\townerId:" << cData[8] << "\townerUsername:" << cData[9]
                       << std::endl;
+
+            //gamemode, maxplayers, textchat, voicechat, specter, owner, password
+            std::vector<std::string> lobbyStr = {cData[2], cData[1], cData[5], cData[4], cData[6], cData[8], cData[7]};
+
+            //remove proccessed elemnt to avoid re proccess them becuase we are getting out of this state,
+            app.receivedTextDataList.pop();
+            return new FluffyMultiplayer::StateLobbySettings(players,textChatLines,playerList,textChat,amILobbyOwner,app,lobbyStr);
           }break;
 
           case RESPONSE_PLAYER_DISCONNECTED: //id
@@ -583,7 +641,7 @@ namespace FluffyMultiplayer
         }
         else if(lobbySettingsButton.getButtonBound().contains(mousePosition))
         {
-          std::cout << "on lobby settings clicked.\n";
+          app.addSendText(REQUEST_GET_LOBBY_SETTINGS);
         }
         else if(pauseResumeGameButton.getButtonBound().contains(mousePosition))
         {

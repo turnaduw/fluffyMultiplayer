@@ -60,9 +60,14 @@ namespace FluffyMultiplayer
     std::string getPlayerNameById(int&);
     void removeFromLobby(int&);
     void isThisPcOwner(int);
-    
+
   public:
     StateMainPage(FluffyMultiplayer::App&);
+    StateMainPage(std::vector<FluffyMultiplayer::Player> players,
+                                int textChatLines,
+                                std::array<FluffyMultiplayer::PlayerList,MAX_PLAYERS_IN_LOBBY> playerList,
+                                FluffyMultiplayer::Text textChat,
+                                bool amILobbyOwner, FluffyMultiplayer::App&);
     ~StateMainPage();
     void render(sf::RenderWindow&);
     FluffyMultiplayer::AppState* update(FluffyMultiplayer::App&);
