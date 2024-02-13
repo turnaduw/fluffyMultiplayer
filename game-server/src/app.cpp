@@ -912,7 +912,18 @@ namespace FluffyMultiplayer
                 {
                   if(startGame())
                   {
-                    response(RESPONSE_GAME_STARTED,&inLobbyPlayers,nullptr,false);
+                    std::string playersInGameStr; //for each player: id, name, colorIndex/playerIndex
+                    for(int i=0; i<inLobbyPlayers.size(); i++)
+                    {
+                      playersInGameStr += std::to_string(inLobbyPlayers[i].id);
+                      playersInGameStr += MS_DATA_DELIMITER;
+                      playersInGameStr += inLobbyPlayers[i].name;
+                      playersInGameStr += MS_DATA_DELIMITER;
+                      playersInGameStr += std::to_string(i);
+                      playersInGameStr += MS_DATA_DELIMITER;
+                    }
+
+                    response(RESPONSE_GAME_STARTED,playersInGameStr,&inLobbyPlayers,nullptr,false);
                     currentGameMode->startGameMode();
                   }
                   else
