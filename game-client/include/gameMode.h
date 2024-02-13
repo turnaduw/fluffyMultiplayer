@@ -31,8 +31,7 @@ namespace FluffyMultiplayer
       int gameModeId;
 
     public:
-      virtual void addPlayerToGame(FluffyMultiplayer::PlayerList&)=0;
-      virtual int howManyPlayersAreInGame() const =0;
+      virtual void updatePlayersInGame(std::vector<std::string>& receivedPlayersInGameInfo,int myId)=0;
       virtual FluffyMultiplayer::GameMode* update(int& currentItemCode, std::vector<std::string>& cData)=0;
       virtual void render(sf::RenderWindow& window)=0;
       virtual FluffyMultiplayer::GameMode* eventHandle(sf::RenderWindow& window,sf::Event& event,

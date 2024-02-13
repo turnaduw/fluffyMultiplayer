@@ -193,7 +193,7 @@ namespace FluffyMultiplayer
             setSimpleTextValue("Lobby Id: "+cData[0]);
 
             //set lobby gameMode
-            app.changeGameMode(app.lobby->gameMode,playerList);
+            app.changeGameMode(app.lobby->gameMode);
 
 
           }break;
@@ -275,7 +275,7 @@ namespace FluffyMultiplayer
 
               app.lobby->gameMode=stringToInt(cData[1]);
               //set lobby gameMode
-              app.changeGameMode(app.lobby->gameMode,playerList);
+              app.changeGameMode(app.lobby->gameMode);
 
               app.lobby->maxPlayers=stringToInt(cData[2]);
               app.lobby->currentPlayers=stringToInt(cData[3]);
@@ -376,11 +376,6 @@ namespace FluffyMultiplayer
               if(playerList[i].getName() == PLAYERS_LOBBY_EMPTY_SLOT_NAME)
               {
                 playerList[i].init(id,name,PLAYER_LIST_X,i*PLAYER_LIST_BOX_PER_PLAYER_Y,false,voiceChat,owner,specter,admin);//false is for IsMe (this is another player always is false)
-
-                if(!specter && app.currentGameMode!=nullptr)
-                {
-                  app.currentGameMode->addPlayerToGame(playerList[i]);
-                }
                 break;
               }
             }
@@ -414,9 +409,12 @@ namespace FluffyMultiplayer
             std::cout << "game is stopped\n";
           }break;
 
-          case RESPONSE_GAME_STARTED:
+          case RESPONSE_GAME_STARTED: //for each player unknown count.. (id,name,an int (indexOfPlayer))
+          //in this case index of player can be color for piece player
           {
             app.startGame();
+            std::cout << "will call updatePlayersInGame for gamemode size cData=" << cData.size() << std::endl;
+            app.currentGameMode->updatePlayersInGame(cData,playerList[THIS_CLIENT_PLYARE_LOBBY_INDEX].getId());
             std::cout << "game is started\n";
           }break;
 

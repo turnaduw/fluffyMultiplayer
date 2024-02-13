@@ -114,7 +114,7 @@ namespace FluffyMultiplayer
       bool addSendVoice(int code);
       bool addSendText(int code, std::string data);
       bool addSendText(int code);
-      void changeGameMode(int gameModeId,std::array<FluffyMultiplayer::PlayerList,MAX_PLAYERS_IN_LOBBY>& playerList);
+      void changeGameMode(int gameModeId);
       void stopGame();
       void startGame();
 

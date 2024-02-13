@@ -47,9 +47,7 @@
 
 #define MENSCH_PLAYER_DEFAULT_COLOR sf::Color::Green
 
-#define HOMES_COUNT MENSCH_PLAYERS_COUNT*MENSCH_PIECE_PER_PLAYER
-#define MAPCIRCLES MENSCH_ROOM_PER_PLAYER*MENSCH_PLAYERS_COUNT
-#define MENSCH_MAP_COUNT HOMES_COUNT+MAPCIRCLES
+#define MENSCH_MAP_COUNT 56
 
 #define GM_MENSCH_BACKGROUND_PADDING_X 0.0
 #define GM_MENSCH_BACKGROUND_PADDING_Y 0.0
@@ -141,6 +139,9 @@ namespace FluffyMultiplayer
 
   class GM_MENSCH : public GameMode
   {
+    private:
+      void initMap();
+
     public:
       FluffyMultiplayer::Text turnLabel;
       std::array<FluffyMultiplayer::MenschPlayer,MENSCH_PLAYERS_COUNT> players;
@@ -148,7 +149,6 @@ namespace FluffyMultiplayer
       int turn; //hold player turns index
       std::array<FluffyMultiplayer::MapCircle,MENSCH_MAP_COUNT> menschMap;
       FluffyMultiplayer::SocketSendData sendTemp;
-      int playersInGameCounter; //hold count of players in game added
 
       // FluffyMultiplayer::Icon backgroundGameMode;
       FluffyMultiplayer::LobbyData* lobby;
@@ -156,8 +156,7 @@ namespace FluffyMultiplayer
       //mouse event handel variable to delecre once, not per loop delcre
       sf::Vector2f mousePosition;
 
-      void addPlayerToGame(FluffyMultiplayer::PlayerList& thatplayer);
-      int howManyPlayersAreInGame() const;
+      void updatePlayersInGame(std::vector<std::string>& playersInfo, int myId);
 
       FluffyMultiplayer::GameMode* update(int& currentItemCode, std::vector<std::string>& cData);
       int stringToInt(const std::string& str);

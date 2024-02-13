@@ -51,6 +51,7 @@ namespace FluffyMultiplayer
     else
     {
       std::cout << "failed to kick there is no1.\n";
+      piece=nullptr;
     }
   }
 
@@ -160,83 +161,68 @@ namespace FluffyMultiplayer
   //---------------------------------------
   // GM_MENSCH
 
-  int GM_MENSCH::howManyPlayersAreInGame() const
+  void GM_MENSCH::initMap()
   {
-    return playersInGameCounter;
-  }
-
-  void GM_MENSCH::addPlayerToGame(FluffyMultiplayer::PlayerList& thatplayer)
-  {
-    std::array<sf::Color,MENSCH_PLAYERS_COUNT> tempColors =
-    {
-      sf::Color::Red,
-      sf::Color::Green,
-      sf::Color::Blue,
-      sf::Color::Yellow
-    };
-
-    for(int i=0; i<MAX_PLAYERS_IN_LOBBY; i++)
-    {
-      if(players[i].id == -1)
-      {
-        players[i].init(thatplayer.getId(),thatplayer.getName(),false,tempColors[i],thatplayer.isMe); //this client
-        playersInGameCounter++;
-        break;
-      }
-    }
-  }
-
-  GM_MENSCH::GM_MENSCH(sf::RenderWindow& window, FluffyMultiplayer::LobbyData* _lobby)
-  {
-    //set lobby details
-    lobby = _lobby;
-    playersInGameCounter=0;
-
-    //labels:
-    turnLabel.initText("turn:",
-              (window.getSize().y/2)-100,
-              (window.getSize().y/2)-100);
-
-
-    dice.setPosition(200.0,100.0);//(window.getSize().x/5),(window.getSize().y/2));
-
-    //background
-    // backgroundGameMode.initIcon(ICON_BACKGROUND_GAMEMODE_MENSCH, ((window.getSize().x/2)-GM_MENSCH_BG_SIZE_X/2)+GM_MENSCH_BACKGROUND_PADDING_X, ((window.getSize().y/2)-GM_MENSCH_BG_SIZE_Y/2)+GM_MENSCH_BACKGROUND_PADDING_Y);
-
-
-    //example
-    players[0].init(1,"alex",true,sf::Color::Red,true); //this client
-    players[1].init(2,"luki",false,sf::Color::Green,false);
-    players[2].init(3,"max",false,sf::Color::Yellow,false);
-    players[3].init(4,"peter",false,sf::Color::Blue,false);
-
-    //example: set pieces into center
-    for(int i=0; i<MENSCH_PLAYERS_COUNT; i++)
-      for(int j=0; j<MENSCH_PIECE_PER_PLAYER; j++)
-      {
-        players[i].pieces[j].setPosition( (window.getSize().x/2)+i*65, (window.getSize().y/2)+j*65 );
-        // std::cout << "player,piece : " << i << ","<< j << "\tx:" << players[i].pieces[j].position.x << "\ty:" << players[i].pieces[j].position.y << std::endl;
-      }
-
-
-
+    std::cout << "init map..\n";
     //init map:
-    std::array<sf::Vector2f,MENSCH_MAP_COUNT> mapPositions =
+    std::array<sf::Vector2f, MENSCH_MAP_COUNT> mapPositions =
     {
-      sf::Vector2f(738.0 ,840.0), sf::Vector2f(741.0 ,783.0), sf::Vector2f(742.0 ,721.0), sf::Vector2f(742.0 ,661.0),
-      sf::Vector2f(741.0 ,600.0), sf::Vector2f(682.0 ,597.0), sf::Vector2f(619.0 ,597.0), sf::Vector2f(557.0 ,595.0),
-      sf::Vector2f(496.0 ,594.0), sf::Vector2f(494.0 ,534.0), sf::Vector2f(555.0 ,536.0), sf::Vector2f(618.0 ,534.0),
-      sf::Vector2f(678.0 ,533.0), sf::Vector2f(742.0 ,534.0), sf::Vector2f(496.0 ,474.0), sf::Vector2f(556.0 ,470.0),
-      sf::Vector2f(616.0 ,469.0), sf::Vector2f(676.0 ,469.0), sf::Vector2f(738.0 ,470.0), sf::Vector2f(739.0 ,407.0),
-      sf::Vector2f(739.0 ,344.0), sf::Vector2f(739.0 ,285.0), sf::Vector2f(736.0 ,223.0), sf::Vector2f(800.0 ,221.0),
-      sf::Vector2f(806.0 ,283.0), sf::Vector2f(805.0 ,346.0), sf::Vector2f(803.0 ,406.0), sf::Vector2f(802.0 ,473.0),
-      sf::Vector2f(865.0 ,225.0), sf::Vector2f(866.0 ,283.0), sf::Vector2f(866.0 ,347.0), sf::Vector2f(867.0 ,412.0),
-      sf::Vector2f(865.0 ,469.0), sf::Vector2f(923.0 ,470.0), sf::Vector2f(983.0 ,472.0), sf::Vector2f(1051.0 ,472.0),
-      sf::Vector2f(1109.0 ,471.0), sf::Vector2f(1115.0 ,534.0), sf::Vector2f(1053.0 ,533.0), sf::Vector2f(993.0 ,537.0),
-      sf::Vector2f(927.0 ,529.0), sf::Vector2f(864.0 ,531.0), sf::Vector2f(1114.0 ,596.0), sf::Vector2f(1051.0 ,596.0),
-      sf::Vector2f(990.0 ,595.0), sf::Vector2f(929.0 ,595.0), sf::Vector2f(866.0 ,590.0), sf::Vector2f(868.0 ,655.0),
-      sf::Vector2f(868.0 ,721.0), sf::Vector2f(865.0 ,779.0), sf::Vector2f(867.0 ,838.0), sf::Vector2f(804.0 ,841.0),
-      sf::Vector2f(806.0 ,779.0), sf::Vector2f(807.0 ,720.0), sf::Vector2f(803.0 ,656.0), sf::Vector2f(799.0 ,598.0)
+      sf::Vector2f(538.0, 740.0),
+      sf::Vector2f(541.0, 683.0),
+      sf::Vector2f(542.0, 621.0),
+      sf::Vector2f(542.0, 561.0),
+      sf::Vector2f(541.0, 500.0),
+      sf::Vector2f(482.0, 497.0),
+      sf::Vector2f(419.0, 497.0),
+      sf::Vector2f(357.0, 495.0),
+      sf::Vector2f(296.0, 494.0),
+      sf::Vector2f(294.0, 434.0),
+      sf::Vector2f(355.0, 436.0),
+      sf::Vector2f(418.0, 434.0),
+      sf::Vector2f(478.0, 433.0),
+      sf::Vector2f(542.0, 434.0),
+      sf::Vector2f(296.0, 374.0),
+      sf::Vector2f(356.0, 370.0),
+      sf::Vector2f(416.0, 369.0),
+      sf::Vector2f(476.0, 369.0),
+      sf::Vector2f(538.0, 370.0),
+      sf::Vector2f(539.0, 307.0),
+      sf::Vector2f(539.0, 244.0),
+      sf::Vector2f(539.0, 185.0),
+      sf::Vector2f(536.0, 123.0),
+      sf::Vector2f(600.0, 121.0),
+      sf::Vector2f(606.0, 183.0),
+      sf::Vector2f(605.0, 246.0),
+      sf::Vector2f(603.0, 306.0),
+      sf::Vector2f(602.0, 373.0),
+      sf::Vector2f(665.0, 125.0),
+      sf::Vector2f(666.0, 183.0),
+      sf::Vector2f(666.0, 247.0),
+      sf::Vector2f(667.0, 312.0),
+      sf::Vector2f(665.0, 369.0),
+      sf::Vector2f(723.0, 370.0),
+      sf::Vector2f(783.0, 372.0),
+      sf::Vector2f(851.0, 372.0),
+      sf::Vector2f(909.0, 371.0),
+      sf::Vector2f(915.0, 434.0),
+      sf::Vector2f(853.0, 433.0),
+      sf::Vector2f(793.0, 437.0),
+      sf::Vector2f(727.0, 429.0),
+      sf::Vector2f(664.0, 431.0),
+      sf::Vector2f(914.0, 496.0),
+      sf::Vector2f(851.0, 496.0),
+      sf::Vector2f(790.0, 495.0),
+      sf::Vector2f(729.0, 495.0),
+      sf::Vector2f(666.0, 490.0),
+      sf::Vector2f(668.0, 555.0),
+      sf::Vector2f(668.0, 621.0),
+      sf::Vector2f(665.0, 679.0),
+      sf::Vector2f(667.0, 738.0),
+      sf::Vector2f(604.0, 741.0),
+      sf::Vector2f(606.0, 679.0),
+      sf::Vector2f(607.0, 620.0),
+      sf::Vector2f(603.0, 556.0),
+      sf::Vector2f(599.0, 498.0)
     };
 
     std::array<FluffyMultiplayer::ColorCircles,MENSCH_PLAYERS_COUNT*5> mapColored =
@@ -270,16 +256,122 @@ namespace FluffyMultiplayer
       menschMap[mapColored[i].id].setColor(mapColored[i].color);
     }
   }
+  void GM_MENSCH::updatePlayersInGame(std::vector<std::string>& playersInfo, int myId)
+  {
+    std::cout << "myId=" << myId << std::endl;
+    //received data or playersInfo holding data for each player : id , name , index
+    // received index or same i or .. in this case we call it player color
+
+    const int eachPlayerDataCount = 3;
+    std::array<sf::Color,4> tempColors =
+    {
+      sf::Color::Red,
+      sf::Color::Green,
+      sf::Color::Blue,
+      sf::Color::Yellow
+    };
+
+    bool _isme = false;
+    std::vector<FluffyMultiplayer::MenschPlayer> playersReceived;
+    FluffyMultiplayer::MenschPlayer tempPlayer;
+    if(playersInfo.size()/eachPlayerDataCount >= MENSCH_PLAYERS_COUNT)
+    {
+      int pid=0;
+
+      //seperate received players put in a temp player and push that into a list
+      //because index in this loop works diffrent so we need to create another loop to assign into array players
+      for(int i=0; i<MENSCH_PLAYERS_COUNT*3; i+=3)
+      {
+        pid = stringToInt(playersInfo[i]);
+        if(myId == pid)
+        {
+          _isme = true;
+        }
+        else
+        {
+          _isme = false;
+        }
+
+
+        tempPlayer.init(pid,playersInfo[i+1],false,tempColors[stringToInt(playersInfo[i+2])],_isme);
+        playersReceived.push_back(tempPlayer);
+        std::cout << "+ a player collected from receivedPlayers from cData.\n";
+      }
+
+      //set received playersi with count of players we need into players array
+      if(playersReceived.size()>=MENSCH_PLAYERS_COUNT)
+      {
+        for(int i=0; i<MENSCH_PLAYERS_COUNT; i++)
+        {
+          players[i].init(playersReceived[i].id,playersReceived[i].name,false,playersReceived[i].color,playersReceived[i].isMe); //this client
+          for(int j=0; j<MENSCH_PIECE_PER_PLAYER; j++)
+          {
+            players[i].pieces[j].setPosition( i*65, j*65 );
+          }
+          std::cout << "player added into game players[i].init called.\n";
+        }
+
+        //print players on console
+        std::cout <<"print players in game on console: \n\n\n";
+        for(int i=0; i<MENSCH_PLAYERS_COUNT; i++)
+        {
+          std::cout << "id=" << players[i].id << "\tname=" << players[i].name << "\tisMe?" << players[i].isMe << std::endl;
+        }
+
+        initMap();
+      }
+      else
+      {
+        std::cout << "playerreceived size is small. size=" << playersReceived.size() << std::endl;
+      }
+    }
+    else
+    {
+      std::cout << "updatePlayersInGame: small players data received. count=" << playersInfo.size() << std::endl;
+    }
+
+
+  }
+
+  GM_MENSCH::GM_MENSCH(sf::RenderWindow& window, FluffyMultiplayer::LobbyData* _lobby)
+  {
+    //set lobby details
+    lobby = _lobby;
+
+    //labels:
+    turnLabel.initText("turn:",
+              (window.getSize().y/2)-100,
+              (window.getSize().y/2)-100);
+
+
+    dice.setPosition(300.0,50.0);//(window.getSize().x/5),(window.getSize().y/2));
+
+    //background
+    // backgroundGameMode.initIcon(ICON_BACKGROUND_GAMEMODE_MENSCH, ((window.getSize().x/2)-GM_MENSCH_BG_SIZE_X/2)+GM_MENSCH_BACKGROUND_PADDING_X, ((window.getSize().y/2)-GM_MENSCH_BG_SIZE_Y/2)+GM_MENSCH_BACKGROUND_PADDING_Y);
+
+
+    //example
+    // players[0].init(1,"alex",true,sf::Color::Red,true); //this client
+    // players[1].init(2,"luki",false,sf::Color::Green,false);
+    // players[2].init(3,"max",false,sf::Color::Yellow,false);
+    // players[3].init(4,"peter",false,sf::Color::Blue,false);
+
+    //example: set pieces into center
+    for(int i=0; i<MENSCH_PLAYERS_COUNT; i++)
+      for(int j=0; j<MENSCH_PIECE_PER_PLAYER; j++)
+      {
+        players[i].pieces[j].setPosition( (window.getSize().x/2)+i*65, (window.getSize().y/2)+j*65 );
+        // std::cout << "player,piece : " << i << ","<< j << "\tx:" << players[i].pieces[j].position.x << "\ty:" << players[i].pieces[j].position.y << std::endl;
+      }
+  }
 
 
   void GM_MENSCH::render(sf::RenderWindow& window)
   {
     // backgroundGameMode.render(window);
-    std::cout << "MENSCH_MAP_COUNT: " << MENSCH_MAP_COUNT << std::endl;
     //render map circles
     for(int i=0; i<MENSCH_MAP_COUNT; i++)
     {
-      std::cout << "i = " << i << " and MENSCH_MAP_COUNT=" << MENSCH_MAP_COUNT << std::endl;
       menschMap[i].pb.render(window);
     }
 
@@ -424,9 +516,32 @@ namespace FluffyMultiplayer
         int playerId = stringToInt(cData[0]);
         int pieceId = stringToInt(cData[1]);
         int roomIndex = stringToInt(cData[2]);
-        menschMap[roomIndex].sit(&players[playerId].pieces[pieceId]);
+        std::cout << "moved piece details: player " <<playerId << " piece " << pieceId << " into room " << roomIndex << std::endl;
+        if(roomIndex<=MENSCH_MAP_COUNT)
+        {
+          if(pieceId<=3 && pieceId>-1)
+          {
+            for(int i=0; i<MENSCH_PLAYERS_COUNT; i++)
+            {
+              if(players[i].id == playerId)
+              {
+                std::cout << "move piece players[i].id" << players[i].id << " playerid="<< playerId << " pieceId=" << pieceId << std::endl;
+                menschMap[roomIndex].sit(&players[i].pieces[pieceId]);
+                break;
+              }
+            }
+          }
+          else
+          {
+            std::cout << "player moved piece: piece id invalid pieceId:" << pieceId << std::endl;
+          }
+        }
+        else
+        {
+          std::cout << "player moved piece: invalid room index.\n";
+          std::cout << "room index = " << roomIndex << "\tMENSCH_MAP_COUNT=" << MENSCH_MAP_COUNT << std::endl;
+        }
 
-        std::cout << "moved piece details: player " <<playerId << " piece " << pieceId << " into room" << roomIndex << std::endl;
       }break;
 
       case PLAYER_ROLED_DICE: //diceNumber

@@ -16,7 +16,7 @@ namespace FluffyMultiplayer
 
   }
 
-  void App::changeGameMode(int gameModeId,std::array<FluffyMultiplayer::PlayerList,MAX_PLAYERS_IN_LOBBY>& playerList)
+  void App::changeGameMode(int gameModeId)
   {
     switch (gameModeId)
     {
@@ -25,13 +25,6 @@ namespace FluffyMultiplayer
         stopGame();
         log.print("selected gameMode is Mensch", FluffyMultiplayer::LogType::Information);
         currentGameMode = new FluffyMultiplayer::GM_MENSCH(appWindow,lobby);
-        for(int i=0; i<MAX_PLAYERS_IN_LOBBY; i++)
-        {
-          if(playerList[i].getId() > -1)
-          {
-            currentGameMode->addPlayerToGame(playerList[i]);
-          }
-        }
       }break;
 
       default:
