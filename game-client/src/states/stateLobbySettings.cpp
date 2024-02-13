@@ -160,7 +160,7 @@ namespace FluffyMultiplayer
 
           std::string lobbyUpdatedData = maxPlayersList[maxPlayersSpinBox.getCurrentIndex()];
           lobbyUpdatedData += MS_DATA_DELIMITER;
-          lobbyUpdatedData += gameModeSpinBox.getCurrentIndex();
+          lobbyUpdatedData += std::to_string(gameModeSpinBox.getCurrentIndex());
           lobbyUpdatedData += MS_DATA_DELIMITER;
           lobbyUpdatedData += std::to_string(!voiceChatCheckBox.getStatus());
           lobbyUpdatedData += MS_DATA_DELIMITER;
@@ -196,12 +196,10 @@ namespace FluffyMultiplayer
         else if(gameModeSpinBoxBounds[0].contains(mousePosition)) //spin box game mode
         {
           gameModeSpinBox.spinUp();
-          std::cout << "spinup: gameMode index=" << gameModeSpinBox.getCurrentIndex() << std::endl;
         }
         else if(gameModeSpinBoxBounds[1].contains(mousePosition)) //spin box game mode
         {
           gameModeSpinBox.spinDown();
-          std::cout << "spindown: gameMode index=" << gameModeSpinBox.getCurrentIndex() << std::endl;
         }
         else if(maxPlayersSpinBoxBounds[0].contains(mousePosition)) //spin box max players
         {

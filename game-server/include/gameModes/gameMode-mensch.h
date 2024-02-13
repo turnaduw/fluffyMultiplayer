@@ -54,7 +54,7 @@
 
 // ------- responses 701->999
 #define PLAYER_MOVED_PIECE 701 //playerId, pieceI, roomIndex
-#define PIECE_KICKED 702
+// #define PIECE_KICKED 702
 #define PLAYER_ROLED_DICE 703 //diceNumber
 #define TURN_FOR 704 //playerId
 #define UPDATE_BOARD 705
@@ -93,6 +93,8 @@ namespace FluffyMultiplayer
       std::array<FluffyMultiplayer::GM_MENSCH_PIECE, MENSCH_PLAYERS_COUNT - 1> piece;
       FluffyMultiplayer::AnAddress address;
 
+      GM_MENSCH_PLAYER();
+
       void set(int _id,
             FluffyMultiplayer::GM_MENSCH_PIECE_TYPE _type,
             std::array<FluffyMultiplayer::GM_MENSCH_PIECE, MENSCH_PLAYERS_COUNT -1> _piece);
@@ -107,9 +109,11 @@ namespace FluffyMultiplayer
     private:
       std::array<FluffyMultiplayer::GM_MENSCH_PIECE_MAP,MENSCH_PLAYERS_COUNT> roads;
 
+      FluffyMultiplayer::App* appPtr;
       int connectedPlayersCounter;
-      int turn; //hold player's id
+      int turn; //hold an index turn make loop for turns 0 to count of players..
       int diceValue; //hold roled value untill that player move piece
+      int playerIdTurn; //hold player's id
 
       std::array<FluffyMultiplayer::GM_MENSCH_PLAYER,
               MENSCH_PLAYERS_COUNT> players;
@@ -141,7 +145,10 @@ namespace FluffyMultiplayer
                             const FluffyMultiplayer::SocketReceiveData& currentItem,
                             const std::vector<std::string>& cData);
 
-
+      void startGameMode();
+      void addPlayerToGame(FluffyMultiplayer::App& app, int index);
+      void removePlayerFromGame(FluffyMultiplayer::App& app, int playerId);
+      int howManyPlayersAreInGame() const;
       GameModeMensch(FluffyMultiplayer::App& app);
       ~GameModeMensch();
   };

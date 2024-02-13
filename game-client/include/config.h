@@ -104,7 +104,7 @@
 #define UI_COMPONENT_TEXTURE_DEFAULT "./somewhere/componentTextureNotFound.png"
 #define UI_COMPONENT_FONT_DEFAULT "./somewhere/componentFontNotFound.ttf"
 
-#define MAX_PLAYERS_IN_LOBBY 5
+#define MAX_PLAYERS_IN_LOBBY 4
 #define PLAYERS_LOBBY_EMPTY_SLOT_NAME "empty"
 #define PLACE_HOLDER_TEXT_CHAT "enter text"
 //state main page elements: 48x48

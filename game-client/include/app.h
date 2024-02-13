@@ -36,6 +36,9 @@ using boost::asio::ip::udp;
 #include "./uiComponents/notificationBox.h"
 
 
+//a define for changeGameMode
+#include "./uiComponents/playerList.h"
+
 namespace FluffyMultiplayer
 {
   class AppState;
@@ -68,7 +71,7 @@ namespace FluffyMultiplayer
 
     public:
       bool gameIsRunning; //a flag stop or start game
-
+      bool isLobbySettingsOn; // a flag to avoid render currentGame on lobbySettingsState
       bool inLobby;
       FluffyMultiplayer::Log log;
       FluffyMultiplayer::GameMode* currentGameMode;
@@ -111,7 +114,7 @@ namespace FluffyMultiplayer
       bool addSendVoice(int code);
       bool addSendText(int code, std::string data);
       bool addSendText(int code);
-      void changeGameMode(int gameModeId);
+      void changeGameMode(int gameModeId,std::array<FluffyMultiplayer::PlayerList,MAX_PLAYERS_IN_LOBBY>& playerList);
       void stopGame();
       void startGame();
 

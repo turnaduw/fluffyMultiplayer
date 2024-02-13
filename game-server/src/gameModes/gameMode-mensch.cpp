@@ -23,6 +23,11 @@ namespace FluffyMultiplayer
     address = _address;
   }
 
+  GM_MENSCH_PLAYER::GM_MENSCH_PLAYER()
+  {
+    id=-1;
+  }
+
 
   //------------------------------------------------------
   //GameModeMensch
@@ -49,12 +54,19 @@ namespace FluffyMultiplayer
       turn = 0;
 
     diceValue=0;
-    std::cout << "next turn: " << turn << std::endl;
+    playerIdTurn = players[turn].id;
+
+    //broadcast to players dice is reseted.
+    broadCast((*appPtr),PLAYER_ROLED_DICE,std::to_string(diceValue),true);
+
+    //broadcast turn:
+    broadCast((*appPtr),TURN_FOR,std::to_string(playerIdTurn),true);
+    std::cout << "next turn, now turn is for player with id: " << playerIdTurn << std::endl;
   }
 
   bool GameModeMensch::isTurn(int playerId)
   {
-    if(turn == playerId)
+    if(players[turn].id == playerId)
       return true;
     else
       return false;
@@ -118,27 +130,27 @@ namespace FluffyMultiplayer
     return false;
   }
 
-  int GameModeMensch::getOwnerByPieceId(int id)
-  {
-    for(int i=0; i<MENSCH_PLAYERS_COUNT-1; i++)
-    {
-      for(int j=0; j<MENSCH_PLAYERS_COUNT-1; j++)
-      {
-        if(players[i].piece[j].id == id)
-          return i;
-      }
-    }
-    return -1;
-  }
+  // int GameModeMensch::getOwnerByPieceId(int id)
+  // {
+  //   for(int i=0; i<MENSCH_PLAYERS_COUNT-1; i++)
+  //   {
+  //     for(int j=0; j<MENSCH_PLAYERS_COUNT-1; j++)
+  //     {
+  //       if(players[i].piece[j].id == id)
+  //         return i;
+  //     }
+  //   }
+  //   return -1;
+  // }
 
   void GameModeMensch::kickPiece(int id)
   {
-    int owner = getOwnerByPieceId(id);
-    for(int i=0; i<MENSCH_PLAYERS_COUNT-1; i++)
-    {
-      if(players[owner].piece[i].id == id)
-        players[owner].piece[i].position = DEAD_POSITION;
-    }
+    // int owner = getOwnerByPieceId(id);
+    // for(int i=0; i<MENSCH_PLAYERS_COUNT-1; i++)
+    // {
+    //   if(players[owner].piece[i].id == id)
+    //     players[owner].piece[i].position = DEAD_POSITION;
+    // }
   }
 
   GameModeMensch::~GameModeMensch()
@@ -148,38 +160,19 @@ namespace FluffyMultiplayer
 
   GameModeMensch::GameModeMensch(FluffyMultiplayer::App& app)
   {
+    gameModeId=1;
+    appPtr=&app;
+
     std::cout << "gameMode Mensch constructor.\n";
     connectedPlayersCounter=0;
-    gameModeId=1;
     turn=-1;
     diceValue=0;
-
-    int totalPieceId=0;
-    //add players into game
-    for(int i=0; i<MENSCH_PLAYERS_COUNT-1; i++)
-    {
-      players[i].set(app.inLobbyPlayers[i].id,
-            static_cast<FluffyMultiplayer::GM_MENSCH_PIECE_TYPE>(i), app.inLobbyPlayers[i].address);
-
-      //init pieces
-      for(int k=0; k<MENSCH_PLAYERS_COUNT-1;k++)
-      {
-        players[i].piece[k].position = DEAD_POSITION;//all dead in first game.
-        if(totalPieceId< MENSCH_PLAYERS_COUNT*MENSCH_PLAYERS_COUNT) //total < max pieces
-        {
-          players[i].piece[k].id = k;
-          totalPieceId++;
-        }
-      }
-    }
 
     //fill gameBoard with zeroes
     for(int i=0; i<(MENSCH_PLAYERS_COUNT*MENSCH_ROOM_PER_PLAYER)+(MENSCH_PLAYERS_COUNT*MENSCH_PIECE_PER_PLAYER); i++)
     {
       board[i] = BOARD_EMPTY_VALUE;
     }
-
-
 
     //set roads, dead position set becuase maybe in future we need place 4x for each player as dead points
     //index,        dead,              spawn,                                        {homes}
@@ -189,12 +182,58 @@ namespace FluffyMultiplayer
     roads[3] = GM_MENSCH_PIECE_MAP{DEAD_POSITION, SPAWN_TYPE_D_INDEX, {HOME_TYPE_D_INDEX1, HOME_TYPE_D_INDEX2, HOME_TYPE_D_INDEX3, HOME_TYPE_D_INDEX4}}; //typeD
 
 
-    //turn
-    nextTurn();
-    //broadcast turn:
-    broadCast(app,TURN_FOR,"now turn is for player with id ..",true);
+
   }
 
+  void GameModeMensch::removePlayerFromGame(FluffyMultiplayer::App& app, int playerId)
+  {
+    connectedPlayersCounter--;
+    //remove that from if id == playerId
+  }
+  void GameModeMensch::startGameMode()
+  {
+    nextTurn();
+  }
+
+  void GameModeMensch::addPlayerToGame(FluffyMultiplayer::App& app, int playerIndexInLobbyPlayers)
+  {
+    if(connectedPlayersCounter<=3)
+    {
+      // add players into game
+      for(int i=0; i<MENSCH_PLAYERS_COUNT-1; i++)
+      {
+        if(players[i].id == -1)
+        {
+          connectedPlayersCounter++;
+
+          //set that receievd as player
+          players[i].set(app.inLobbyPlayers[playerIndexInLobbyPlayers].id,
+            static_cast<FluffyMultiplayer::GM_MENSCH_PIECE_TYPE>(i), app.inLobbyPlayers[playerIndexInLobbyPlayers].address);
+
+          //init pieces for that player
+          for(int k=0; k<MENSCH_PIECE_PER_PLAYER-1;k++)
+          {
+            players[i].piece[k].position = DEAD_POSITION;//all dead in first game.
+            players[i].piece[k].id = k;
+          }
+
+          break;
+        }
+        else
+        {
+          continue;
+        }
+      }
+    }
+    else
+    {
+      std::cout << "game-mode mensch: game players are full can not add\n";
+    }
+  }
+  int GameModeMensch::howManyPlayersAreInGame() const
+  {
+    return connectedPlayersCounter;
+  }
   FluffyMultiplayer::GameMode* GameModeMensch::process(FluffyMultiplayer::App& app,
                         const FluffyMultiplayer::SocketReceiveData& currentItem,
                         const std::vector<std::string>& cData)
@@ -213,26 +252,30 @@ namespace FluffyMultiplayer
         {
           case ROLE_DICE:
           {
-            //role dice
-            diceValue = rollDice();
-
-            if(isPlayerAbleToMove())
+            if(isTurn(requesterId))
             {
-              //broadcast role result:
-              broadCast(app,PLAYER_ROLED_DICE,"player with id : .. rolled result = ..",true);
+              //role dice
+              diceValue = rollDice();
+
+              if(isPlayerAbleToMove())
+              {
+                //broadcast role result:
+                broadCast(app,PLAYER_ROLED_DICE,std::to_string(diceValue),true);
+              }
+              else
+              {
+                //broadcast role result:
+                broadCast(app,PLAYER_ROLED_DICE,std::to_string(diceValue),true);
+                std::cout << "player with id : .. rolled result = .. but he could not able to move.. " << std::endl;
+
+                // that player with that role number is not able to move, next turn
+                nextTurn();
+              }
             }
             else
             {
-              //broadcast role result:
-              broadCast(app,PLAYER_ROLED_DICE,"player with id : .. rolled result = .. but he could not able to move.. ",true);
-
-              // that player with that role number is not able to move, next turn
-              nextTurn();
-
-              //broadcast turn:
-              broadCast(app,TURN_FOR,"next turn, now turn is for player with id ..",true);
+              //not ur turn
             }
-
           }break;
 
           case MOVE_PIECE: //cData[0]->id that piece wants to move
@@ -242,7 +285,7 @@ namespace FluffyMultiplayer
               if(isTurn(requesterId))
               {
                 int pieceId = app.stringToInt(cData[0]);
-                if(getOwnerByPieceId(pieceId) == requesterId)
+                // if(getOwnerByPieceId(pieceId) == requesterId)
                 {
                   //logic...
                   int lastpos = players[requesterId].piece[pieceId].position;
@@ -256,8 +299,8 @@ namespace FluffyMultiplayer
                     if(board[newpos]!=BOARD_EMPTY_VALUE)
                     {
                       //kick out old one piece
-                      kickPiece(board[newpos]);
-                      broadCast(app,PIECE_KICKED,"pieceId kicked by ..", true);
+                      // kickPiece(board[newpos]);
+                      // broadCast(app,PIECE_KICKED,"pieceId kicked by ..", true);
 
                       //place new piece
                       board[newpos] = pieceId;
@@ -270,18 +313,25 @@ namespace FluffyMultiplayer
                     //reset diceValue
                     diceValue=0;
 
-                    //broadcast result
-                    broadCast(app,PLAYER_MOVED_PIECE,"pieceId .. moved +X",true);
+                    //broadcast result (playerid, piece id, newpoistion)
+                    std::string res = std::to_string(requesterId);
+                    res += MS_DATA_DELIMITER;
+                    res += std::to_string(pieceId);
+                    res += MS_DATA_DELIMITER;
+                    res += std::to_string(newpos);
+                    res += MS_DATA_DELIMITER;
+
+                    broadCast(app,PLAYER_MOVED_PIECE,res,true);
                   }
                   else
                   {
                     //new position is inavlid value.. something went wrong
                   }
                 }
-                else
-                {
+                // else
+                // {
                   //you dont own this piece..
-                }
+                // }
               }
               else
               {

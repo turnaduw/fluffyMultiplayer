@@ -38,9 +38,9 @@ namespace FluffyMultiplayer
 
 
       bool voiceChat;
-      bool isMe;
 
     public:
+      bool isMe;
       //publiced to access into bounds from outside like playerList[i].pictureButtons[j].getButtonBound()
       FluffyMultiplayer::PictureButton voiceChatPB;
       void setOwner(bool status)

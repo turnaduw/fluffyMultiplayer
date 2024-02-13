@@ -275,6 +275,21 @@ namespace FluffyMultiplayer
         currentGameMode = nullptr;
       }break;
     }
+
+    if(currentGameMode!=nullptr)
+    {
+      if(inLobbyPlayers.size()>=3) //append players into new gameMode
+      {
+        currentGameMode->addPlayerToGame((*this), 0);
+        currentGameMode->addPlayerToGame((*this), 1);
+        currentGameMode->addPlayerToGame((*this), 2);
+        currentGameMode->addPlayerToGame((*this), 3);
+      }
+      else
+      {
+        log.print("game change called but players are not enough to pass", FluffyMultiplayer::LogType::Information);
+      }
+    }
   }
 
   bool App::isConnectionBlocked(const FluffyMultiplayer::AnAddress& address) const
@@ -628,6 +643,7 @@ namespace FluffyMultiplayer
                             {
                               log.print("player added into lobby as PLAYER.",FluffyMultiplayer::LogType::Information);
                               inLobbyPlayers.push_back(tempPlayer);
+                              currentGameMode->addPlayerToGame((*this), inLobbyPlayers.size()-1);
                             }
                             std::string serverStatusPrint = "\n----------------------------\nserver status:\ntotal connected:" + std::to_string(connectedPlayers.size());
                             serverStatusPrint += "\n players in lobby:" +  std::to_string(inLobbyPlayers.size());
@@ -897,10 +913,13 @@ namespace FluffyMultiplayer
                   if(startGame())
                   {
                     response(RESPONSE_GAME_STARTED,&inLobbyPlayers,nullptr,false);
+                    currentGameMode->startGameMode();
                   }
                   else
                   {
-                    response(RESPONSE_INTERNAL_ERROR_FAILED_TO_START_GAME,currentItem.sender, false);
+                    response(RESPONSE_START_GAME_NOT_ENOUGH_PLAYER_TO_START, currentItem.sender, false);
+
+                    // response(RESPONSE_INTERNAL_ERROR_FAILED_TO_START_GAME,currentItem.sender, false);
                   }
                 }
               }
@@ -1386,11 +1405,21 @@ namespace FluffyMultiplayer
   //lobby
   bool App::startGame()
   {
-    gameIsRunning=true;
-    db.queryStr="UPDATE fm_lobby SET lobbyStatus='1' WHERE id='";
-    db.queryStr+= std::to_string(lobbyData.id) + "';";
-    if(db.query_to_db())
-      return true;
+    if(currentGameMode->howManyPlayersAreInGame()>=3)//0 to 3 (4players)
+    {
+      gameIsRunning=true;
+      db.queryStr="UPDATE fm_lobby SET lobbyStatus='1' WHERE id='";
+      db.queryStr+= std::to_string(lobbyData.id) + "';";
+      if(db.query_to_db())
+      {
+        return true;
+      }
+    }
+    else //try to add players
+    {
+      log.print("game start called but players are not enough..", FluffyMultiplayer::LogType::Information);
+      return false;
+    }
     return false;
   }
   bool App::stopGame()

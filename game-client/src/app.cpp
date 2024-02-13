@@ -13,9 +13,10 @@ namespace FluffyMultiplayer
   void App::startGame()
   {
     gameIsRunning=true;
+
   }
 
-  void App::changeGameMode(int gameModeId)
+  void App::changeGameMode(int gameModeId,std::array<FluffyMultiplayer::PlayerList,MAX_PLAYERS_IN_LOBBY>& playerList)
   {
     switch (gameModeId)
     {
@@ -24,6 +25,13 @@ namespace FluffyMultiplayer
         stopGame();
         log.print("selected gameMode is Mensch", FluffyMultiplayer::LogType::Information);
         currentGameMode = new FluffyMultiplayer::GM_MENSCH(appWindow,lobby);
+        for(int i=0; i<MAX_PLAYERS_IN_LOBBY; i++)
+        {
+          if(playerList[i].getId() > -1)
+          {
+            currentGameMode->addPlayerToGame(playerList[i]);
+          }
+        }
       }break;
 
       default:
@@ -201,7 +209,7 @@ namespace FluffyMultiplayer
 
   void App::init(FluffyMultiplayer::AnAddress _server, std::string _identity)
   {
-
+    isLobbySettingsOn=false;
     inLobby=false; //a flag turn off to avoid to run gameMode->render after constructor StateMainPage called, turn on when received code == joint into lobby
     //init log
     log.init(APP_LOG_FILENAME,APP_PRINT_LOGS_LEVEL);
@@ -250,8 +258,10 @@ namespace FluffyMultiplayer
   void App::run()
   {
     log.print("game run.", FluffyMultiplayer::LogType::Information);
-    while (appWindow.isOpen() && appIsRunning)
+    while (appWindow.isOpen())
     {
+      if(!appIsRunning)
+        break;
        // Event processing
        sf::Event event;
        while (appWindow.pollEvent(event))
@@ -293,10 +303,11 @@ namespace FluffyMultiplayer
        currentState = currentState->update((*this));
 
        // Draw some graphical entities (z:0)
+       if(currentGameMode!=nullptr && inLobby && isLobbySettingsOn==false)
+        currentGameMode->render(appWindow);
+
        currentState->render(appWindow);
 
-       if(currentGameMode!=nullptr && inLobby)
-        currentGameMode->render(appWindow);
 
        //draw notifications (z:2)
        if(notificationQueue.size()>=1)

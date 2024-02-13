@@ -9,6 +9,7 @@ namespace FluffyMultiplayer
                               FluffyMultiplayer::Text _textChat,
                               bool _amILobbyOwner,FluffyMultiplayer::App& app)
   {
+    app.isLobbySettingsOn=false;
     players = _players;
     textChatLines = _textChatLines;
     amILobbyOwner = _amILobbyOwner;
@@ -192,7 +193,7 @@ namespace FluffyMultiplayer
             setSimpleTextValue("Lobby Id: "+cData[0]);
 
             //set lobby gameMode
-            app.changeGameMode(app.lobby->gameMode);
+            app.changeGameMode(app.lobby->gameMode,playerList);
 
 
           }break;
@@ -224,6 +225,7 @@ namespace FluffyMultiplayer
           case RESPONSE_UNKNOWN_REQUEST_GAME_IS_NOT_STARTED:
           case RESPONSE_UNKNOWN_REQUEST_GAME_PAUSED_OR_NOT_STARTED:
           case RESPONSE_ERROR_SEND_VOICE_CHAT_DISABLED:
+          case RESPONSE_START_GAME_NOT_ENOUGH_PLAYER_TO_START:
           {
             app.log.print("mainState: something received. code="+std::to_string(currentItem.code), FluffyMultiplayer::LogType::Information);
           }
@@ -273,7 +275,7 @@ namespace FluffyMultiplayer
 
               app.lobby->gameMode=stringToInt(cData[1]);
               //set lobby gameMode
-              app.changeGameMode(app.lobby->gameMode);
+              app.changeGameMode(app.lobby->gameMode,playerList);
 
               app.lobby->maxPlayers=stringToInt(cData[2]);
               app.lobby->currentPlayers=stringToInt(cData[3]);
@@ -314,7 +316,7 @@ namespace FluffyMultiplayer
           case RESPONSE_LOBBY_SETTINGS_IS:
           //lobby id, maxplayer, gameMode, currentplayers, voiceChatStatus, textChatStatus, specterStatus, password, ownerId, owner username
           {
-
+            app.isLobbySettingsOn=true;
             //update applobby
 
             std::cout << "open lobby settings form and insert data into it\n"
@@ -367,12 +369,18 @@ namespace FluffyMultiplayer
             connectMessage += ") joint to the lobby.\n";
             appendToTextChat(connectMessage);
 
+
             //check for empty slot
             for(int i=0; i<MAX_PLAYERS_IN_LOBBY; i++)
             {
               if(playerList[i].getName() == PLAYERS_LOBBY_EMPTY_SLOT_NAME)
               {
                 playerList[i].init(id,name,PLAYER_LIST_X,i*PLAYER_LIST_BOX_PER_PLAYER_Y,false,voiceChat,owner,specter,admin);//false is for IsMe (this is another player always is false)
+
+                if(!specter && app.currentGameMode!=nullptr)
+                {
+                  app.currentGameMode->addPlayerToGame(playerList[i]);
+                }
                 break;
               }
             }
@@ -661,6 +669,12 @@ namespace FluffyMultiplayer
     //keyboard
     switch(event.type)
     {
+      case sf::Event::Closed:
+      {
+        app.addSendText(REQUEST_DISCONNECT_FROM_LOBBY);
+        app.close();
+      }break;
+
       case sf::Event::KeyPressed:
       {
         if(event.key.code == sf::Keyboard::Enter || event.key.code == sf::Keyboard::Return)

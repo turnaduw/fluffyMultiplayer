@@ -1,5 +1,5 @@
 #!/bin/bash
-compileMain="main.cpp ./include/*.h ./include/states/*.h ./include/uiComponents/*.h ./src/*.cpp ./src/states/*.cpp -o gc.run -std=c++11 -lboost_system -lboost_filesystem -lboost_thread -lsfml-graphics -lsfml-window -lsfml-system -pthread -lpthread"
+compileMain="main.cpp ./include/*.h ./include/states/*.h ./include/uiComponents/*.h ./include/gameModes/*.h ./src/*.cpp ./src/states/*.cpp  ./src/gameModes/*.cpp -o gc.run -std=c++11 -lboost_system -lboost_filesystem -lboost_thread -lsfml-graphics -lsfml-window -lsfml-system -pthread -lpthread"
 PS3="Select compile type: "
 select compileMode in normal debug run runViaGDB
 do
