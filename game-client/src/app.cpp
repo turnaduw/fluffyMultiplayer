@@ -297,7 +297,15 @@ namespace FluffyMultiplayer
 
        // Draw some graphical entities (z:0)
        if(currentGameMode!=nullptr && inLobby && isLobbySettingsOn==false)
-        currentGameMode->render(appWindow);
+        if(currentGameMode->getGameStarted())
+        {
+          /*
+          this top condition is for to avoid render gameMode Elements before gameMode
+           turn his flag on, this is for to avoid render gameMode when that gameMode is not ready some
+           gameModes have problem to render/setposition to elements before game start.
+          */
+          currentGameMode->render(appWindow);
+        }
 
        currentState->render(appWindow);
 
