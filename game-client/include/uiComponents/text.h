@@ -41,6 +41,11 @@ namespace FluffyMultiplayer
         textText.setString(str);
       }
 
+      void setColor(sf::Color color)
+      {
+        textText.setFillColor(color);
+      }
+
       void setFontSize(unsigned int size)
       {
         textText.setCharacterSize(size);
