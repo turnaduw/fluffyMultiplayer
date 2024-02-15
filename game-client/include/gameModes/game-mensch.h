@@ -150,7 +150,7 @@ namespace FluffyMultiplayer
       std::array<FluffyMultiplayer::MapCircle,MENSCH_MAP_COUNT> menschMap;
       FluffyMultiplayer::SocketSendData sendTemp;
 
-      // FluffyMultiplayer::Icon backgroundGameMode;
+      FluffyMultiplayer::Icon backgroundGameMode;
       FluffyMultiplayer::LobbyData* lobby;
 
       //mouse event handel variable to delecre once, not per loop delcre

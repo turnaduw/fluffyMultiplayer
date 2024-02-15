@@ -60,7 +60,8 @@ namespace FluffyMultiplayer
     if(piece==nullptr)
     {
       p->setPosition(position.x,position.y);
-      std::cout << "piece sit\n";
+      piece = p;
+      std::cout << "piece sit at posx:" << position.x << "\ty=" << position.y << std::endl;
     }
     else
     {
@@ -255,6 +256,8 @@ namespace FluffyMultiplayer
     {
       menschMap[mapColored[i].id].setColor(mapColored[i].color);
     }
+
+    gameStarted=true;
   }
   void GM_MENSCH::updatePlayersInGame(std::vector<std::string>& playersInfo, int myId)
   {
@@ -338,23 +341,16 @@ namespace FluffyMultiplayer
     //set lobby details
     lobby = _lobby;
 
+    gameStarted=false;
+
     //labels:
-    turnLabel.initText("turn:",
-              (window.getSize().y/2)-100,
-              (window.getSize().y/2)-100);
+    turnLabel.initText("Turn:", 260.0 ,105.0);
 
 
-    dice.setPosition(300.0,50.0);//(window.getSize().x/5),(window.getSize().y/2));
+    dice.setPosition(599.0, 434.0);//(window.getSize().x/5),(window.getSize().y/2));
 
     //background
-    // backgroundGameMode.initIcon(ICON_BACKGROUND_GAMEMODE_MENSCH, ((window.getSize().x/2)-GM_MENSCH_BG_SIZE_X/2)+GM_MENSCH_BACKGROUND_PADDING_X, ((window.getSize().y/2)-GM_MENSCH_BG_SIZE_Y/2)+GM_MENSCH_BACKGROUND_PADDING_Y);
-
-
-    //example
-    // players[0].init(1,"alex",true,sf::Color::Red,true); //this client
-    // players[1].init(2,"luki",false,sf::Color::Green,false);
-    // players[2].init(3,"max",false,sf::Color::Yellow,false);
-    // players[3].init(4,"peter",false,sf::Color::Blue,false);
+    backgroundGameMode.initIcon(ICON_BACKGROUND_GAMEMODE_MENSCH, 251.0 ,98.0);
 
     //example: set pieces into center
     for(int i=0; i<MENSCH_PLAYERS_COUNT; i++)
@@ -368,7 +364,8 @@ namespace FluffyMultiplayer
 
   void GM_MENSCH::render(sf::RenderWindow& window)
   {
-    // backgroundGameMode.render(window);
+    backgroundGameMode.render(window);
+
     //render map circles
     for(int i=0; i<MENSCH_MAP_COUNT; i++)
     {
@@ -486,12 +483,22 @@ namespace FluffyMultiplayer
   void GM_MENSCH::setTurn(int id)
   {
     //find id by searching indexes
+    std::array<sf::Color,4> colorList =
+    {
+      sf::Color::Red,
+      sf::Color::Green,
+      sf::Color::Blue,
+      sf::Color::Yellow
+    };
+
+
     for(int i=0; i<MENSCH_PLAYERS_COUNT; i++)
     {
       if(id == players[i].id) //turnon
       {
         players[i].turn=true;
         turnLabel.setText("Turn: "+players[i].name + " ("+std::to_string(id)+")");
+        turnLabel.setColor(colorList[i]);
       }
       else //turnoff
       {
@@ -525,8 +532,23 @@ namespace FluffyMultiplayer
             {
               if(players[i].id == playerId)
               {
-                std::cout << "move piece players[i].id" << players[i].id << " playerid="<< playerId << " pieceId=" << pieceId << std::endl;
+                std::cout << "move piece players[i].id=" << players[i].id << " playerid="<< playerId << " pieceId=" << pieceId << std::endl;
                 menschMap[roomIndex].sit(&players[i].pieces[pieceId]);
+
+                //temp print menschboard
+                std::cout << "menschMap prints all pieces positions:\n";
+                for(int i=0; i<MENSCH_MAP_COUNT; i++)
+                {
+                  std::cout << "map pos = " << menschMap[i].position.x << ", " << menschMap[i].position.y;
+                  if(menschMap[i].piece==nullptr)
+                  {
+                    std::cout << "\t" << i << "nullptr\n";
+                  }
+                  else
+                  {
+                    std::cout << "\t" <<  i << " x:"<<menschMap[i].piece->position.x << "y:" << menschMap[i].piece->position.y << std::endl;
+                  }
+                }
                 break;
               }
             }
