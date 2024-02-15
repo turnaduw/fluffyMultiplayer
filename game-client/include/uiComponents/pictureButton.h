@@ -44,7 +44,7 @@ namespace FluffyMultiplayer
         pictureButtonPosition.y = y;
 
         //apply position.
-        pictureButtonButtonSprite.move(pictureButtonPosition);
+        pictureButtonButtonSprite.setPosition(pictureButtonPosition);
         pictureButtonButtonBound = pictureButtonButtonSprite.getGlobalBounds();
       }
 
