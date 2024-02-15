@@ -17,7 +17,7 @@ namespace FluffyMultiplayer
     std::string fontPath = MC_PATH_TO_FONTS MC_DEFAULT_FONT;
     std::string txttemp = "Lobby Id: " + std::to_string(app.lobby->id);
     initSimpleText(fontPath, txttemp);
-    setSimpleTextPosition(255.0,27.5);
+    setSimpleTextPosition(260.0,27.5);
     setSimpleTextFontsize(15);
 
     pauseResumeGameButton.init("", ICON_PAUSE , 772.0, 27.5, sf::Color::White,sf::Color::White, 12);
