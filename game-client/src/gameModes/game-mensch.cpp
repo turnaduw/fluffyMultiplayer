@@ -304,12 +304,32 @@ namespace FluffyMultiplayer
       //set received playersi with count of players we need into players array
       if(playersReceived.size()>=MENSCH_PLAYERS_COUNT)
       {
+        float posX,posY;
         for(int i=0; i<MENSCH_PLAYERS_COUNT; i++)
         {
+          if(i==0)
+            posX=750.0;
+          else if(i==1)
+            posX=815.0;
+          else if(i==2)
+            posX=880.0;
+          else
+            posX=945.0;
+
+
           players[i].init(playersReceived[i].id,playersReceived[i].name,false,playersReceived[i].color,playersReceived[i].isMe); //this client
           for(int j=0; j<MENSCH_PIECE_PER_PLAYER; j++)
           {
-            players[i].pieces[j].setPosition( i*65, j*65 );
+            if(j==0)
+              posY=100.0;
+            else if(j==1)
+              posY=165.0;
+            else if(j==2)
+              posY=230.0;
+            else
+              posY=295.0;
+
+            players[i].pieces[j].setPosition( posX, posY );
           }
           std::cout << "player added into game players[i].init called.\n";
         }
