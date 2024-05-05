@@ -1,10 +1,12 @@
 how to setup and how it work:<a href="https://github.com/turnaduw/fluffyMultiplayer/blob/master/docs/document-body.pdf">click to see pdf file (presian)</a><h1>
+cant open preview? <a href="https://github.com/turnaduw/fluffyMultiplayer/blob/master/docs/preview/final-preview-v3.0.0.mp4">click here</a> to load it from docs
 
 
 https://github.com/mdeets/fluffyMultiplayer/assets/61864724/f8c53d57-cf43-411d-8c2c-da31a6daf741
 
 
-cant open preview? <a href="https://github.com/turnaduw/fluffyMultiplayer/blob/master/docs/preview/final-preview-v3.0.0.mp4">click here</a> to open load it from docs
+
+
 ________________________________________________
 ### there is some bug and problem:
   - **CLIENT/SERVER SIDE:** cpu usage is extremely high becuase of while loops to receive data... needed to replace by Asyncchronous way.
