@@ -1,5 +1,7 @@
-how to setup and how it work:<a href="https://github.com/turnaduw/fluffyMultiplayer/blob/master/docs/document-body.pdf">click to see pdf file (presian)</a><h1>
-cant open preview? <a href="https://github.com/turnaduw/fluffyMultiplayer/blob/master/docs/preview/final-preview-v3.0.0.mp4">click here</a> to load it from docs
+<h2> how to setup and how it work:</h2><a href="https://github.com/turnaduw/fluffyMultiplayer/blob/master/docs/document-body.pdf">click to see pdf file (presian)</a><h1>
+
+
+cant open preview video? <a href="https://github.com/turnaduw/fluffyMultiplayer/blob/master/docs/preview/final-preview-v3.0.0.mp4">click here</a> to load it from docs
 
 
 https://github.com/mdeets/fluffyMultiplayer/assets/61864724/f8c53d57-cf43-411d-8c2c-da31a6daf741
